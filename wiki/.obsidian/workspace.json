@@ -1,0 +1,214 @@
+{
+  "main": {
+    "id": "2eef801b2b91d26f",
+    "type": "split",
+    "children": [
+      {
+        "id": "664f744e555b2346",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b8292bc55dbdd8ee",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "1f18ce18715c9814",
+    "type": "split",
+    "children": [
+      {
+        "id": "0732fc72fd5893c9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8809ae6428886cc6",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "d38de65d9a6c3be8",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "bc58fa8a8ae5e5d7",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "cec146015707f8e2",
+    "type": "split",
+    "children": [
+      {
+        "id": "16d689e508249400",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a60d6251d397a583",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "848d76ef50cce092",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "9bb53ad59bb4c415",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "c8050a4be9182608",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "06f8470ffc9f2bcb",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "b8292bc55dbdd8ee",
+  "lastOpenFiles": [
+    "projects/raunch.md",
+    "projects/career-ops.md",
+    "decisions/2026-04-13-cpo-mission-vision.md",
+    "organizations/danaher.md",
+    "sources/openclaw-research.md",
+    "sources/karpathy-wiki-community-feedback.md",
+    "sources/cos-atlas-recommendations.md",
+    "sources/cos-role-research.md",
+    "sources/dina-resume-v7.md",
+    "sources/dina-career-targets.md",
+    "sources/2026-03-dha-personal-statement.md",
+    "people/dina-gbotoe.md",
+    "sources/dina-email-voice-profile.md",
+    "log.md.tmp.37712.1776047310723",
+    "people/martin-kang.md",
+    "2026-04-12.md",
+    "projects/gbotoe-business.md",
+    "projects/samesf-automation.md",
+    "projects/tax-app.md",
+    "projects/madina-portfolio.md",
+    "projects/media-theater.md",
+    "projects/nala-paw.md",
+    "projects/wdai-platform.md",
+    "sources/sedx8Dh3U",
+    "sources/sed5ehB6p",
+    "sources/sedZa4XaD",
+    "sed6Gvqme",
+    "sed0pFmfz",
+    "people/brigitte-lyons.md",
+    "people/lauren-irving.md",
+    "people/martin.md",
+    "people/sandhya-simhan.md"
+  ]
+}

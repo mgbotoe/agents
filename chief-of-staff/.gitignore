@@ -1,0 +1,29 @@
+# Secrets — NEVER commit these
+.env
+*.env.local
+.mcp.json
+mcp/**/credentials.json
+mcp/**/tokens/
+mcp/**/.env
+
+# Node
+node_modules/
+mcp/**/node_modules/
+
+# Runtime / logs
+daily-logs/
+.claude/edit-log.txt
+.claude/memory.db
+.claude/runtime/
+.claude/launchd-task-log.txt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.firecrawl/
+
+# Discord session history
+.claude/runtime/discord-sessions/
+
+# Claude Code local settings
+.claude/settings.local.json

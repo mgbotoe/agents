@@ -1,0 +1,33 @@
+# Secrets
+.mcp.json
+.env
+**/config/secrets/
+
+# Runtime
+**/.claude/memory.db
+**/.claude/runtime/
+**/.claude/edit-log.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.cursor/
+
+# Temp
+**/tmp/
+
+# Node
+**/node_modules/
+
+# Data files (large JSON exports)
+*.json
+!**/package.json
+!**/bun.lock
+!**/.obsidian/*.json
+!**/tsconfig.json
+
+# Raw wiki sources (tracked separately if needed)
+wiki/raw/

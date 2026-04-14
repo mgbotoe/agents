@@ -1,0 +1,13 @@
+{
+  "name": "atlas-google-drive-mcp",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "auth": "bun run src/auth.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "googleapis": "^144.0.0"
+  }
+}

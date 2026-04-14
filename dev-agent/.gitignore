@@ -1,0 +1,20 @@
+# Secrets
+.mcp.json
+.env
+config/secrets/
+
+# Runtime
+.claude/memory.db
+.claude/runtime/
+.claude/edit-log.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.cursor/
+
+# Temp
+tmp/
