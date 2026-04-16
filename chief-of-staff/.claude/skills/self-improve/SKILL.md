@@ -1,6 +1,6 @@
 ---
 name: self-improve
-description: Recursive self-improvement loop. Reviews and improves the agent's own skills, rules, identity files, hooks, and scripts based on recent usage patterns. Runs nightly via launchd or manually with /self-improve.
+description: Recursive self-improvement loop. Reviews and improves the agent's own skills, rules, identity files, hooks, and scripts based on recent usage patterns. Runs nightly via Task Scheduler or manually with /self-improve.
 ---
 
 # Recursive Self-Improvement
@@ -56,7 +56,8 @@ Review and improve these in order:
 
 ## Execution Rules
 
-- **Auto-apply all changes.** The morning standup will surface what changed.
+- **Auto-apply all changes.**
+- **Post a summary to Slack #atlas-cos (C0ASHFXMHM5) when changes were made.** If any files were modified, send a short message (2-5 lines) listing what changed and what was skipped for human review. Silent when nothing changed — no "all clear" posts.
 - **One change per concern.** Don't combine unrelated improvements into one edit.
 - **Document every change.** Append a summary to `daily-logs/YYYY-MM-DD.md` under `## [HH:MM] Self-Improvement` with what was changed and why.
 - **Preserve intent.** Improve clarity and coverage, don't change the agent's personality or role.
@@ -66,7 +67,9 @@ Review and improve these in order:
 
 ## Output
 
-After completing the loop, append to the daily log:
+After completing the loop:
+
+1. Append to the daily log:
 
 ```
 ## [HH:MM] Self-Improvement
@@ -82,3 +85,9 @@ After completing the loop, append to the daily log:
 - Rules: X reviewed, Y improved
 - Hooks: all passing / [issues found]
 ```
+
+2. **If any files were changed**, post a summary to Slack #atlas-cos (C0ASHFXMHM5):
+   - 2-5 lines max. Lead with count of changes, then the most notable ones.
+   - Include "Skipped" items if they need human attention.
+   - Example: "Self-improve: 5 files updated overnight. Fixed stale macOS refs in 3 skills, rewrote daily-standup to match CoS role, fixed notification hook for Windows. 1 item needs your input: scan-slack tool names may be stale after Gumloop retirement."
+   - **Do NOT post if nothing changed.** No "all clear" messages.

@@ -1,5 +1,6 @@
 ---
 name: Raunch (Novel)
+org: personal
 type: personal creative
 status: active
 path: C:\Workspace\raunch

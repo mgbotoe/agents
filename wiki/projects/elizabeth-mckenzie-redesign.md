@@ -12,7 +12,7 @@ tags: [business, client, overdue]
 Gbotoe Co. client lead. Redesign project inquiry.
 
 ## Status
-- **Overdue 21+ days** (due Mar 22, 2026)
+- **Overdue 23+ days** (due Mar 22, 2026 — as of Apr 14)
 - Status: "contacted" — no response or next step
 - Getting daily automated follow-up reminders from Gbotoe Co. Business Manager
 - Shows up in weekly digest as needing attention

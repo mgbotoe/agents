@@ -3,7 +3,7 @@ name: Martin Kang
 role: Manager — Enterprise AI
 org: Danaher
 meeting_cadence: Weekly 1:1 (Tuesdays)
-last_meeting: 2026-04-02
+last_meeting: 2026-04-15
 tags: [danaher, manager, key-relationship]
 ---
 
@@ -40,6 +40,10 @@ Dina's direct manager at [[organizations/danaher|Danaher]] on the Enterprise AI 
 
 ## Key Sources
 
+- [[sources/2025-12-15-finance-martin-siyu-madina|Finance Sync — Martin/Siyu/Madina (Dec 15, 2025)]]
+- [[sources/2025-12-16-martin-1on1|1:1 with Martin (Dec 16, 2025)]]
+- [[sources/2025-12-16-ppg-year-end|PPG Year-End (Dec 16, 2025)]]
 - [[sources/2026-01-26-performance-review-martin|Performance Review (Jan 26)]]
 - [[sources/2026-02-10-martin-1on1-dlc-conference|DLC Conference Debrief (Feb 10)]]
+- [[sources/2026-03-02-danaher-board-ai-presentation|Board AI Presentation (Mar 2)]]
 - [[sources/2026-04-02-martin-1on1|Pod Model & Org Restructuring (Apr 2)]]

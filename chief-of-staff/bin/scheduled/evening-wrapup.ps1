@@ -1,4 +1,4 @@
-# Evening Wrap-up — sends end-of-day summary to Discord after work hours.
+# Evening Wrap-up — sends end-of-day summary to Slack after work hours.
 # Runs via Task Scheduler at 3:15 PM PT (right after Dina's 3 PM end of work).
 
 param()
@@ -10,19 +10,19 @@ $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 New-Item -ItemType Directory -Path "$ProjectDir\.claude\runtime" -Force | Out-Null
 
 function Log($msg) {
-    "[$Timestamp] scheduled(evening-wrapup): $msg" | Out-File -Append -FilePath $LogFile
+    "[$Timestamp] scheduled(evening-wrapup): $msg" | Out-File -Append -FilePath $LogFile -Encoding utf8
 }
 
 $currentDate = Get-Date -Format "dddd, MMMM d, yyyy 'at' h:mm tt"
 
 $prompt = @"
-You are Atlas, Dina's Chief of Staff. Generate and send the evening wrap-up to Discord.
+You are Atlas, Dina's Chief of Staff. Generate and send the evening wrap-up to Slack #atlas-cos.
 CURRENT DATE/TIME: $currentDate PT. Use this as the source of truth for today's date and day of the week.
 
 CONTEXT:
 - Dina works at Danaher 7 AM - 3 PM PT. It's now end of day.
-- Discord channel: 605801708546686998
-- Dina's Discord tag: <@255180039002390528>
+- Slack channel: C0ASHFXMHM5 (#atlas-cos)
+- Dina's Slack tag: <@U094L7RJ9FV>
 - Skip weekends — if today is Saturday or Sunday, exit silently.
 
 STEPS:
@@ -33,9 +33,9 @@ STEPS:
 4. Use gcal_upcoming with days=1 to preview tomorrow
 5. Check for tomorrow reminders: Mama Day Off, Nala meds, holidays, appointments
 
-FORMAT (send as one Discord message):
+FORMAT (send to Slack C0ASHFXMHM5 via slack_send):
 
-<@255180039002390528> — Evening Wrap | [Day] [Date]
+Evening Wrap | [Day] [Date]
 
 **📅 TODAY'S MEETINGS** ([count] total)
 - [list meetings that happened, check mark if in the past]
@@ -64,12 +64,21 @@ Check for:
 - If Dina said she'd do something in a Granola transcript and there's no evidence it happened.
 Format: "🔔 You haven't connected with [person] since [date]" or "⚠️ [project] hasn't had activity in 2 weeks"
 
-6. Send to Discord. Keep it under 2000 chars. If it exceeds, split into 2 messages.
+6. Send to Slack C0ASHFXMHM5 via slack_send. If content exceeds 3000 chars, split: send the first half as the parent message, then details as a threaded reply using thread_ts.
 7. If today was a PTO/OOO day, keep it light — just preview tomorrow and reminders.
 
-WIKI MAINTENANCE (after sending the Discord message):
-8. Read the wiki index at C:\Workspace\agents\wiki\index.md
-9. Based on today's meetings and emails, update the wiki:
+POST-MEETING TRANSCRIPT INGESTION (WDAI only — after sending the Slack message):
+8. Use gcal_today to identify WDAI meetings that happened today (womendefiningai.org attendees or nonprofit calendar)
+9. For each WDAI meeting today:
+   a. Check if a wiki source already exists at C:\Workspace\agents\wiki\sources\ matching this meeting's date and title. If yes, skip.
+   b. Use list_meetings + get_meeting_transcript from Granola to pull the transcript
+   c. If transcript available: write summary + granola_id to wiki/sources/YYYY-MM-DD-slug.md with routing tag (technical/strategic/operational)
+   d. If routing is "technical": send a short message to Slack channel C0ASYTE8PB4 (#polaris-tl) with the wiki path and Granola ID
+   e. Update wiki/index.md and wiki/log.md
+
+WIKI MAINTENANCE (after transcript ingestion):
+10. Read the wiki index at C:\Workspace\agents\wiki\index.md
+11. Based on today's meetings and emails, update the wiki:
    - New people in meeting attendees who don't have wiki pages? Create them in wiki/people/
    - Project status changed? Update the project page.
    - Decisions made (from email threads)? Create a decision page in wiki/decisions/

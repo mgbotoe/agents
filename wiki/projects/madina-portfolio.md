@@ -1,5 +1,6 @@
 ---
 name: Madina Portfolio
+org: personal
 type: personal site
 status: active
 path: C:\Workspace\Personal Projects\madina-portfolio

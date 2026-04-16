@@ -42,4 +42,5 @@ Helen walked through these as examples of deeply integrated items to show how th
 - Test framework with core team presentations
 
 ## Source
-[[sources/2026-04-13-madina-helen-1on1|Madina <> Helen 1:1 (Apr 13)]]
+Apr 13 Madina <> Helen 1:1 session (source page not yet created — Granola transcript needs ingestion).
+Prep agenda: [[sources/2026-04-helen-1on1-prep|Helen 1:1 Prep (Apr 13)]]

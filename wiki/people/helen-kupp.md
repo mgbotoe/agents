@@ -30,5 +30,7 @@ Founder & CEO of [[organizations/wdai|Women Defining AI]]. Former Chief of Staff
 - Strategy skill building through apprenticeship model with Madina (bi-weekly 1:1s)
 
 ## Key Sources
+- [[sources/2025-12-11-wdai-community-huddle|Community Meet+Greet & Huddle (Dec 11, 2025)]]
+- [[sources/2025-12-15-wdai-2026-planning|WDAI 2026 Planning (Dec 15, 2025)]]
 - [[sources/2026-03-30-madina-helen-1on1|Madina <> Helen 1:1 (Mar 30)]]
 - [[sources/2026-04-01-wdai-core-team-sync|WDAI Core Team Sync (Apr 1)]]

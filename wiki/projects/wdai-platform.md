@@ -16,6 +16,7 @@ Dina is a contributor to the WDAI platform codebase. This is the org's main proj
 
 ## Role
 Active contributor — internal tooling, Slack automations, operational process design.
+PRs require review from Helen's team before merge. Dina does not have unilateral deploy authority.
 
 ## Technical Details
 - **Repos:** `wdai-foundation-platform` (main app), `claude-code-skills` (open source skill library)

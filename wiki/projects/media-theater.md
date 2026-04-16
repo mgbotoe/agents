@@ -1,5 +1,6 @@
 ---
 name: Media Theater
+org: personal
 type: personal app
 status: active
 path: C:\Workspace\Personal Projects\media-theater

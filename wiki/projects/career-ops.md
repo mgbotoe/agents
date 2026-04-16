@@ -1,5 +1,6 @@
 ---
 name: Career-Ops
+org: personal
 type: personal tool
 status: active
 path: C:\Workspace\career-ops

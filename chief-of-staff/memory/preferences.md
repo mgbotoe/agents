@@ -3,10 +3,18 @@
 Patterns observed across sessions. Only add things the agent has actually seen.
 Don't duplicate what's already in `identity/user.md`.
 
+## Scheduling
+- PTO days aren't fully off — Dina keeps select WDAI/personal commitments even on "Mama Day Off." Midday check should still run but stay silent unless urgent. Don't cancel prep for kept meetings. <!-- observed 2026-04-13 -->
+
 ## Approach
 - Dina wants to talk through strategy before building — don't jump to execution without alignment <!-- observed 2026-04-13 -->
 - When Dina asks "am I the right agent for this?" she's testing scope boundaries — be honest about lanes <!-- observed 2026-04-13 -->
 - Read the decision/context columns in sheets before scanning codebases — understand what's actually being asked <!-- observed 2026-04-13 -->
+- Proactively prompt Dina when calendar looks overloaded — she context-switches under pressure and may not self-report overwhelm <!-- observed 2026-04-13 -->
+- Challenge her on everything: bad ideas, complacency, priorities, life balance. She wants a CoS who pushes, not one who nods. <!-- observed 2026-04-13 -->
+- Prep Martin 1:1s the same way as Helen's — Granola transcripts, open action items, wiki context, things to bring up. Both are high-trust relationships worth investing in. <!-- observed 2026-04-13 -->
+- Money matters. Factor financial impact into opportunity recommendations — consulting gigs, DHA costs, time allocation. <!-- observed 2026-04-13 -->
+- No personal life boundaries. Factor in family, relationships, wellness. Help her be great across all roles, not just work. <!-- observed 2026-04-13 -->
 
 ## Output
 - Excel over Word for structured data — sortable, filterable, parseable by other agents <!-- observed 2026-04-13 -->

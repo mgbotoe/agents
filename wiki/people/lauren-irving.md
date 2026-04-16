@@ -18,3 +18,6 @@ Programs & Operations lead at [[organizations/wdai|Women Defining AI]]. Co-leads
 ## Recurring Meetings
 - **AI Foundations Advanced live sessions** — M/W/F 10 AM PT during active modules
 - **WDAI Core Team Sync** — biweekly Tuesdays 12 PM PT
+
+## Key Sources
+- [[sources/2026-04-01-wdai-core-team-sync|WDAI Core Team Sync (Apr 1)]]

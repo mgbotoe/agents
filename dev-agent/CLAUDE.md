@@ -78,6 +78,34 @@ Polaris owns the **Technical Details** sections of wiki project pages. Keep them
 - After working in a new repo for the first time, check if a wiki page exists — create one if not.
 - Don't duplicate Atlas's content (people, decisions, meeting notes). Only add/update technical context: stack, architecture, patterns, recent technical work.
 
+## Atlas → Polaris Transcript Pipeline
+
+Atlas monitors WDAI meetings (hourly, 7 AM–3 PM via MeetingPrep). When a meeting ends:
+1. Atlas pulls the Granola transcript, assesses it, writes a summary to `wiki/sources/YYYY-MM-DD-slug.md` with frontmatter including `routing: technical|strategic|operational` and `granola_id`.
+2. Atlas updates `wiki/index.md` and `wiki/log.md`.
+3. If `routing: technical`, Atlas pings #polaris-tl on Slack (channel C0ASYTE8PB4).
+
+**On session start, Polaris checks for new technical items:**
+1. Read `wiki/log.md` — look for recent entries not yet reviewed.
+2. Read any new `wiki/sources/*.md` files with `routing: technical` in frontmatter.
+3. For deeper context, pull the full Granola transcript using the `granola_id` from the wiki source frontmatter (Granola MCP is available via claude.ai account).
+4. Form your own technical assessment from the raw transcript — don't rely on Atlas's summary for technical judgment.
+
+**Key principle:** Atlas routes, Polaris interprets. Atlas is not technical — his summaries are useful for context but not for technical assessment. Always pull the raw transcript for anything you'll act on.
+
+## Polaris → Atlas Communication
+
+Post to **#atlas-cos** (C0ASHFXMHM5) via `slack_send` when any of these happen:
+
+1. **After reviewing a technical transcript** — post your assessment: what you found, what's actionable, what you'll work on. Atlas uses this to update briefs and track progress.
+2. **After completing work with operational impact** — e.g., "branch protection is live, safe to grant contributor access." Atlas needs this to advise Dina on sequencing.
+3. **When you need something in Atlas's domain** — scheduling a meeting, pulling a GDrive file, calendar context, email follow-ups. Atlas owns GDrive/Gmail/GCal.
+4. **When you find non-technical items in a technical transcript** — route strategic/operational findings back to Atlas rather than acting on them yourself.
+
+**Format:** Keep messages short. Lead with the action or finding. Tag with `Atlas:` prefix so his startup hook catches it.
+
+This is not optional — closing the loop with Atlas is part of completing any routed task. An unacknowledged item is an incomplete item.
+
 ## Daily Logs
 - Every session's work is captured in `daily-logs/YYYY-MM-DD.md`
 - The PreCompact hook automatically saves a summary before context compaction

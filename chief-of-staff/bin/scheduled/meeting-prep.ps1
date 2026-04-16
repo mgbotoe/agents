@@ -1,5 +1,5 @@
-# Meeting Prep — sends context briefs to Discord 15 min before each meeting.
-# Runs via Task Scheduler every 30 min during work hours (6:30 AM - 4 PM PT).
+# Meeting Prep — sends context briefs to Slack before each meeting.
+# Runs via Task Scheduler every hour during work hours (7 AM - 3 PM PT).
 # Checks calendar for meetings starting in the next 15-30 min window,
 # then sends a prep brief for each one.
 
@@ -12,7 +12,7 @@ $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 New-Item -ItemType Directory -Path "$ProjectDir\.claude\runtime" -Force | Out-Null
 
 function Log($msg) {
-    "[$Timestamp] scheduled(meeting-prep): $msg" | Out-File -Append -FilePath $LogFile
+    "[$Timestamp] scheduled(meeting-prep): $msg" | Out-File -Append -FilePath $LogFile -Encoding utf8
 }
 
 $currentDate = Get-Date -Format "dddd, MMMM d, yyyy 'at' h:mm tt"
@@ -26,24 +26,30 @@ CONTEXT:
 - You do NOT have access to her Danaher email (madina.gbotoe@danaher.com)
 - You DO have access to: personal (mgbotoe@gmail.com), business (madina@gbotoe.com), nonprofit (madina@womendefiningai.org)
 - Granola MCP may have past meeting transcripts — check if available
-- Discord channel: 605801708546686998
-- Dina's Discord tag: <@255180039002390528>
+- Slack channel: C0ASHFXMHM5 (#atlas-cos)
+- Dina's Slack tag: Atlas
 
 STEPS:
 
 1. Use gcal_today to get all events for today
-2. Check which meetings start in the next 15-30 minutes (current time in PT)
-3. If no meetings in that window, exit silently — do NOT send anything to Discord
-4. For each upcoming meeting, gather context:
-   a. **Attendees** — list names/emails from the calendar invite
-   b. **Recurring?** — is this a weekly/biweekly meeting or a one-off?
-   c. **Recent emails** — use gmail_search to find recent emails from/to key attendees (last 7 days). Read the most relevant 1-2 emails for context.
-   d. **Meeting notes** — search nonprofit inbox for Gemini meeting notes with this meeting's name
-   e. **Granola** — use query_granola_meetings or list_meetings to search for the LAST occurrence of this meeting (same title or same key attendees). If found, use get_meetings to read the transcript. Extract: key decisions made, action items assigned, open threads that are still unresolved. This is the most valuable prep.
-   f. **Wiki** — check C:\Workspace\agents\wiki\ for pages about attendees or the project this meeting relates to. Pull in relevant context.
-5. Format and send to Discord:
+2. Check which meetings start in the next 15-60 minutes (current time in PT)
+3. If no meetings in that window, exit silently — do NOT send anything to Slack
 
-<@255180039002390528> — Meeting Prep | [Meeting Title] in 15 min
+4. FILTER — only prep meetings that are worth prepping. For each meeting in the window:
+   a. Check attendees — are there any EXTERNAL attendees (outside @danaher.com)? People Dina doesn't meet regularly?
+   b. Check Granola — use query_granola_meetings or list_meetings to search for the LAST occurrence of this meeting. Does it have meaningful context worth surfacing (open action items, unresolved decisions, threads that carried over)?
+   c. PREP if: meeting has external attendees OR Granola has context worth surfacing (action items, decisions, open threads)
+   d. SKIP if: it's a routine recurring internal meeting (same attendees every week) AND Granola has no open threads or action items from last time. Log the skip reason silently.
+
+5. For each meeting that passes the filter, gather context:
+   a. **Attendees** — list names/emails from the calendar invite
+   b. **Recent emails** — use gmail_search to find recent emails from/to key attendees (last 7 days). Read the most relevant 1-2 emails for context.
+   c. **Meeting notes** — search nonprofit inbox for Gemini meeting notes with this meeting's name
+   d. **Granola** — use the transcript from step 4. Extract: key decisions made, action items assigned, open threads that are still unresolved.
+   e. **Wiki** — check C:\Workspace\agents\wiki\ for pages about attendees or the project this meeting relates to. Pull in relevant context.
+5. Format and send to Slack C0ASHFXMHM5 via slack_send:
+
+Atlas — Meeting Prep | [Meeting Title] in 15 min
 
 **📍 [Time] — [Title]**
 [Platform: Teams/Meet/Zoom] | [Link if available]
@@ -64,6 +70,45 @@ STEPS:
 7. If it's a Danaher meeting (Teams, "Calendar" source), note that you have limited context since you can't access the work inbox.
 "@
 
+$postMeetingPrompt = @"
+You are Atlas, Dina's Chief of Staff. Check for WDAI meeting transcripts that just landed and need processing.
+CURRENT DATE/TIME: $currentDate PT.
+
+SCOPE: Only WDAI meetings — identified by womendefiningai.org attendees or nonprofit calendar events. Ignore Danaher, personal, and Gbotoe Co. meetings entirely.
+
+STEPS:
+
+1. Use gcal_today to get today's events
+2. Identify WDAI meetings that ENDED in the last 90 minutes (use current time in PT)
+3. If none, exit silently
+
+4. For each recently ended WDAI meeting:
+   a. Check if a wiki source already exists at C:\Workspace\agents\wiki\sources\ matching this meeting's date and title. If yes, skip — already ingested.
+   b. Use list_meetings + get_meeting_transcript from Granola to pull the full transcript
+   c. If no transcript available yet, skip silently — it may not have been processed by Granola yet
+
+5. For each new transcript found:
+   a. Write the full raw transcript to wiki/sources/YYYY-MM-DD-meeting-slug.md with frontmatter:
+      ---
+      title: [Meeting Title]
+      date: YYYY-MM-DD
+      attendees: [list]
+      source: granola
+      routing: [technical|strategic|operational]
+      ---
+   b. ASSESS the content and tag routing:
+      - "technical" — if it discusses code, infrastructure, repos, staging, CI/CD, analytics implementation, agents, error tracking, architecture
+      - "strategic" — if it discusses mission, grants, partnerships, community strategy, program design
+      - "operational" — if it's logistics, scheduling, access management, routine coordination
+   c. Update wiki/index.md with the new source entry
+   d. Update wiki/log.md with the ingestion
+   e. If routing is "technical": send a short message to Slack channel C0ASYTE8PB4 (#polaris-tl):
+      "New WDAI transcript ready for review: [title] (YYYY-MM-DD). Route: technical. Wiki: sources/[filename]. Pull full transcript from Granola if needed for deeper context."
+   f. If routing is "strategic" or "operational": no Slack notification needed — it'll show up in the morning brief or midday check naturally.
+
+6. Keep wiki source entries concise — include the Granola summary + key decisions/action items, NOT the full raw transcript (too large). Note the Granola meeting ID so Polaris can pull the full transcript himself if needed.
+"@
+
 Log "Checking for upcoming meetings"
 
 try {
@@ -72,5 +117,15 @@ try {
     Log "Meeting prep check complete"
 } catch {
     Log "Meeting prep failed: $_"
+    exit 1
+}
+
+Log "Checking for recent WDAI transcripts"
+
+try {
+    $result2 = claude -p $postMeetingPrompt --dangerously-skip-permissions 2>&1
+    Log "Post-meeting transcript check complete"
+} catch {
+    Log "Post-meeting transcript check failed: $_"
     exit 1
 }

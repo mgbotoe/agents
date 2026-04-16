@@ -1,6 +1,6 @@
 ---
 name: promote
-description: Extract key learnings from daily logs and promote them to identity/memory.md. Run automatically via launchd once per day, or manually after a productive day.
+description: Extract key learnings from daily logs and promote them to identity/memory.md. Run automatically via Task Scheduler once per day, or manually after a productive day.
 ---
 
 Daily log promotion — extract signal from raw conversation logs into long-term memory.

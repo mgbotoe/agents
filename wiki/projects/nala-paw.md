@@ -1,5 +1,6 @@
 ---
 name: Nala Paw
+org: personal
 type: personal app
 status: active
 path: C:\Workspace\Personal Projects\nala-paw

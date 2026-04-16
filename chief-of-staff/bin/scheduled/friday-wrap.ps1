@@ -10,7 +10,7 @@ $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 New-Item -ItemType Directory -Path "$ProjectDir\.claude\runtime" -Force | Out-Null
 
 function Log($msg) {
-    "[$Timestamp] scheduled(friday-wrap): $msg" | Out-File -Append -FilePath $LogFile
+    "[$Timestamp] scheduled(friday-wrap): $msg" | Out-File -Append -FilePath $LogFile -Encoding utf8
 }
 
 $currentDate = Get-Date -Format "dddd, MMMM d, yyyy 'at' h:mm tt"
@@ -22,8 +22,8 @@ CURRENT DATE/TIME: $currentDate PT. Use this as the source of truth for today's 
 Read context from: C:\Workspace\agents\wiki\people\dina-gbotoe.md, C:\Workspace\agents\wiki\index.md
 
 CONTEXT:
-- Discord channel: 605801708546686998
-- Dina's tag: <@255180039002390528>
+- Slack channel: C0ASHFXMHM5 (#atlas-cos)
+- Dina's tag: Atlas
 - If today is NOT Friday, exit silently.
 
 STEPS:
@@ -34,11 +34,11 @@ STEPS:
 4. Read wiki project pages — what advanced, what stalled
 5. Check: did Nala get walked this week? How many times?
 
-FORMAT — 2 Discord messages:
+FORMAT — send to Slack C0ASHFXMHM5 via slack_send. Post Message 1 as parent, Message 2 as threaded reply:
 
 MESSAGE 1:
 
-<@255180039002390528> — Friday Wrap | Week of [Date]
+Atlas — Friday Wrap | Week of [Date]
 
 **📊 WHAT MOVED**
 - Danaher: [key outcomes, decisions, progress]

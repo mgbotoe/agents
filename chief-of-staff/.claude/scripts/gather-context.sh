@@ -12,7 +12,7 @@ echo ""
 
 echo "## Pending Items from identity/memory.md"
 if [ -f "$PROJECT_DIR/identity/memory.md" ]; then
-  grep -i -E "follow.?up|pending|todo|deadline|reminder|urgent" "$PROJECT_DIR/identity/memory.md" 2>/dev/null || echo "No pending items found."
+  grep -i -E "follow.?up|pending|todo|deadline|reminder|urgent|overdue" "$PROJECT_DIR/identity/memory.md" 2>/dev/null || echo "No pending items found."
 else
   echo "No identity/memory.md found."
 fi
@@ -29,11 +29,13 @@ else
 fi
 echo ""
 
-echo "## Scheduled Tasks"
-if [ -f "$PROJECT_DIR/.claude/scheduled-tasks.md" ]; then
-  grep "^- " "$PROJECT_DIR/.claude/scheduled-tasks.md" 2>/dev/null || echo "No tasks defined."
+echo "## Scheduled Tasks (recent runs)"
+TASK_LOG="$PROJECT_DIR/.claude/runtime/scheduled-tasks.log"
+if [ -f "$TASK_LOG" ]; then
+  echo "Last 5 task runs:"
+  tail -5 "$TASK_LOG" 2>/dev/null || echo "Could not read task log."
 else
-  echo "No scheduled-tasks.md found."
+  echo "No scheduled-tasks.log found."
 fi
 echo ""
 
@@ -51,22 +53,24 @@ else
 fi
 echo ""
 
-echo "## Channel Health"
-if pgrep -f "bun.*server\.ts" > /dev/null 2>&1; then
-  BUN_PID=$(pgrep -f "bun.*server\.ts")
-  echo "bun channel server: RUNNING (pid $BUN_PID)"
+echo "## Discord Bot Health"
+DISCORD_SESSION="$PROJECT_DIR/.claude/runtime/discord-sessions"
+if [ -d "$DISCORD_SESSION" ]; then
+  SESSION_COUNT=$(ls "$DISCORD_SESSION"/*.json 2>/dev/null | wc -l | xargs)
+  echo "Discord session files: $SESSION_COUNT"
+  for f in "$DISCORD_SESSION"/*.json; do
+    [ -f "$f" ] && echo "  $(basename "$f"): $(wc -c < "$f") bytes"
+  done
 else
-  echo "bun channel server: NOT RUNNING (may not be configured)"
+  echo "No Discord session directory found."
 fi
-CLAUDE_COUNT=$(pgrep -fc "claude.*--dangerously-skip-permissions" 2>/dev/null || echo 0)
-echo "claude agent processes: $CLAUDE_COUNT (expected: 1)"
-echo ""
-
-echo "## System"
-echo "Uptime: $(uptime | sed 's/.*up /up /' | sed 's/,.*//')"
-echo "Disk: $(df -h / | tail -1 | awk '{print $4 " free of " $2}')"
+DISCORD_LOG="$PROJECT_DIR/.claude/runtime/discord-watcher.log"
+if [ -f "$DISCORD_LOG" ]; then
+  echo "Last Discord watcher entry:"
+  tail -3 "$DISCORD_LOG" 2>/dev/null
+fi
 echo ""
 
 echo "## Recent File Changes (last 2 hours)"
-find "$PROJECT_DIR" -not -path '*/.firecrawl/*' -not -path '*/.git/*' -not -path '*/.claude/memory.db*' -not -path '*/.claude/runtime/*' -type f -mmin -120 -exec ls -lt {} + 2>/dev/null | head -10 || echo "No recent changes."
+find "$PROJECT_DIR" -not -path '*/.git/*' -not -path '*/.claude/runtime/*' -not -path '*/.claude/memory.db*' -not -path '*/node_modules/*' -type f -mmin -120 2>/dev/null | head -10 || echo "No recent changes."
 echo ""

@@ -35,7 +35,7 @@ Secrets include API keys, tokens, passwords, private keys, and personally identi
 
 ## Automated Task Safety
 
-When running unattended (via launchd, cron, or `/loop`) — heartbeats, self-improve, promote, distill:
+When running unattended (via Task Scheduler or `/loop`) — heartbeats, self-improve, promote, distill:
 
 - **Be extra conservative.** No human is watching. When in doubt, skip the action and log it for morning review.
 - **Never make destructive changes.** Automated runs may read, analyze, and improve — but never delete files, force-push, or make irreversible changes.

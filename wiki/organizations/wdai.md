@@ -1,7 +1,7 @@
 ---
 name: Women Defining AI
 type: nonprofit
-dina_role: AI Enablement Lead, Operations & Education
+dina_role: VP/CPO — Product & Infrastructure (AI-native framework across all pillars)
 founder: Helen Kupp
 email: madina@womendefiningai.org
 website: womendefiningai.org
@@ -17,16 +17,14 @@ Nonprofit empowering women and nonbinary individuals to lead in AI. 1,000+ membe
 Close the gender-tech gap through curated learning programs, educational content, research, and community events. Focus on mid-career women and non-technical backgrounds.
 
 ## Dina's Role
-- AI Enablement Lead, Operations & Education (Nov 2025–present)
-- Internal tooling and Slack automations
+- VP/CPO — Product & Infrastructure (Mar 2026–present)
+- Previously: AI Enablement Lead, Operations & Education (Nov 2025–Mar 2026)
+- Chose holistic scope: AI-native nonprofit framework across all pillars (not just platform/repo IC)
+- Owns project evaluation framework, strategic roadmapping, resource allocation
+- Pushes entire org to be AI-first
+- Retains core ownership of WDAI Foundation platform repo and tech stack
 - Co-leading AI Foundations curriculum
-- Operational process design
-
-## Dina's Role (updated Mar 2026)
-
-Chose holistic scope: AI-native nonprofit framework across all pillars (not just platform/repo IC). VP/CPO-like role — owns project evaluation framework, strategic roadmapping, resource allocation. Pushes entire org to be AI-first. Retains core ownership of WDAI Foundation platform repo and tech stack.
-
-See: [[sources/2026-03-30-madina-helen-1on1|Role Definition (Mar 30)]]
+- See: [[sources/2026-03-30-madina-helen-1on1|Role Definition (Mar 30)]]
 
 ## Key People
 - [[people/helen-kupp|Helen Kupp]] — Founder & CEO
@@ -34,6 +32,7 @@ See: [[sources/2026-03-30-madina-helen-1on1|Role Definition (Mar 30)]]
 - [[people/brigitte-lyons|Brigitte Lyons]] — Core Team
 - [[people/sandhya-simhan|Sandhya Simhan]] — Core Team, Marketing & Content
 - Rita (rhokstad@gmail.com) — Core Team
+- Nichole Sterling — Core Team
 
 ## Programs
 - [[projects/ai-foundations|AI Foundations]] — recurring 3-week cohort, 300+ women per cohort
@@ -45,6 +44,12 @@ See: [[sources/2026-03-30-madina-helen-1on1|Role Definition (Mar 30)]]
 - madina@womendefiningai.org (primary)
 - WDAI Programs & Events (program calendar)
 - WDAI Internal Calendar (team meetings)
+
+## Shared Resources
+- **CPO Folder (GDrive):** https://drive.google.com/drive/folders/1d7OR7Sy0BW5Qb-Fjr8vq-jOPCiniGsAy
+- **Product Spectrum Registry:** https://docs.google.com/spreadsheets/d/1Gz50sLZ_b6asCjU6D7-BqhFjlaK_A11oYWN6RTe8arw/edit
+- **Platform repo:** GitHub — womendefiningai org (private)
+- **PostHog:** analytics + error tracking (Rebekah getting access Apr 2026)
 
 ## Important
 - WDAI is **unpaid volunteer work**

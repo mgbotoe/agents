@@ -29,5 +29,17 @@ Thumbs.db
 !**/.obsidian/*.json
 !**/tsconfig.json
 
+# Binary artifacts (pptx, xlsx — should be on GDrive, not git)
+*.pptx
+*.xlsx
+~$*
+
+# Playwright MCP logs
+**/.playwright-mcp/
+
+# Slack watcher runtime
+slack-watcher/watcher.log
+slack-watcher/sessions/
+
 # Raw wiki sources (tracked separately if needed)
 wiki/raw/

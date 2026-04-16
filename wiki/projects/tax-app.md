@@ -1,5 +1,6 @@
 ---
 name: Tax App
+org: personal
 type: personal app
 status: active
 path: C:\Workspace\Personal Projects\tax-app

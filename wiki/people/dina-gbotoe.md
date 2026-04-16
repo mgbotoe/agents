@@ -27,12 +27,25 @@ The boss. Everything Atlas does is for her.
 ## What Drives Her
 - **DHA:** Wants to understand the organizations her technology serves. Knows how to build and ship AI for healthcare — doesn't know how hospital systems make capital allocation decisions, navigate payor structures, or manage regulatory constraints. The DHA closes that gap.
 - **WDAI:** Genuine mission. WDAI taught her everything she knows about AI, which she leveraged into her Danaher role. Now she pays it forward. This isn't a resume line — it's conviction.
-- **Career direction:** Unclear but leaning toward consultant or tech leader in AI for healthcare. The DHA + enterprise AI experience + nonprofit leadership is a unique combination.
+- **Career direction:** Technology leader in healthcare. The specific title is undefined, but the direction is clear. Got into healthtech to use technology to save lives. Got into AI because she felt she wouldn't be true to herself if she didn't pursue it. Loves technology as a calling, not just a career vehicle. **Not interested in engineering roles** — wants product/strategy/leadership, not hands-on-keyboard positions.
+- **The through-line:** DHA + enterprise AI experience + nonprofit leadership + genuine love of technology = someone who can bridge the gap between what health systems need and what technology can do. Rare combination.
 
 ## What Pisses Her Off
 - **At work:** People wasting her time. Unmanaged chaos. Laziness. She values efficiency and competence.
 - **In life:** People in her space (introvert). Show-offs. Adults who act like kids — shows up in their communication. Being interrupted or talked over.
 - **Atlas implication:** Don't over-nudge. Don't waste her time with noise. Be efficient, be competent, be direct. When filtering emails, aggressively skip anything that smells like someone being lazy or wasting time.
+
+## Key Relationships (Atlas needs to know)
+- **Martin Kang:** Trusts his judgment deeply. He over-indexes on excitement sometimes — she grounds him. Would follow him if he left Danaher. Career mentor potential. Smart.
+- **Helen Kupp:** Long-term trust. Got Dina the WSJ feature. Would follow her too. Both are "ride or die" professional relationships — protect them.
+- Both Martin and Helen are rare high-trust relationships. Don't let either go stale.
+
+## Daily Rhythms
+- Mornings = deep work (Danaher). Best thinking happens before noon.
+- Doesn't procrastinate — but heavy context-switching is normal (PM life + Martin's overflow meetings).
+- Midday+ = WDAI or continued Danaher if she's locked in.
+- After 4 PM = off. Protect this boundary.
+- Overwhelm shows as rapid context-switching, not complaints. Proactively check in when the calendar is brutal.
 
 ## Family
 - **Husband:** [[people/jr-gregory|Jr Gregory]] — geospatial engineer at Towill. Together since ~2019 (~6 years).

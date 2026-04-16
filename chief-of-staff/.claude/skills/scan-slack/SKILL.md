@@ -22,7 +22,7 @@ Sharing something IN a WDAI Slack channel is NOT the same as building something 
 
 ## Step 2 — List and Filter Channels
 
-Use `mcp__claude_ai_Gumloop__list_channels` (as_user: true) to get all accessible channels. Filter by prefix:
+Use the hardcoded channel lists below. The Gumloop `list_channels` tool is no longer available — use the known channels and IDs directly. Filter by prefix:
 
 **Always include (auto-scan):**
 - `#gig-*` — auto-qualifies, skip standard filter
@@ -229,7 +229,7 @@ Every item gets a status:
 
 ### Surfacing Bar (Helen, Apr 13: "less, not more")
 
-**Discord digest:** Only show **High value** items (score 6-8 for integrated/middle, 7-10 for standalone). Medium and Low value items get logged to daily logs and xlsx silently — they exist if Dina looks, but don't interrupt her.
+**Slack digest:** Only show **High value** items (score 6-8 for integrated/middle, 7-10 for standalone). Medium and Low value items get logged to daily logs and xlsx silently — they exist if Dina looks, but don't interrupt her.
 
 **Exception:** New items always surface regardless of score on their first run (so nothing sneaks by). After first appearance, Medium/Low drop to silent logging.
 
@@ -251,7 +251,7 @@ DECISION NEEDED: [One specific yes/no question for Madina — or "None"]
 
 **Canonical naming:** Use a consistent short name for each project. Format: "[WDAI] [What it does]" — e.g., "WDAI AI Slackbot", "BadgeBot", "Build TogetHER Workflow". If the project has a `#gig-*` channel, use the channel name as the base (e.g., #gig-badges-n-beyond → "BadgeBot"). If the builder named it, use their name. Never invent a new name for something that already has one.
 
-**Dedup before output:** Before saving to JSON or posting to Discord, check if the same project already exists in the current results by matching on:
+**Dedup before output:** Before saving to JSON or posting to Slack, check if the same project already exists in the current results by matching on:
 1. Same builder + same channel = almost certainly the same project
 2. Same builder + similar description keywords = likely the same project
 3. Same channel + overlapping date range = check if it's a new sighting vs a new project
@@ -275,11 +275,11 @@ Every signal saved to the JSON and xlsx must include these fields:
 - `url`: source permalink
 - `first_seen` / `last_seen` / `run_count`: tracking
 
-### Discord Output
+### Slack Output
 
-**Primary:** Discord `#product-radar` (`1493333553143091240`) via `mcp__atlas-discord__discord_send`
+**Primary:** Slack `#atlas-cos` (`C0ASHFXMHM5`) via `mcp__atlas-slack__slack_send`
 
-Full digest format:
+Full digest format (send as parent message, details in thread):
 ```
 🛠️ WDAI Build Radar — [Date]
 
@@ -297,10 +297,6 @@ Full digest format:
 
 📡 Coverage: [N] channels scanned | [list private] | No access: [list or "none"]
 ```
-
-**Secondary:** Discord `#atlas` (`1493062124975685864`) — one-line summary ping.
-
-**When Slack #product-radar permissions are fixed:** Switch primary to WDAI Slack `#product-radar` (`C0ASECP7T19`).
 
 ### Nothing Found
 - Manual run: tell Dina "No new WDAI builds surfaced in the last [window]."
@@ -337,10 +333,10 @@ Before outputting, check the registry:
 - Never infer WDAI association — must be explicit in the message
 - Never hallucinate — only log what was actually found
 - Direct permalink URL for every item
-- Keep Discord messages under 2000 chars, split if needed
+- Keep Slack messages concise, use threading for details
 
 ## Run Modes
 
-- **Manual** (`/scan-slack`): 7-day window, show inline + Discord, ask about registry additions
-- **Scheduled**: 4-day window, Discord only, conservative, silent if nothing found
+- **Manual** (`/scan-slack`): 7-day window, show inline + Slack, ask about registry additions
+- **Scheduled**: 4-day window, Slack only, conservative, silent if nothing found
 - **Backfill** (`/scan-slack backfill [Month Year]`): specified date range, log only, don't post digest

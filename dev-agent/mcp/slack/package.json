@@ -1,0 +1,12 @@
+{
+  "name": "polaris-slack-mcp",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@slack/web-api": "^7.9.1"
+  }
+}

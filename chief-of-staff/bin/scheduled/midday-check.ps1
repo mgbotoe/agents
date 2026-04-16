@@ -1,5 +1,5 @@
 # Midday Check — 11 AM PT. Silent unless something needs Dina's attention.
-# Only pings Discord if there's something actionable. Quiet if nothing's urgent.
+# Only pings Slack if there's something actionable. Quiet if nothing's urgent.
 
 param()
 
@@ -10,7 +10,7 @@ $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 New-Item -ItemType Directory -Path "$ProjectDir\.claude\runtime" -Force | Out-Null
 
 function Log($msg) {
-    "[$Timestamp] scheduled(midday-check): $msg" | Out-File -Append -FilePath $LogFile
+    "[$Timestamp] scheduled(midday-check): $msg" | Out-File -Append -FilePath $LogFile -Encoding utf8
 }
 
 $currentDate = Get-Date -Format "dddd, MMMM d, yyyy 'at' h:mm tt"
@@ -21,8 +21,8 @@ CURRENT DATE/TIME: $currentDate PT. Use this as the source of truth for today's 
 
 CONTEXT:
 - Dina works at Danaher 7 AM - 3 PM PT.
-- Discord channel: 605801708546686998
-- Dina's tag: <@255180039002390528>
+- Slack channel: C0ASHFXMHM5 (#atlas-cos)
+- Dina's tag: <@U094L7RJ9FV>
 - Wiki: C:\Workspace\agents\wiki\
 - Skip weekends entirely — exit silently.
 - Skip PTO/OOO days — check calendar first.
@@ -40,10 +40,10 @@ CHECKS:
 5. **Relationship nudge:** Check wiki people pages — anyone important (Martin, Helen, Lauren, Brigitte) that Dina hasn't met with in 2+ weeks? Quick flag.
 
 DECISION:
-- If NOTHING is urgent → do NOT send a Discord message. Just log "midday check: all clear" and exit.
-- If SOMETHING needs attention → send ONE short Discord message (<1000 chars):
+- If NOTHING is urgent → do NOT send a Slack message. Just log "midday check: all clear" and exit.
+- If SOMETHING needs attention → send ONE short Slack message to C0ASHFXMHM5 via slack_send (<1000 chars):
 
-<@255180039002390528> — Midday Nudge
+Midday Nudge
 
 [Only the things that actually need attention. No fluff. 2-5 bullets max.]
 
