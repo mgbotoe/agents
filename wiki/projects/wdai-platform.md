@@ -29,3 +29,5 @@ PRs require review from Helen's team before merge. Dina does not have unilateral
 - **CI/CD:** GitHub Actions + Vercel
 - **Key patterns:** App Router, webhook idempotency via `webhookEvent` table, Clerk metadata for onboarding, minimal useEffect
 - **Features:** Member directory, resource library, courses/LMS, Luma events, Stripe subscriptions, weekly trend digest, Slack sync
+- **Agent skills:** defrag (PR #560), council, commit-workflow, pr-merge-workflow, review-codex, seo-public-page
+- **Team context:** All non-developers/vibecoders. CI + smoke testing + defrag are the quality safety net. No one manually reviews code.

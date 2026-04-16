@@ -2,6 +2,10 @@
 
 Append-only record of wiki activity. Each entry starts with `## [date] action | subject`.
 
+## [2026-04-15] shipped | Defrag skill for WDAI (PR #560)
+
+Polaris built `/defrag` skill for wdai-foundation-platform. Scans for duplicated components, inconsistent patterns, dead code, shared logic. Verifies findings before presenting, requires user confirmation before fixing. PR assigned to Helen (helenlkupp). First run found 6 issues (0 dupes, 2 inconsistencies, 2 dead code, 2 shared logic).
+
 ## [2026-04-15] built | Slack Socket Mode Watcher (shared agent service)
 
 Polaris built `C:\Workspace\agents\slack-watcher\` — persistent Socket Mode listener replacing the old Discord watcher. Watches #atlas-cos and #polaris-tl, routes to the right agent, spawns Claude sessions. Config-driven: add new agents via config.json entry. Running as `node watcher.mjs`.

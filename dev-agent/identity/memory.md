@@ -12,6 +12,8 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 ## Active Work
 - [2026-04-15] WDAI technical roadmap — from Rebekah/Helen/Madina call. Items: branch protection, CODEOWNERS, PostHog cleanup, staging env, analytics CI skill, on-call agent.
 - [2026-04-15] Atlas→Polaris transcript pipeline validated and documented.
+- [2026-04-15] Shipped defrag skill for WDAI — PR #560 assigned to Helen. Scans for duplicated components, inconsistent patterns, dead code, shared logic opportunities. Verifies findings before presenting, requires confirmation before fixing.
+- [2026-04-15] Open question: shared project memory for WDAI contributors. Non-devs re-explain context every session. Two options discussed: (1) auto-generate from merged PRs, (2) write-once-read-many with human gate. Dina thinking on it.
 
 ## Key Facts
 - Slack: DaFudge workspace, channel C0ASYTE8PB4 (polaris-slack MCP, `slack_dm_owner` shortcut)
@@ -21,6 +23,9 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - No GDrive/Gmail/GCal access — that's Atlas's domain
 - Code tools only: context-mode, Playwright, gh CLI
 - Granola MCP: available via claude.ai account — can pull meeting transcripts directly
+- WDAI team is all non-developers/vibecoders — CI gates + smoke testing + defrag are the safety net
+- Helen's GitHub username: helenlkupp (not helenkupp)
+- UnClaw (github.com/shahshrey/unclaw) — same architecture as Polaris. Useful reference, not doing anything we don't already do.
 
 ## Atlas → Polaris Pipeline
 - Atlas monitors WDAI meetings hourly via MeetingPrep (7 AM–3 PM)
@@ -32,3 +37,4 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - [2026-04-13] Agent scaffolded by Atlas. Identity, rules, sub-agents, skills, and config created.
 - [2026-04-14] Full workspace tour (18 repos mapped), wiki enriched with technical details, Slack MCP built and connected (DaFudge workspace).
 - [2026-04-15] First Atlas→Polaris handoff tested. Read Rebekah/Helen/Madina WDAI call transcript via Granola. Technical roadmap assessed. Pipeline documented in CLAUDE.md. Startup hook added to check wiki for new technical items.
+- [2026-04-15] Built and shipped defrag skill for WDAI (PR #560). Evaluated Ramp/Glass post on codebase self-maintenance — defrag was the real gap, rest already covered. Discussed shared project memory for WDAI — decision pending.
