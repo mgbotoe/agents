@@ -25,7 +25,7 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 
 ## Active Work
 - [2026-04-15] WDAI technical roadmap — Polaris owns, from Rebekah/Helen/Madina call. Items: staging env, branch protection, CODEOWNERS, PostHog cleanup, analytics CI skill, on-call agent.
-- [2026-04-15] Granola backlog — ~17 meetings from Mar 16-30 still unprocessed. Batch run queued for tonight.
+- [2026-04-15] Granola backlog cleared — 15 meetings from Mar 16-30 ingested to wiki/sources/. 2 technical items routed to Polaris.
 - [2026-04-13] Product Signal Detector — spec at wiki/projects/wdai-product-signal-detector.md
 - Overdue: Brigitte meeting to map website/portal structure (14+ days, from Mar 30)
 - Overdue: Elizabeth McKenzie lead follow-up (24 days)

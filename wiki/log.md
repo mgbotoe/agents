@@ -2,6 +2,26 @@
 
 Append-only record of wiki activity. Each entry starts with `## [date] action | subject`.
 
+## [2026-04-15] reorganized | Wiki sources index extracted from main index
+
+Main index was 145 lines, sources alone ~95 lines. Created `sources/INDEX.md` with domain grouping (Danaher Pricing, LBS/VOC, HR/Copilot, Strategy, Freight/Ops, Microsoft/Snowflake, Quality, WDAI, Personal, Research). Main index now ~55 lines with a single link to sources sub-index. Per Polaris's recommendation (option 3).
+
+## [2026-04-15] ingested | 30 Granola meetings (Mar 1–15 + Apr 15 backlog)
+
+Batch ingestion of 30 meetings. Mar 1–15 covers: Martin 1:1 (compensation $228K, HR AI, McKinsey), HR transformation tollgate 2, freight kaizen prep (Cesar), Anish/Keith VOC sessions (SDLC, Node.js upgrade $88→$7.5K savings, unlimited AI currency), pricing excellence (McKinsey DDS + Contract AI), Beckman margin levers ($50–80M), Felix Rode IDN contract workflow, Ty Usrey LBS VOC, Craig/Alice community of practice, Josh/Andrew Copilot dashboard, PPG training (Karen Bogren), Snowflake demos (Cortex + Horizon), HR enablement (Craig/Chris, 5380 licenses needed), Echo calibration ($112M revenue), WDAI core team sync (Mar 4) + AI Foundations scaling, Geese MBA capital structure assignment, Patrick McKenzie/Frontier Audio client intro. Apr 15: Enterprise AI forward deployment strategy (post-Martin, $5M threshold, "Strike Team" concept). Two WDAI items routed technical.
+
+## [2026-04-15] ingested | 15 Granola meetings (Mar 16–30 backlog)
+
+Batch ingestion of 15 unprocessed meetings from Mar 16–30. Covers: LBS AI pilot planning (Keith/Anish/Ty VOC sessions), Martin 1:1 on token budgets, Sameer Doshi India finance use cases, Cepheid pricing strategy (McKinsey $46–75M), Chris Bouda finance AI prioritization, Microsoft Copilot licensing + IP agent prototype, Cortex Code workshop, Google Analytics with Lorie (WDAI), AI strategy panel (Women Who Rule AI), Patrick McKenzie client intro (Frontier Audio). Two technical items routed to Polaris (IP agent, GA/WDAI).
+
+## [2026-04-15] improved | Polaris sub-agents (Builder, Designer, QA)
+
+Updated all three sub-agent definitions: added "read CLAUDE.md first" as step 1, workspace paths for cross-repo awareness, structured report-back formats. QA got WebFetch in allowed-tools for smoke testing. Builder/Designer report-back now includes files changed, concerns, and blockers in consistent format.
+
+## [2026-04-15] built | Heartbeat skill + gather-context script
+
+Adapted from unclaw (github.com/shahshrey/unclaw). PowerShell script gathers context deterministically (memory staleness, wiki inbox, git status, slack-watcher health, scheduled tasks, disk space, runtime errors). Heartbeat skill reads output and acts only if actionable. Running as `/loop 30m` in active sessions, not Task Scheduler.
+
 ## [2026-04-15] shipped | Defrag skill for WDAI (PR #560)
 
 Polaris built `/defrag` skill for wdai-foundation-platform. Scans for duplicated components, inconsistent patterns, dead code, shared logic. Verifies findings before presenting, requires user confirmation before fixing. PR assigned to Helen (helenlkupp). First run found 6 issues (0 dupes, 2 inconsistencies, 2 dead code, 2 shared logic).
