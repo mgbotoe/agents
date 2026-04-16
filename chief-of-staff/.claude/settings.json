@@ -1,0 +1,81 @@
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"[SYSTEM] Session started at $(date '+%Y-%m-%d %H:%M %Z'). Persistent recurring tasks are managed by the OS scheduler. Do not create duplicate /loop versions of distill-session or promote unless explicitly asked. Start /loop 60m /heartbeat for session-scoped check-ins.\""
+          },
+          {
+            "type": "command",
+            "command": "echo \"[AGENT-INBOX] Check #atlas-cos (C0ASHFXMHM5) on Slack for recent messages from Polaris. Use slack_read silently on session start.\""
+          },
+          {
+            "type": "command",
+            "command": "last_mod=$(stat -c %Y identity/memory.md 2>/dev/null || stat -f %m identity/memory.md 2>/dev/null); now=$(date +%s); age=$(( (now - last_mod) / 3600 )); if [ $age -gt 48 ]; then echo \"[MEMORY-STALE] identity/memory.md hasn't been updated in ${age} hours. Worth a refresh?\"; fi"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -Command \"[System.Media.SystemSounds]::Exclamation.Play()\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "The conversation is about to be compacted. Before that happens, write a summary of this session to the daily log. Append to daily-logs/$(date '+%Y-%m-%d').md with a ## heading showing the current time. Include: 1) What was accomplished (3-5 bullets) 2) Any open threads or unfinished tasks 3) Key decisions made 4) Any preferences or patterns observed. Keep it under 200 words. Create the file if it doesn't exist \u00e2\u20ac\u201d start with '# Daily Log \u00e2\u20ac\u201d YYYY-MM-DD' header."
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Session is ending. If this session had any meaningful interaction (not just startup), write a brief summary to daily-logs/$(date '+%Y-%m-%d').md. Append with a ## heading showing current time. Include what was discussed or accomplished in 2-5 bullets. If the session was trivial or empty (no user messages), just skip \u00e2\u20ac\u201d do NOT write 'Session ended' lines. After writing (or skipping), run: python3 .claude/scripts/index-daily-logs.py"
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/index-daily-logs.py 2>/dev/null; echo 'Daily logs re-indexed after compaction.'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"[$(date '+%Y-%m-%d %H:%M:%S')] File modified\" >> .claude/edit-log.txt"
+          }
+        ]
+      }
+    ]
+  }
+}
