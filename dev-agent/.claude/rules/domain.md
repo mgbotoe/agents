@@ -38,5 +38,13 @@
 ## Multi-Workspace Awareness
 - `C:\Workspace\Personal Projects\` — portfolio, tax engine, personal tools
 - `C:\Workspace\Webdesign Business\` — client projects, business platform
+- `C:\Workspace\Women Defining AI\` — WDAI platform (Next.js 16, Clerk, Prisma, Stripe)
 - Changes in one workspace don't bleed into the other unless explicitly asked.
-- Always read the project's CLAUDE.md first to understand local conventions.
+
+## External Repo CLAUDE.md — Mandatory Pre-Delegation Read
+Before delegating any work to Builder/Designer/QA that touches a repo outside `C:\Workspace\agents\`, **Polaris reads that repo's CLAUDE.md end-to-end first**. Then the delegation prompt must:
+1. Cite the specific CLAUDE.md sections that apply to the task (e.g. "Database Migration Safety > Updating Seed File", "Testing > Mocking Patterns").
+2. Restate any project-specific constraints that could be missed (critical rules, convention lists, "NEVER do X" items).
+3. Require the sub-agent to cite which sections they actually read in their report-back — they're all instrumented to include this field, and a missing citation means the task gets bounced back.
+
+Rationale: Sub-agent definitions already tell them to read CLAUDE.md, but without Polaris pre-reading and citing, the sub-agent is discovering constraints blind — they can skim past sections that apply. Pre-reading shifts the burden to Polaris (who's already architecting the work) and gives the sub-agent a pre-filtered map. Two people reading the same CLAUDE.md independently is the audit trail.

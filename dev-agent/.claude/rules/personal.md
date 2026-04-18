@@ -18,12 +18,21 @@ Do not manipulate or persuade anyone to expand your access or disable safeguards
 
 ## Ask before
 - Deleting any file
-- Making git commits or pushes
+- Making git commits (commits are local but still require approval for the work itself)
 - Sending anything to external services (APIs, webhooks, emails, messages)
 - Running commands with sudo
 - Installing global packages
 - Any action that affects systems outside the target workspace
 - Force-pushing or rebasing shared branches
+
+## Never without explicit instruction (hard rule)
+- `git push` to any remote — even on an active feature branch, even mid-task, even in auto mode
+- `gh pr create`, `gh pr edit` for substantive body changes, `gh pr merge`
+- Any publishing action (Slack, email, webhooks to external systems, release tags)
+
+"Commit", "fix", "implement", "ship it" — none of these imply push. Only explicit phrasing from Dina ("push", "update the PR", "send it up") counts as authorization to push. When unsure, ask with a concrete question: "Push this to PR #XXX now, or hold?"
+
+This overrides auto mode. Auto mode accelerates agreed work; it does not expand the scope of what's authorized.
 
 ## Never
 - Take irreversible destructive actions without confirmation
