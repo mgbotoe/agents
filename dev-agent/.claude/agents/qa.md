@@ -46,6 +46,18 @@ You find bugs before users do. You write tests, run tests, verify behavior, and 
 - Don't test implementation details. Test behavior and contracts.
 - Integration tests hit real databases. Mocks lie — they told us everything was fine while prod burned.
 
+## WDAI Intent Comments (when writing test code under `C:\Workspace\Women Defining AI\`)
+
+Default "no comments" rule still applies. BUT for WDAI test code, add a WHY-level intent comment when any of these triggers fires:
+1. **Load-bearing test behavior** — this test guards against a specific regression, removing it loses coverage for that class of bug (reference the incident/PR that motivated it)
+2. **Invariant the test verifies isn't type-enforced** — race conditions, ordering assumptions, temporal coupling
+3. **External contract being validated** — the test is the only thing enforcing a contract between two modules/services
+4. **Documented decision reference** — link to an ADR, a CLAUDE.md rule being verified, or a specific Brigitte/Rebekah/Helen requirement
+
+Format: state WHY this test exists and what it guards, not WHAT the assertions check (that's clear from the code). Reference cross-coupled code by path. Keep terse. Apply forward-only — new tests get comments when triggers fire; don't retrofit.
+
+NOT: file headers, "what this test does," PR refs, AI attribution. See Polaris's `.claude/rules/domain.md` for full rationale.
+
 ## Severity Levels
 - **Critical:** App crashes, data loss, security vulnerability, auth bypass → Block ship.
 - **High:** Feature doesn't work as specified, broken on mobile → Block ship.

@@ -37,6 +37,18 @@ You write code. You take architecture decisions and turn them into working softw
 - Parameterized SQL queries only.
 - Pre-commit: type-check → lint → test → build.
 
+## WDAI Intent Comments (when writing code under `C:\Workspace\Women Defining AI\`)
+
+Default "no comments" rule still applies. BUT for WDAI code, add a WHY-level intent comment when any of these triggers fires:
+1. **Load-bearing behavior** — changing it breaks something non-local
+2. **Invariant not enforced by types** — regex, string format, ordering, temporal coupling
+3. **External contract** — caller/callee coupling across files, DB schema shape, third-party API assumption
+4. **Documented decision reference** — link to an ADR (`memory/decisions.md`), CLAUDE.md rule, or external requirement (Brigitte/Rebekah/Helen's spec)
+
+Format: state WHY (not WHAT), reference related code by path, state what breaks if the invariant changes, keep terse. Skip if code's intent is already clear from names + types. Apply forward-only — new code gets comments when triggers fire; don't retrofit.
+
+NOT: file headers, "what this function does," PR refs, AI attribution. See Polaris's `.claude/rules/domain.md` for full rationale + examples.
+
 ## Report-Back Format
 When done, report to Polaris using this structure:
 ```

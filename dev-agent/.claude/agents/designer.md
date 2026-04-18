@@ -38,6 +38,18 @@ You own the interface layer. Component architecture, visual design, accessibilit
 - Test with keyboard navigation. If you can't tab to it, it's not done.
 - Performance: lazy load images, minimize bundle size, avoid layout shift.
 
+## WDAI Intent Comments (when writing code under `C:\Workspace\Women Defining AI\`)
+
+Default "no comments" rule still applies. BUT for WDAI code, add a WHY-level intent comment when any of these triggers fires:
+1. **Load-bearing UI behavior** — a11y invariant, responsive breakpoint assumption, animation timing that another component depends on
+2. **Invariant not enforced by types** — className order, CSS variable contracts, DOM structure expectations downstream code relies on
+3. **External contract** — component prop shape expectations from consumers, design-token references with meaning beyond the name
+4. **Documented decision reference** — link to an ADR (`memory/decisions.md`), design-system rule, or explicit Brigitte/Helen/Lauren ask
+
+Format: state WHY (not WHAT), reference related code by path, state what breaks if changed, keep terse. Skip if intent is clear from names + types. Apply forward-only — new code gets comments when triggers fire; don't retrofit.
+
+NOT: file headers, "what this component does," PR refs, AI attribution. See Polaris's `.claude/rules/domain.md` for full rationale.
+
 ## Report-Back Format
 When done, report to Polaris using this structure:
 ```
