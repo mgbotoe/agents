@@ -231,3 +231,8 @@ Batch ingestion of 8 high-priority meeting transcripts from Granola (Jan-Apr 202
 
 ## [2026-04-12] init | Wiki created
 Atlas setup session. Created initial structure with people, organizations, projects, decisions, and sources directories. Seeded index with known entities from calendar, email, and resume data.
+
+## [2026-04-19] debug | Watcher self-loop fix + inter-agent rubric
+**Atlas:** Debugged Slack watcher spawning 9 replies per "hey" in #atlas-cos. Root cause: per-agent token split broke `event.user === botUserId` self-filter (listening bot is Polaris's ID, reply bot is Atlas's ID — different users). Consulted Polaris, he confirmed and approved one-line fix at the bot_message handler. Branch `fix/watcher-self-loop` commit 8e795fc pushed. Polaris's own WIP (token split, Windows claude.cmd + stdin-piping spawn fix, resilience) left unstaged for him to split into 3 commits on top.
+
+**Atlas:** Also formalized inter-agent Slack discipline in `infrastructure.md` — 4 triggers each way, what stays in wiki vs Slack, what escalates to Dina. Heartbeat skill now reads #polaris-tl hourly using `.claude/runtime/polaris-last-seen.ts` as the watermark so Polaris replies don't get missed.
