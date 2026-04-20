@@ -39,6 +39,7 @@ The LLM writes and maintains everything. Dina reads, directs, and asks questions
 
 ### Agent Ecosystem
 - [[projects/agent-ecosystem|Agent Ecosystem Roadmap]] — living doc, improvements to Atlas + Polaris + future agents
+- [[projects/agent-swarm-playbook|Agent Swarm Playbook]] — concrete workflows for feature dev, new app, bug fix, security-sensitive changes, post-ship watch
 - [[projects/wdai-product-signal-detector|Product Signal Detector]] — Slack watcher for CPO triage
 - [[projects/wdai-product-spectrum-registry|Product Spectrum Registry]] — Google Sheet tracking all builds
 - [[projects/ai-foundations|AI Foundations]] — recurring cohort program
