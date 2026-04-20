@@ -244,11 +244,11 @@ async function handleMessage(event) {
 
   if (!agentCfg) return; // not a watched channel
 
-  // Ignore bot's own messages (prevent self-loop)
-  // Note: filtering only on user — NOT on event.bot_id — because the previous
-  // `event.bot_id ||` filter also dropped legitimate cross-agent bot_messages,
-  // which made the later `subtype === "bot_message"` handler dead code.
-  if (event.user === botUserId) return;
+  // Self-loop protection handled at the agent-identity layer below
+  // (`source.name === agentCfg.label` inside the bot_message block).
+  // A user-ID check here over-filters: the listening bot IS one of the posting
+  // agents (Polaris), so filtering by botUserId blocks cross-channel agent
+  // traffic (Polaris posting to #atlas-cos to notify Atlas).
 
   // Ignore message subtypes (edits, joins, etc.) except bot_message from other agents
   if (event.subtype && event.subtype !== "bot_message") return;
