@@ -18,6 +18,14 @@ Thumbs.db
 
 # Temp
 **/tmp/
+**/.tmp/
+
+# Scheduler lock files (per-session, transient)
+**/scheduled_tasks.lock
+
+# Throwaway screenshots at repo/agent root — commit to docs/ instead
+dev-agent/*.png
+chief-of-staff/*.png
 
 # Node
 **/node_modules/
