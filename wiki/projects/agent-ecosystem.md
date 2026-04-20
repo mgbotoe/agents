@@ -16,6 +16,15 @@ Both agents can add items here. Updated as work ships. Mark items shipped with �
 
 - [ ] **Migrate from polling to cross-post + metadata marker.** Current polling model is O(N²) — each agent polls every other agent's channel. At N=3 it gets messy. Replace with: when watcher posts an agent's reply in the origin channel, ALSO cross-post a compact reference to the sender's channel with `metadata: {event_type: "agent_reply_xref", from: <agent>}`. Watcher filters messages with that event_type from re-triggering spawns. O(N) forever, adding a new agent becomes zero-code. Owner: Polaris (watcher.mjs change). Scope: M. Trigger: when a 3rd agent is actually on the table.
 
+### P1 — Development lifecycle coverage
+
+- ✅ **DevOps sub-agent created** — shipped 2026-04-19. `dev-agent/.claude/agents/devops.md`. Owns post-deploy monitoring, incident response, dep maintenance, release coordination. Closes DevOps/SRE/Dep-maintenance gaps. Does NOT write feature code (Builder's lane).
+- ✅ **Designer unblocked for direct Builder delegation** — Designer config now has `Agent` tool. Routine "implement what I designed" handoffs skip the Polaris middle-man.
+- ✅ **Delegation protocol expanded** — `CLAUDE.md` now documents shift-left pattern (parallel Builder + QA for complex features), security-sensitive tag (threat model before, pen-test after), and delegation-packet convention (file paths + CLAUDE.md sections + out-of-scope + expected report items).
+- [ ] **Perf audit skill.** Bundle-size + Lighthouse + N+1 + load-test patterns. WDAI-tech-debt-audit workflow but for performance. Owner: Polaris. Scope: S. Trigger: when a project actually complains about perf — don't build it speculatively.
+- [ ] **Deep a11y audit skill.** Designer covers a11y basics. A dedicated WCAG 2.1 AA pass with axe/lighthouse/screen-reader testing deserves its own skill. Owner: Designer. Scope: S. Trigger: before any public-facing release.
+- [ ] **Post-ship handoff formalization.** "Builder deployed → DevOps smoke test on prod → all-clear report → close out" loop should be a documented workflow, not implicit. Owner: Polaris. Scope: S (doc edit).
+
 ### P1 — Agent UX
 
 - [ ] **Proactive meeting prep (Atlas).** Morning brief pre-loads transcripts + wiki pages once at 6:45 AM. A 3 PM meeting gets stale prep if new context surfaced at 10 AM. Proposed: 30-min pre-meeting spawn that re-pulls wiki + last 3 Granola meetings + open threads for attendees. Owner: Atlas. Scope: M.
