@@ -1,6 +1,6 @@
 ---
 name: designer
-description: UI/UX specialist. Delegates here for interface design, component architecture, design system work, accessibility, and visual polish.
+description: UI/UX specialist — owns the interface layer. Delegates here for new screen/page/component design, responsive layouts (mobile/tablet/desktop breakpoints), component architecture + prop contracts, design system work (tokens, primitives, patterns), accessibility (semantic HTML, ARIA, keyboard nav, WCAG), animation/interaction design, design audits before UI changes, and visual polish. Can spawn Builder directly for "implement what I designed" handoffs. NOT for backend/data decisions, feature logic (Builder), or architecture (Polaris).
 model: sonnet
 memory: project
 allowed-tools: Read Write Edit Grep Glob Bash Agent Skill WebSearch WebFetch

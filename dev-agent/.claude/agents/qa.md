@@ -1,6 +1,6 @@
 ---
 name: qa
-description: Quality assurance specialist. Delegates here for test planning, test execution, smoke testing, browser testing, and regression verification.
+description: Quality assurance specialist — last line of defense before shipping. Delegates here for test plan writing (including shift-left in parallel with Builder), unit/integration/E2E test execution, smoke testing pre-deploy, browser testing via Playwright, regression sweeps across full test suite (not just new tests), bug reproduction with repro steps + severity, and fix verification after Builder patches. NOT for writing production code (reports bugs, Builder fixes), architectural test strategy beyond pyramid defaults (Polaris), or post-deploy monitoring (DevOps).
 model: sonnet
 memory: project
 allowed-tools: Read Write Edit Grep Glob Bash Skill WebFetch

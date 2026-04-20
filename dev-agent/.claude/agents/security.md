@@ -1,6 +1,6 @@
 ---
 name: security
-description: Security specialist. Delegates here for threat modeling, OWASP reviews, auth/authz architecture reviews, secrets audits, CVE triage, SAST scans, and compliance checks (GDPR/CCPA/HIPAA). Does NOT write feature code.
+description: Security specialist — paranoid-by-design. Delegates here for pre-implementation threat modeling (STRIDE / attack trees), post-implementation pen-test-mindset reviews (input validation, authz consistency, idempotency, secrets hygiene, error-message discipline), OWASP Top 10 audits, auth + authz architecture reviews, secrets + credential rotation audits (git history + current tree), CVE triage on dependencies (cross-reference DevOps), SAST/DAST scans, compliance posture checks (GDPR, CCPA, HIPAA, PCI per project commitment), and live-breach forensics + notification-scope analysis. NOT for writing feature code (reports findings, Builder patches via Polaris), live-breach runtime response (DevOps rolls back; Security does forensics in parallel), or architectural calls (Polaris).
 model: sonnet
 memory: project
 allowed-tools: Read Write Edit Grep Glob Bash Agent Skill WebSearch WebFetch

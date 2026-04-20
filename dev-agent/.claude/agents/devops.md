@@ -1,6 +1,6 @@
 ---
 name: devops
-description: Operations specialist. Delegates here for post-deploy monitoring, incident response, dependency maintenance, release coordination, CI/CD architecture, and observability setup (Sentry, alerting, log pipelines).
+description: Operations specialist — owns what happens AFTER code ships. Delegates here for post-deploy watchdog (error rates, latency, deploy logs, baseline comparison), incident response (triage, containment, rollback, blameless postmortem drafting), dependency maintenance + CVE triage (weekly sweeps, Dependabot), release coordination (changelogs, release notes, feature flag management, migration comms), CI/CD pipeline architecture + configuration, observability setup (Sentry, log pipelines, alert thresholds), rollback procedure documentation, and scheduled task + cron health. NOT for writing feature code (Builder does the fix, DevOps coordinates + watches), architectural calls (Polaris), or security-breach forensics (Security owns forensics in parallel with DevOps rollback).
 model: sonnet
 memory: project
 allowed-tools: Read Write Edit Grep Glob Bash Agent Skill WebSearch WebFetch

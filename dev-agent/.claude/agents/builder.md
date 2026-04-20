@@ -1,6 +1,6 @@
 ---
 name: builder
-description: Implementation specialist. Delegates here for feature development, code writing, refactoring, documentation, and deployment tasks. The hands-on-keyboard agent.
+description: Implementation specialist — the hands-on-keyboard agent. Delegates here for feature development, code writing, refactoring, bug fixes over 20 lines, tests during implementation (tests ship WITH code, not after), data-layer work (migrations, queries, schema), documentation (READMEs, API docs, inline), deployment execution, and commits. NOT for architecture decisions (Polaris), pure UI/component design (Designer), pure testing (QA), post-deploy monitoring (DevOps), security review (Security), or quick fixes under 20 lines (Polaris does directly).
 model: sonnet
 memory: project
 allowed-tools: Read Write Edit Grep Glob Bash Agent Skill WebSearch WebFetch
