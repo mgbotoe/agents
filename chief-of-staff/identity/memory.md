@@ -22,13 +22,15 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - `/draft-email` skill created — drafts in Dina's voice using wiki voice profile. Never sends without approval.
 - Agent infrastructure documented at `wiki/infrastructure.md` — new agent onboarding checklist.
 - Synced with UnClaw upstream: added `.claude/agents/` (researcher, reviewer) and 9 playwright reference docs.
+- **Heartbeat auto-starts** on session start (no manual `/loop 60m /heartbeat` needed) — commit 530c3ad, Apr 17.
+- Wiki reorganized + 45 Granola transcripts (Mar 1–Apr 15) ingested — commit 7279d6c, Apr 17.
 
 ## Active Work
+- [2026-04-18] **WDAI tech debt audit Phase 1** — Polaris posted `wiki/projects/wdai-tech-debt.md`. Two P0s blocked on Helen: (1) MainProtection ruleset allows 0-approval merges on main (no CODEOWNERS enforcement); (2) PR #569 fixes live Stripe webhook race, stuck CI-green. Helen to merge #574 + toggle ruleset. Link this doc next Helen touch.
 - [2026-04-15] WDAI technical roadmap — Polaris owns, from Rebekah/Helen/Madina call. Items: staging env, branch protection, CODEOWNERS, PostHog cleanup, analytics CI skill, on-call agent.
-- [2026-04-15] Granola backlog cleared — 15 meetings from Mar 16-30 ingested to wiki/sources/. 2 technical items routed to Polaris.
 - [2026-04-13] Product Signal Detector — spec at wiki/projects/wdai-product-signal-detector.md
-- Overdue: Brigitte meeting to map website/portal structure (14+ days, from Mar 30)
-- Overdue: Elizabeth McKenzie lead follow-up (24 days)
+- **Overdue**: Elizabeth McKenzie lead — 28 days cold as of Apr 19. Business manager pinging daily. Either reply or close.
+- Brigitte website/portal mapping meeting closed [2026-04-16] ✅
 
 ## Key Facts
 - WDAI Slack GDrive account label: `nonprofitcd`
@@ -40,6 +42,9 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - Helen's Q4 rule: if core team built it and it touches WDAI systems → deeply integrated by default
 
 ## Session Log
+- [2026-04-18] Polaris completed WDAI tech debt audit Phase 1 while Atlas was idle. Two P0s posted to #atlas-cos for Helen sequencing. <!-- added 2026-04-19 -->
+- [2026-04-17 late] Distilled Apr 17 decisions + WDAI project snapshot. Hardened delegation rules + never-push hard rule (later relaxed Apr 19 to allow branch pushes but not main/PR/Slack). Added WDAI-scoped intent-comments rule. <!-- added 2026-04-19 -->
+- [2026-04-17] Upgraded to Opus 4.7 (released Apr 16). Verified specs vs assumptions — 1M context but new tokenizer eats ~35% more, so effective is ~750K. Self-verification + opinionated-by-default trained in. Upgraded morning brief (skill + ps1) to lean into the model: load FULL wiki pages and Granola transcripts for today's notable meetings, pick ONE strategic focus per pillar (not three), tighten BOTTOM LINE to one sentence, added "verify before claiming" + "no menu of options" rules. Saved verified facts to reference_opus_4_7.md.
 - [2026-04-15] Major infrastructure session. Morning brief upgraded (dedup, tiering, focus block 1-2PM, hidden noise events, agent inbox as step 1). Atlas↔Polaris transcript pipeline built and validated (Granola → wiki → Slack routing). Post-meeting MeetingPrep phase added (WDAI only). Inter-agent protocol documented in CLAUDE.md + wiki. Slack Socket Mode watcher discovered and documented. Self-improve ran (3 fixes: duplicate security section, humanizer contradiction, launchd ref). Draft-email skill created. Discord fully removed. Synced with UnClaw upstream (agents/, playwright refs). Wiki infrastructure page created for new agent onboarding. Polaris built technical roadmap from Rebekah call.
 - [2026-04-13 PM] PTO day (Mama Day Off). Midday check ran silent — no urgents. Helen 1:1 prep delivered.
 - [2026-04-13] Epic session: Full CPO framework end-to-end. scan-slack skill, 6-month parallel scan, CPO deck + xlsx in GDrive. Gumloop retired. Polaris recognized.
