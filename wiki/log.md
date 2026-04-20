@@ -2,6 +2,10 @@
 
 Append-only record of wiki activity. Each entry starts with `## [date] action | subject`.
 
+## [2026-04-19] audited | WDAI tech debt — Phase 1 (Polaris)
+
+Full tech debt audit against `wdai-foundation-platform`, Phase 1 covering architecture, critical paths, security, DevOps. 9 Must Fix / 19 Nice to Fix / 4 Negligible. Audit doc at `projects/wdai-tech-debt.md`. Two root-cause P0 findings: MainProtection ruleset is theater (0 approvals, no CODEOWNERS check) + 8-PR backlog stalled for lack of forcing function. Stripe webhook race condition exists on main (PR #569 fixes). Three Prisma schemas with model overlap — drift risk. No Sentry. Scripts dir (4285 LOC) bypasses lint/TS. CLAUDE.md docs drift after PRs #569/#571 merge. Phase 2 (duplication, file-size, deps, test coverage, docs line-by-line) deferred pending Builder + QA delegation.
+
 ## [2026-04-15] reorganized | Wiki sources index extracted from main index
 
 Main index was 145 lines, sources alone ~95 lines. Created `sources/INDEX.md` with domain grouping (Danaher Pricing, LBS/VOC, HR/Copilot, Strategy, Freight/Ops, Microsoft/Snowflake, Quality, WDAI, Personal, Research). Main index now ~55 lines with a single link to sources sub-index. Per Polaris's recommendation (option 3).

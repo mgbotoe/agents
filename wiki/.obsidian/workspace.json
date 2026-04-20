@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "664f744e555b2346",
+        "id": "5608cd5a6abee4d1",
         "type": "tabs",
         "children": [
           {
-            "id": "b8292bc55dbdd8ee",
+            "id": "12bce063245da7df",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "projects/github-copilot-adoption.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "github-copilot-adoption"
             }
           }
         ]
@@ -49,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#synthetic-data",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -70,7 +74,8 @@
               "title": "Bookmarks"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -176,35 +181,39 @@
       "bases:Create new base": false
     }
   },
-  "active": "b8292bc55dbdd8ee",
+  "active": "12bce063245da7df",
   "lastOpenFiles": [
-    "projects/finance-ai.md",
-    "projects/enterprise-search.md",
-    "people/krishna.md",
-    "people/david-gering.md",
-    "sources/2025-12-16-krishna-meet-greet.md",
-    "sources/2025-12-16-martin-1on1.md",
-    "sources/2025-12-16-ppg-year-end.md",
-    "sources/2025-12-15-finance-martin-siyu-madina.md",
-    "sources/2025-12-15-finance-use-case-part2.md",
-    "sources/2025-12-15-david-gering-meet-greet.md",
-    "sources/2025-12-15-wdai-2026-planning.md",
-    "sources/2025-12-15-jainendra-meet-greet.md",
-    "sources/2025-12-11-wdai-community-huddle.md",
-    "sources/2025-12-11-quality-audit-mpl-intake.md",
-    "SCHEMA.md",
-    "Untitled.canvas",
-    "2026-04-13.md",
-    "projects/raunch.md",
-    "projects/career-ops.md",
-    "decisions/2026-04-13-cpo-mission-vision.md",
-    "organizations/danaher.md",
-    "sources/openclaw-research.md",
-    "sources/karpathy-wiki-community-feedback.md",
+    "projects/wdai-tech-debt.md.tmp.151568.1776641370327",
+    "log.md.tmp.151568.1776641253097",
+    "index.md.tmp.151568.1776641246297",
+    "projects/wdai-tech-debt.md.tmp.151568.1776641228072",
+    "projects/wdai-tech-debt.md.tmp.151568.1776641184625",
+    "projects/wdai-tech-debt.md",
+    "sources/2026-04-16-copilot-metrics-hr-review.md",
+    "sources/INDEX.md",
     "sources/cos-atlas-recommendations.md",
-    "sources/cos-role-research.md",
-    "sources/dina-resume-v7.md",
-    "sources/dina-career-targets.md",
+    "projects/ai-fluency-hrbp.md",
+    "projects/madina-portfolio.md",
+    "projects/ai-foundations.md",
+    "organizations/osu.md",
+    "organizations/danaher.md",
+    "decisions/2026-04-13-value-scoring-ops-first.md",
+    "decisions/2026-04-13-cpo-mission-vision.md",
+    "SCHEMA.md",
+    "log.md",
+    "Untitled.canvas",
+    "sources/2026-03-01-capital-structure-cat-deere.md",
+    "sources/2026-03-03-hr-transformation-tollgate2.md",
+    "sources/2026-03-03-martin-1on1-compensation-hr.md",
+    "sources/2026-03-03-freight-revenue-kaizen-prep.md",
+    "sources/2026-03-03-voc-anish-sdlc.md",
+    "sources/2026-03-04-wdai-core-team-sync-mar4.md",
+    "sources/2026-03-04-ai-foundations-scaling.md",
+    "sources/2026-03-04-pricing-excellence-dx.md",
+    "sources/2026-03-04-freight-cost-revenue-analysis.md",
+    "sources/2026-03-05-hr-ai-enablement-craig-chris.md",
+    "sources/2026-03-05-cortex-code-demo.md",
+    "sources/2026-03-05-snowflake-ai-finance-demo.md",
     "log.md.tmp.37712.1776047310723",
     "sources/sedx8Dh3U",
     "sources/sed5ehB6p",

@@ -35,6 +35,7 @@ The LLM writes and maintains everything. Dina reads, directs, and asks questions
 
 ### WDAI
 - [[projects/wdai-platform|WDAI Platform]] — internal tooling & automation
+- [[projects/wdai-tech-debt|WDAI Tech Debt Audit]] — living doc, Phase 1 complete 2026-04-19
 - [[projects/wdai-product-signal-detector|Product Signal Detector]] — Slack watcher for CPO triage
 - [[projects/wdai-product-spectrum-registry|Product Spectrum Registry]] — Google Sheet tracking all builds
 - [[projects/ai-foundations|AI Foundations]] — recurring cohort program
