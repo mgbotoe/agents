@@ -36,6 +36,7 @@ chief-of-staff/*.png
 !**/bun.lock
 !**/.obsidian/*.json
 !**/tsconfig.json
+!**/.claude/settings.json
 
 # Binary artifacts (pptx, xlsx — should be on GDrive, not git)
 *.pptx

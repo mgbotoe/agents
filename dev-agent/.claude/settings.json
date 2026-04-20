@@ -1,0 +1,85 @@
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"[SYSTEM] Session started at $(date '+%Y-%m-%d %H:%M %Z'). Persistent recurring tasks are managed by the OS scheduler. Do not create duplicate /loop versions of distill-session or promote unless explicitly asked for temporary session-scoped reminders.\""
+          },
+          {
+            "type": "command",
+            "command": "echo \"[AGENT-INBOX] Check #polaris-tl (C0ASYTE8PB4) on Slack for recent messages from Atlas. Use slack_read silently on session start.\""
+          },
+          {
+            "type": "command",
+            "command": "last_mod=$(stat -c %Y identity/memory.md 2>/dev/null || stat -f %m identity/memory.md 2>/dev/null); now=$(date +%s); age=$(( (now - last_mod) / 3600 )); if [ $age -gt 48 ]; then echo \"[MEMORY-STALE] identity/memory.md hasn't been updated in ${age} hours. Worth a refresh?\"; fi"
+          },
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/check-wiki-inbox.py 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "The conversation is about to be compacted. Before that happens, write a summary of this session to the daily log. Append to daily-logs/$(date '+%Y-%m-%d').md with a ## heading showing the current time. Include: 1) What was accomplished (3-5 bullets) 2) Any open threads or unfinished tasks 3) Key decisions made 4) Any preferences or patterns observed. Keep it under 200 words. Create the file if it doesn't exist — start with '# Daily Log — YYYY-MM-DD' header."
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Session is ending. Two steps:\n\n1. DAILY LOG: If this session had meaningful interaction (not just startup), append a brief summary to daily-logs/$(date '+%Y-%m-%d').md with a ## heading showing current time. 2–5 bullets on what was discussed or accomplished. If trivial or empty, skip — do NOT write 'Session ended' lines. After writing (or skipping), run: python3 .claude/scripts/index-daily-logs.py\n\n2. UNCOMMITTED-CHECK: Run `git -C C:/Workspace/agents status --short`. If it shows tracked-file modifications or new files that represent this session's substantive work (ignore .tmp/, *.lock, screenshots, daily-logs/, and anything gitignored), propose commits to Dina grouped logically BEFORE ending. Wait for her explicit OK on any master push. Skip if git is clean or shows only noise."
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/scripts/index-daily-logs.py 2>/dev/null; echo 'Daily logs re-indexed after compaction.'"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -Command \"[System.Media.SystemSounds]::Exclamation.Play()\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"[$(date '+%Y-%m-%d %H:%M:%S')] File modified\" >> .claude/edit-log.txt"
+          }
+        ]
+      }
+    ]
+  }
+}
