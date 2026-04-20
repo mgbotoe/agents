@@ -126,10 +126,12 @@ This is not optional — closing the loop with Atlas is part of completing any r
 ## Active Tasks
 | Task | Schedule | What it does |
 |------|----------|-------------|
-| `Polaris\Promote` | Daily 11:00 PM | Extract learnings from daily logs → memory |
-| `Polaris\Distill` | Every 2 hours | Save session context to daily logs |
-| `Polaris\SelfImprove` | Daily 3:00 AM | Review and improve agent skills/rules |
-| `Polaris\IndexLogs` | Daily 11:30 PM | Rebuild daily log search index |
+| `Polaris\Promote` | Daily 11:15 PM | Extract learnings from daily logs → memory |
+| `Polaris\Distill` | Every 2 hours (:12) | Save session context to daily logs |
+| `Polaris\SelfImprove` | Daily 3:30 AM | Review and improve agent skills/rules |
+| `Polaris\IndexLogs` | Daily 11:45 PM | Rebuild daily log search index |
+
+All tasks have `WakeToRun` + `StartWhenAvailable` enabled. Times are staggered 15-30 min after Atlas to avoid conflicts.
 
 ## Management
 - List tasks: `schtasks /query /tn "\Polaris\Promote" /fo LIST`
