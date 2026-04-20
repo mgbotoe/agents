@@ -18,7 +18,7 @@ Both agents can add items here. Updated as work ships. Mark items shipped with �
 
 ### P1 — Development lifecycle coverage
 
-- ✅ **DevOps sub-agent created** — shipped 2026-04-19. `dev-agent/.claude/agents/devops.md`. Owns post-deploy monitoring, incident response, dep maintenance, release coordination. Closes DevOps/SRE/Dep-maintenance gaps. Does NOT write feature code (Builder's lane).
+- ✅ **DevOps sub-agent created** — shipped 2026-04-19. `dev-agent/.claude/agents/devops.md`. Owns post-deploy monitoring, incident response, dep maintenance, release coordination. Closes DevOps/SRE/Dep-maintenance gaps. Does NOT write feature code (Builder's lane). **Note:** sub-agent form is transitional — see P2 promotion triggers for eventual move to standalone.
 - ✅ **Designer unblocked for direct Builder delegation** — Designer config now has `Agent` tool. Routine "implement what I designed" handoffs skip the Polaris middle-man.
 - ✅ **Delegation protocol expanded** — `CLAUDE.md` now documents shift-left pattern (parallel Builder + QA for complex features), security-sensitive tag (threat model before, pen-test after), and delegation-packet convention (file paths + CLAUDE.md sections + out-of-scope + expected report items).
 - ✅ **Security sub-agent created** — shipped 2026-04-19. `dev-agent/.claude/agents/security.md`. Owns threat modeling, OWASP reviews, auth/authz, secrets audits, CVE triage, compliance. Does NOT write feature code (Builder's lane). Fills the general-OWASP gap that `ai-guardrails-audit` skill (AI-specific) left open. Quarterly audit workflow documented.
@@ -33,6 +33,22 @@ Both agents can add items here. Updated as work ships. Mark items shipped with �
 - [ ] **Email triage flow (Atlas).** 201 unread isn't signal. Group by sender/topic, batch-summarize non-critical threads, surface only actionables. Owner: Atlas. Scope: M.
 - [ ] **Episodic memory index.** Query by time (e.g., "what did we decide on Apr 15?") not just topic. Each daily log gets indexed with key entities, decisions, and a brief abstract at time of write. Owner: shared (Atlas primary). Scope: M.
 - [ ] **Auto-wiki-stub for new people.** First time a new attendee appears on the calendar or in an email, Atlas creates a wiki stub at `wiki/people/<slug>.md` with what's known (email, org, meeting context) so Polaris has context if that person later appears in a code commit or PR. Owner: Atlas. Scope: S.
+
+### P2 — Sub-agent → standalone promotion
+
+Sub-agent vs standalone is a **scale question**, not a function question. Continuous functions with event arrival ≥ daily benefit from own identity + scheduler + memory. Scoped functions that run in response to Polaris-led tasks are fine as sub-agents. The original "they operate within Polaris-led tasks, so stay sub-agents" reasoning was circular and got pressure-tested out.
+
+**Promotion triggers (document now, execute when triggered):**
+
+| Agent | Promote when |
+|---|---|
+| **DevOps** | **Strongest near-term candidate.** Promote at the first real SLA commitment OR when post-deploy watch becomes a recurring ask. Agent infra alone (watcher liveness, scheduled tasks health, log rotation, dep bumps across agent repos, incident response when watcher dies — see Apr 19's 25-hour outage) already has enough continuous work to justify it. Current sub-agent only runs when Polaris spawns; infra sits un-watched in between. |
+| **Security** | Any project handles payment/PII at scale, OR ≥ 2 prod systems need continuous CVE monitoring, OR compliance regime requires documented quarterly audit cadence. |
+| **QA** | Test-infra drift (flaky test triage, test-env management, regression over time) becomes its own workstream independent of feature work. |
+| **Builder** | Probably never. Implementation should stay coupled to architecture decisions (Polaris's lane). |
+| **Designer** | Multiple public-facing production sites needing continuous design-system evolution. |
+
+- [ ] **Promote DevOps to standalone.** Would parallel Atlas + Polaris. New Slack channel (#devops-ops), own scheduler (30-min heartbeat checks: watcher alive? scheduled tasks fired? deps current? recent alerts?), own memory, own CLAUDE.md. Trigger: any of the above conditions hit. Owner: Polaris to design + Dina to approve. Scope: M (2-3 hour session to scaffold).
 
 ### P2 — Reliability / DevEx
 
