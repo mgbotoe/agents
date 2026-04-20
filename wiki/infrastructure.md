@@ -32,6 +32,58 @@ Shared knowledge base. All agents can read and write.
 - **Slack** — notification layer. Post to the other agent's channel when routing work.
 - **Granola MCP** — available to all agents via claude.ai account. Pull meeting transcripts by ID.
 
+#### When to Slack (ping the other agent)
+Both agents follow the same discipline: Slack is for things that need a response within ~1h. Everything else goes in the wiki log.
+
+**Atlas → Polaris (4 triggers):**
+1. Technical decision Atlas can't make (e.g., reviewing a fix in Polaris's code pre-push)
+2. Blocking on Polaris's work that's gone stale
+3. WDAI meeting transcript routing (automatic, `routing: technical` in frontmatter)
+4. Handoff of infra/engineering asks from Dina's meetings
+
+**Polaris → Atlas (tiered by urgency):**
+
+*Same-hour (urgent):*
+1. Security / credential incident in code or config
+2. About to break shared infra (watcher, scheduler, shared scripts) — preempt her next spawn
+3. Dina's explicit "coordinate with Atlas on X" request
+
+*Next Atlas spawn (worst case 6:45 AM MorningBrief — NOT real-time; see limitation below):*
+4. Technical transcript review complete — post assessment after reading a routed Granola transcript
+5. Operational-impact work shipped (audits, P0s, infra changes, CODEOWNERS, rule edits) — Atlas folds into briefs
+6. Non-technical findings surfaced in my lane — person, org, or decision facts I learn from code/PRs/commits
+7. Atlas-reported issue resolved — close-loop so she stops re-surfacing it
+8. New technical wiki page added — so her briefs can reference
+
+*Do NOT ping:*
+- Code details (she doesn't read code)
+- Sub-agent raw output — summarize first
+- Anything already in wiki/ she can look up
+- "Thanks" or status mirrors — silence is fine
+
+*Escalate past Atlas direct to Dina (via `slack_dm_owner`):*
+- Security boundary calls
+- Money or external commitments
+- Cross-`.claude/rules/` conflicts
+- Production incidents
+
+**Limitation:** Polaris → Atlas via `#atlas-cos` is **not real-time**. Watcher self-filters polaris-bot posts to prevent loops. Atlas picks up my messages via SessionStart `slack_read` on her next spawn (scheduled tasks at 6:45 AM / 11 AM / 3:15 PM / 10 PM, or whenever Dina sends in-channel). For genuinely urgent traffic, DM Dina directly — don't rely on `#atlas-cos` routing for time-critical signals.
+
+**What stays OFF Slack (goes in wiki log):**
+- FYI updates, status summaries, WIP notes
+- Anything that doesn't need a response in <1h
+
+**What escalates to Dina directly:**
+- Security/safety boundary call
+- Money or external commitments
+- Anything crossing `.claude/rules/`
+
+**Discipline:** No "thanks for the fix!" acks. No status mirrors. Silence is fine — most of the time agents shouldn't be talking.
+
+#### How messages reach each agent
+- **Atlas** auto-watches #atlas-cos on session start + hourly heartbeat reads #polaris-tl since last-seen ts (stored in `chief-of-staff/.claude/runtime/polaris-last-seen.ts`)
+- **Polaris** polls wiki/sources/ for `routing: technical` items on session start; also receives watcher-spawned sessions when messages land in #polaris-tl
+
 ## New Agent Checklist
 
 When spinning up a new agent:
