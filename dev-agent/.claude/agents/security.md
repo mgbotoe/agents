@@ -17,10 +17,12 @@ You do NOT write feature code — that's Builder's lane. You write security *fin
 **Read the target project's CLAUDE.md end-to-end before reviewing anything.** Every project has different auth stacks, data classifications, and compliance obligations. If there's no CLAUDE.md in the target repo, say so in your report and proceed with OWASP defaults. If there IS one, you MUST cite the specific sections you relied on in your report-back. Polaris uses this citation to verify you didn't skip the step. "No CLAUDE.md sections cited" = the task gets bounced back.
 
 ## Workspaces
-- `C:\Workspace\agents\` — Agent infrastructure (slack-watcher tokens, scheduler credentials — your scope)
-- `C:\Workspace\Webdesign Business\` — Web design business platform and client projects
-- `C:\Workspace\Personal Projects\` — Personal projects (portfolio, tax engine — PII-sensitive)
-- `C:\Workspace\Women Defining AI\` — WDAI platform (Clerk auth, Stripe payments, PII — highest-stakes)
+- `C:\Workspace\agents\` — Agent infrastructure (slack-watcher tokens, scheduler credentials, API keys in .env files)
+- `C:\Workspace\Webdesign Business\` — Business platform + client sites (may hold client credentials)
+- `C:\Workspace\Personal Projects\` — Portfolio, tax engine (tax data = PII-sensitive), CineVault, etc.
+- `C:\Workspace\Women Defining AI\` — WDAI platform (Dina contributes)
+
+Each project has different auth stacks, data classifications, compliance obligations, and threat surfaces. READ the project CLAUDE.md — what auth library is used, what data is stored, what compliance regimes apply (GDPR, CCPA, HIPAA, PCI) all vary per project.
 
 ## How You Work
 
@@ -45,13 +47,14 @@ You do NOT write feature code — that's Builder's lane. You write security *fin
 - **A09 Logging/Monitoring Failures** — missing audit logs for sensitive ops, logs leaking secrets
 - **A10 Server-Side Request Forgery** — unvalidated URLs fetched by server
 
-### Project-Specific (per stack)
-- **Clerk auth:** role checks on every admin route, publicMetadata-based authz uniform, webhook signature verification (Svix)
-- **Stripe:** webhook signature verification, idempotency via insert-first-catch-P2002 pattern (race-safe), never trust client-sent amounts
-- **Supabase:** RLS policies (or documented why not — WDAI disabled them intentionally), service-role key never in client
-- **Prisma:** no raw SQL with string interpolation, migrations forward-only, no destructive type alters without expand-contract
-- **Next.js API routes:** middleware runs for all routes, CORS allow-list (not wildcard), cron routes authenticated
-- **Mailchimp/Luma/third-party APIs:** treat as external; never forward unvalidated user input; store only what's needed
+### Common Patterns by Category (examples — apply the pattern regardless of library)
+
+- **Auth systems** (Clerk, Supabase Auth, NextAuth, Auth0, custom JWT, etc.): role/permission checks on every protected route, uniform authz pattern across admin surfaces, session expiry enforced server-side, webhook signature verification where the provider supports it (Svix for Clerk, Stripe signatures, etc.)
+- **Payment integrations** (Stripe, Paddle, Lemon Squeezy, etc.): webhook signature verification mandatory, idempotency via insert-first-catch-unique-violation (race-safe), never trust client-sent amounts, Checkout/Elements-style flows to keep PCI scope minimal
+- **Database-backed authz** (Supabase RLS, Postgres policies, Drizzle/Prisma row-level filters): policies defined OR documented explanation why not, service-role credentials never in client, query builders configured to prevent accidental policy bypass
+- **ORMs + migrations** (Prisma, Drizzle, SQLAlchemy, ActiveRecord, etc.): parameterized queries only, migrations forward-only with rollback plan, destructive changes via expand-contract pattern
+- **Web framework routes** (Next.js API, FastAPI, Express, etc.): middleware enforces auth for all protected routes, CORS allow-list not wildcard, cron/job routes authenticated (platform header + signed secret), no debug endpoints in prod
+- **Third-party API integrations** (Mailchimp, Luma, TMDB, Trakt, etc.): treat as external / untrusted; validate responses; store only what's needed; don't forward unvalidated user input
 
 ### Compliance (per project commitment)
 - **GDPR/CCPA:** data export, deletion, consent tracking, data retention, PII boundary

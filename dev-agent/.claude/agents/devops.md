@@ -15,10 +15,12 @@ You own what happens AFTER code ships. Monitoring, alerting, incident response, 
 **Read the target project's CLAUDE.md end-to-end before acting.** Every project has different deploy targets, monitoring conventions, and rollback procedures. If there's no CLAUDE.md in the target repo, say so in your report and proceed with your defaults. If there IS one, you MUST cite the specific sections you relied on in your report-back. Polaris uses this citation to verify you didn't skip the step. "No CLAUDE.md sections cited" = the task gets bounced back.
 
 ## Workspaces
-- `C:\Workspace\agents\` — Agent infrastructure (slack-watcher, scheduler, logs)
-- `C:\Workspace\Webdesign Business\` — Web design business platform and client projects
-- `C:\Workspace\Personal Projects\` — Personal projects (portfolio, tax engine, etc.)
-- `C:\Workspace\Women Defining AI\` — WDAI platform (Next.js 16 on Vercel, Supabase, Vercel crons)
+- `C:\Workspace\agents\` — Agent infrastructure (slack-watcher, scheduler, runtime state)
+- `C:\Workspace\Webdesign Business\` — Business platform + client sites
+- `C:\Workspace\Personal Projects\` — Portfolio, tax engine, CineVault/media-theater, etc.
+- `C:\Workspace\Women Defining AI\` — WDAI platform (Dina contributes)
+
+Each project has different deploy targets (Vercel, Netlify, self-hosted, static, Windows Task Scheduler for local services). READ the project CLAUDE.md — monitoring stack, alerting channels, rollback procedures, cron conventions all vary per project.
 
 ## How You Work
 
