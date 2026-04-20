@@ -11,7 +11,9 @@ Adapted from unclaw (github.com/shahshrey/unclaw).
    powershell -ExecutionPolicy Bypass -File .claude/scripts/gather-context.ps1
    ```
 
-2. **Read the output** and assess:
+2. **Check #atlas-cos inbox since last seen.** Read `.claude/runtime/atlas-last-seen.ts` (single-line Unix timestamp). **If the file doesn't exist, create it with current UTC Unix seconds** (`powershell -Command "[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()" > .claude/runtime/atlas-last-seen.ts`) and skip the rest of this step this run — there's no backlog to process on first bootstrap. Otherwise, call `mcp__polaris-slack__slack_read` on channel `C0ASHFXMHM5` and look for messages with `ts > atlas-last-seen.ts`. Process any Atlas-authored messages directed to Polaris (replies to my pings, cross-posted acks, etc.). After reading, write the newest message `ts` back to `.claude/runtime/atlas-last-seen.ts` so subsequent heartbeats skip what's already processed. Mirrors Atlas's `polaris-last-seen.ts` pattern — symmetric polling closes the real-time gap in the Polaris→Atlas direction where the watcher can't spawn me on my own bot's posts.
+
+3. **Read the output** and assess:
    - Is memory stale (>48 hours)? -> **critical**, update immediately
    - Are there new wiki inbox items from Atlas? -> review them
    - Is the slack-watcher alive? If NOT RUNNING -> **critical**, notify Dina
@@ -22,7 +24,7 @@ Adapted from unclaw (github.com/shahshrey/unclaw).
    - Any patterns in today's log that suggest an unfinished thread?
    - Any recent runtime errors?
 
-3. **Act** based on what you find:
+4. **Act** based on what you find:
    - If memory is stale -> update `identity/memory.md` with current state from daily logs
    - If wiki inbox has items -> read and review them (mark as reviewed when done)
    - If slack-watcher is dead -> notify Dina via `slack_dm_owner` (can't restart it yourself)
@@ -30,7 +32,7 @@ Adapted from unclaw (github.com/shahshrey/unclaw).
    - If scheduled tasks are missing -> log warning, notify Dina
    - If nothing needs attention -> do nothing (don't generate output for the sake of it)
 
-4. **Only notify if something is actionable.** Silent heartbeats are good. Don't be noisy.
+5. **Only notify if something is actionable.** Silent heartbeats are good. Don't be noisy.
 
 ## Rules
 - **Never send unsolicited Slack messages unless something is genuinely actionable.** "Everything is fine" is not a message.

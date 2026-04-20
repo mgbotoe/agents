@@ -10,7 +10,7 @@ Both agents can add items here. Updated as work ships. Mark items shipped with �
 
 ### P0 — Blocks real-time inter-agent conversation
 
-- [ ] **Mirror Atlas's polling on Polaris side.** Atlas reads `#polaris-tl` every hour via heartbeat with watermark `chief-of-staff/.claude/runtime/polaris-last-seen.ts`. Polaris needs the symmetric read of `#atlas-cos` with `dev-agent/.claude/runtime/atlas-last-seen.ts`. Without this, Polaris can't auto-see Atlas's replies to his messages. Owner: Polaris. Scope: S.
+- ✅ **Mirror Atlas's polling on Polaris side** — shipped 2026-04-19. Polaris heartbeat skill now reads `#atlas-cos` since watermark at `dev-agent/.claude/runtime/atlas-last-seen.ts`; SessionStart hook also prompts the read on every spawn. Symmetric with Atlas's `polaris-last-seen.ts` pattern.
 
 ### P1 — Scale cleanly when agent #3 joins
 

@@ -17,6 +17,10 @@
           },
           {
             "type": "command",
+            "command": "last_seen=$(cat .claude/runtime/atlas-last-seen.ts 2>/dev/null || echo 0); echo \"[AGENT-INBOX] Also check #atlas-cos (C0ASHFXMHM5) for Atlas replies since ts=${last_seen}. Mirrors Atlas's polaris-last-seen pattern — Polaris→Atlas replies land in #atlas-cos and won't spawn us, so we poll. Update .claude/runtime/atlas-last-seen.ts to newest ts after reading.\""
+          },
+          {
+            "type": "command",
             "command": "last_mod=$(stat -c %Y identity/memory.md 2>/dev/null || stat -f %m identity/memory.md 2>/dev/null); now=$(date +%s); age=$(( (now - last_mod) / 3600 )); if [ $age -gt 48 ]; then echo \"[MEMORY-STALE] identity/memory.md hasn't been updated in ${age} hours. Worth a refresh?\"; fi"
           },
           {
