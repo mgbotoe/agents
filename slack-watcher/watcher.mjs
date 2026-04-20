@@ -225,6 +225,7 @@ async function handleMessage(event) {
   if (event.subtype === "bot_message") {
     const source = getMessageSource(event);
     if (source.type !== "agent") return; // unknown bot, ignore
+    if (source.name === agentCfg.label) return; // own channel's agent reply — skip (per-agent tokens break user-id self-filter)
   }
 
   // Skip if already processing for this channel
