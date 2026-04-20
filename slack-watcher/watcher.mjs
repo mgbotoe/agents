@@ -47,7 +47,18 @@ if (!SLACK_APP_TOKEN || !SLACK_BOT_TOKEN) {
 }
 
 const socketClient = new SocketModeClient({ appToken: SLACK_APP_TOKEN });
+// Default webClient uses the Socket Mode app's bot token — used for auth.test
+// (bot identity on startup) and user lookups.
 const webClient = new WebClient(SLACK_BOT_TOKEN);
+
+// Per-agent WebClient so replies post as the correct agent (Atlas vs Polaris
+// have separate Slack apps / bot users in DaFudge). Falls back to the default
+// token if an agent's botTokenEnv is missing or unset.
+const agentWebClients = new Map();
+for (const [chId, agentCfg] of Object.entries(config.agents)) {
+  const token = agentCfg.botTokenEnv ? process.env[agentCfg.botTokenEnv] : null;
+  agentWebClients.set(chId, token ? new WebClient(token) : webClient);
+}
 
 const SESSIONS_DIR = join(__dirname, "sessions");
 const LOG_FILE = join(__dirname, "watcher.log");
@@ -168,11 +179,25 @@ Rules:
 
 // --- Spawn Claude session ---
 
+// On Windows, Node's spawn() doesn't resolve PATHEXT — "claude" is `claude.cmd`
+// which also must be run with `shell: true` per Node 20+ security policy
+// (see https://nodejs.org/api/child_process.html#spawning-bat-and-cmd-files-on-windows).
+// Without these, the watcher dies with ENOENT / EINVAL when launched from a
+// detached cmd.exe (Startup folder / Task Scheduler).
+const IS_WIN = process.platform === "win32";
+const CLAUDE_BIN = IS_WIN ? "claude.cmd" : "claude";
+
 function spawnClaude(agentCfg, prompt) {
   return new Promise((resolve) => {
-    const proc = spawn("claude", ["-p", prompt, "--dangerously-skip-permissions"], {
+    // Pipe prompt via stdin rather than argv. With `shell: true` on Windows,
+    // Node joins argv with spaces into a raw command string without quoting
+    // individual args — cmd.exe then word-splits the prompt, making `-p`
+    // grab only the first whitespace-delimited token ("You" from "You are
+    // Polaris…"). stdin-piping sidesteps the quoting problem entirely.
+    const proc = spawn(CLAUDE_BIN, ["-p", "--dangerously-skip-permissions"], {
       cwd: agentCfg.cwd,
-      stdio: ["ignore", "pipe", "pipe"],
+      stdio: ["pipe", "pipe", "pipe"],
+      shell: IS_WIN,
     });
 
     let stdout = "";
@@ -180,6 +205,10 @@ function spawnClaude(agentCfg, prompt) {
 
     proc.stdout.on("data", (data) => { stdout += data.toString(); });
     proc.stderr.on("data", (data) => { stderr += data.toString(); });
+
+    // Write prompt to stdin then close so Claude exits after processing
+    proc.stdin.write(prompt);
+    proc.stdin.end();
 
     proc.on("close", (code) => {
       if (code === 0 && stdout.trim()) {
@@ -215,8 +244,11 @@ async function handleMessage(event) {
 
   if (!agentCfg) return; // not a watched channel
 
-  // Ignore bot's own messages
-  if (event.bot_id || event.user === botUserId) return;
+  // Ignore bot's own messages (prevent self-loop)
+  // Note: filtering only on user — NOT on event.bot_id — because the previous
+  // `event.bot_id ||` filter also dropped legitimate cross-agent bot_messages,
+  // which made the later `subtype === "bot_message"` handler dead code.
+  if (event.user === botUserId) return;
 
   // Ignore message subtypes (edits, joins, etc.) except bot_message from other agents
   if (event.subtype && event.subtype !== "bot_message") return;
@@ -255,7 +287,10 @@ async function handleMessage(event) {
 
   if (reply) {
     try {
-      await webClient.chat.postMessage({
+      // Post as the spawned agent (their own bot token), not as the watcher's
+      // listening bot — otherwise Atlas replies appear from Polaris's avatar.
+      const agentClient = agentWebClients.get(channelId) || webClient;
+      await agentClient.chat.postMessage({
         channel: channelId,
         text: reply.slice(0, 4000),
         thread_ts: event.thread_ts || undefined,
@@ -285,6 +320,41 @@ socketClient.on("message", async ({ event, body, ack }) => {
     // Reset processing state for the channel
     if (event?.channel) processing.set(event.channel, false);
   }
+});
+
+// Socket lifecycle logging — surface connection issues instead of drowning
+// in ping/pong timeout warnings from the default logger
+socketClient.on("error", (err) => {
+  log(`[socket error] ${err?.message || err}`);
+});
+socketClient.on("disconnected", (err) => {
+  log(`[socket disconnected] ${err?.message || "no reason"}; auto-reconnect will retry`);
+});
+socketClient.on("reconnecting", () => {
+  log("[socket reconnecting]");
+});
+socketClient.on("connected", () => {
+  log("[socket connected]");
+});
+
+// Process-level resilience — exit with code 1 so the supervisor restart loop
+// picks us back up. Without this, unhandled errors kill the process silently
+// and the watcher stays dead until manual restart.
+process.on("uncaughtException", (err) => {
+  log(`[FATAL uncaughtException] ${err?.stack || err}`);
+  process.exit(1);
+});
+process.on("unhandledRejection", (reason) => {
+  log(`[FATAL unhandledRejection] ${reason?.stack || reason}`);
+  process.exit(1);
+});
+process.on("SIGINT", () => {
+  log("[SIGINT] shutting down");
+  process.exit(0);
+});
+process.on("SIGTERM", () => {
+  log("[SIGTERM] shutting down");
+  process.exit(0);
 });
 
 // --- Start ---
