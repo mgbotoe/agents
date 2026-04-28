@@ -19,21 +19,32 @@ Daily log promotion — extract signal from raw conversation logs into long-term
 
 1. Read the last 3 days of `daily-logs/` files
 2. Read current `identity/memory.md` (hot) and relevant `memory/*.md` files (cold)
-3. Extract and route:
+3. **Curation pass on `identity/memory.md`** (do this BEFORE appending new entries):
+   - Scan `## Session Log` for runs of same-day, near-identical entries (typical case: scheduled-task ghost sessions that all report "no movement").
+   - Collapse a run into a single entry with a count and time range.
+     - Example bad: 6 separate `[2026-04-23] Ghost distill #30..#35. No new activity.` lines.
+     - Example collapsed: `[2026-04-23] Ghost distills #30–35 (11:00–23:00). No new activity.`
+   - If two entries on different days say the same thing, keep the most recent and drop the older — Session Log is a log of *changes*, not a heartbeat.
+   - Don't collapse across distinct facts. "Ghost distill, nothing happened" is one fact; "shipped X" is another.
+4. Extract and route:
    - **Key decisions** (with rationale) → `identity/memory.md` Current State + `memory/decisions.md`
    - **Lessons learned** → `memory/decisions.md`
    - **New preferences** → `memory/preferences.md`
    - **Project context** → `memory/projects.md`
    - **People context** → `memory/people.md`
    - **Active work / open threads** → `identity/memory.md` Active Work
-4. For `identity/memory.md` (hot layer):
+5. For `identity/memory.md` (hot layer):
    - Only promote things needed in every conversation
    - Update `## Current State` and `## Active Work`
    - Add one-liner to `## Session Log`
    - Keep under 2500 tokens — push detail to cold files
-5. For `memory/*.md` (cold layer):
+6. For `memory/*.md` (cold layer):
    - Add detailed entries with datestamps: `<!-- promoted YYYY-MM-DD -->`
    - Don't duplicate — consolidate with existing entries
    - Remove stale entries that are clearly no longer relevant
-6. If `identity/memory.md` is over 2500 tokens, archive oldest entries to `memory/archive-YYYY-MM.md`
-7. Report what was promoted, where it went, and what was skipped
+7. If `identity/memory.md` is over 2500 tokens, archive oldest entries to `memory/archive-YYYY-MM.md`
+8. Report what was promoted, where it went, what was skipped, and what got collapsed during curation.
+
+## Decay (separate concern)
+
+Raw `daily-logs/*.md` decay is handled by the weekly `Atlas\Decay` task (`bin/scheduled/decay.cmd` → `.claude/scripts/decay-memory.py`). Don't manually move daily logs from this skill.
