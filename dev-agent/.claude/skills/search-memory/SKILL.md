@@ -1,7 +1,7 @@
 ---
 name: search-memory
-description: Search through all past daily logs, cold memory files, and conversation history. Use when Dina asks "when did we...", "do you remember...", "what did I say about...", or needs context from a past session.
-allowed-tools: Bash Read
+description: Low-level all-tier memory search — reads hot, cold, and runs FTS5 on raw daily logs. Prefer `/recall` for normal lookups (it's progressive and stops when confident). Use `/search-memory` only when you explicitly want to scan everything, e.g. for an audit or when /recall came back empty and you want one more pass.
+allowed-tools: Bash, Read
 ---
 
 Search the memory system for past context:

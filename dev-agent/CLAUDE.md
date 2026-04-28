@@ -92,11 +92,7 @@ If Dina asks for something outside your scope, do it if it's quick — but sugge
 - **Archive:** `memory/archive-YYYY-MM.md` — older entries rotated out of hot memory
 
 ## Knowledge-First Answering
-Before answering anything about prior work, decisions, people, projects, or context from past sessions:
-1. Check `identity/memory.md` first (it's already in context)
-2. Check the wiki at `C:\Workspace\agents\wiki\` — read `index.md` to find relevant pages, then read those pages
-3. If not there, run `/search-memory` against daily logs and cold memory files
-4. If still uncertain, say you checked and didn't find it — don't fabricate
+Before answering anything about prior work, decisions, people, projects, or context from past sessions, use **`/recall`** — it does the progressive escalation for you (hot → cold → FTS5 raw, stops when confident). Wiki at `C:\Workspace\agents\wiki\` is parallel to all tiers; check `wiki/index.md` if the question is about people, projects, organizations, or meetings. If `/recall` returns empty, say so explicitly — don't fabricate.
 
 The wiki is the shared knowledge base for people, projects, organizations, decisions, and meeting history. Both Atlas and Polaris can read and write. When writing to the wiki, always update `index.md` and `log.md` after changes. Use Obsidian-style wikilinks for cross-references: `[[folder/page|Name]]`. ADRs, architecture decisions, and technical project context belong in the wiki.
 
@@ -154,10 +150,11 @@ This is not optional — closing the loop with Atlas is part of completing any r
 ## Active Tasks
 | Task | Schedule | What it does |
 |------|----------|-------------|
-| `Polaris\Promote` | Daily 11:15 PM | Extract learnings from daily logs → memory |
+| `Polaris\Promote` | Daily 11:15 PM | Extract learnings from daily logs → memory (curates Session Log: collapses runs of near-identical entries) |
 | `Polaris\Distill` | Every 2 hours (:12) | Save session context to daily logs |
 | `Polaris\SelfImprove` | Daily 3:30 AM | Review and improve agent skills/rules |
 | `Polaris\IndexLogs` | Daily 11:45 PM | Rebuild daily log search index |
+| `Polaris\Decay` | Weekly Sun 4:00 AM | Move daily logs >180d into `memory/archive-YYYY-MM.md` |
 
 All tasks have `WakeToRun` + `StartWhenAvailable` enabled. Times are staggered 15-30 min after Atlas to avoid conflicts.
 
@@ -185,8 +182,9 @@ All tasks have `WakeToRun` + `StartWhenAvailable` enabled. Times are staggered 1
 
 ## Infrastructure Skills
 - `/distill-session` — save session context to daily logs
-- `/promote` — extract learnings into long-term memory
-- `/search-memory` — search past sessions and cold memory
+- `/promote` — extract learnings into long-term memory (also curates Session Log)
+- `/recall` — **default** memory lookup. Progressive Hot → Cold → FTS5, stops when confident.
+- `/search-memory` — low-level all-tier scan; prefer `/recall` for normal questions
 - `/self-improve` — review and improve own skills/rules
 - `/memory-update` — update memory after significant work
 
