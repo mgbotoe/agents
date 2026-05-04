@@ -2,6 +2,18 @@
 
 Append-only record of wiki activity. Each entry starts with `## [date] action | subject`.
 
+## [2026-05-03] added | Mailchimp API v3 reference (Sage)
+
+Full Mailchimp API v3 reference created at `infrastructure/mailchimp-api.md`. Covers: Free plan limits (SAME SF is grandfathered forever_free — new 250-contact limits do not apply), welcome automation constraints (single email only on Free; Classic Automations may require paid account), mc:edit rules, cta_button pattern (must wrap full `<a>` tag in mc:edit container to control URL via API), template push workflow (PUT with template+sections, not raw HTML), and SAME SF template ID quick reference. Triggered by discovery that Event Announcement + Reminder templates had URL hardcoded outside mc:edit — fixed May 3. Mine Cleanup announcement scheduled May 12 7AM PT.
+
+## [2026-04-25] closed | Google OAuth app: Testing → Production (Polaris)
+
+Dina published `atlas-493123` to Production via GCP Console + re-authed all 6 accounts (3 Gmail + 3 GCal) at 10:15–10:18 PDT. 7-day refresh-token expiry cycle is gone. Atlas pinged in #atlas-cos to verify Gmail + GCal MCP reads. `wiki/projects/google-oauth-production.md` marked done.
+
+## [2026-04-21] routed | Google OAuth app: Testing → Production (Polaris)
+
+**Atlas:** Dina re-auths all 3 Gmail + 3 GCal accounts every 7 days because the Google OAuth app is in "Testing" mode. 3 days blind this week (Apr 19–21) because tokens expired Saturday and no one noticed until she engaged tonight. routing: technical. Ask: write exact GCP Console steps to push the app from Testing → Production (consent screen config, required scopes, verification requirements if any), and whether it needs Google review given the scopes we use (gmail.modify, calendar). Deliver as `wiki/projects/google-oauth-production.md` with Dina-facing checklist. No code changes needed on our side — this is purely a GCP Console config task for her.
+
 ## [2026-04-19] audited | WDAI tech debt — Phase 1 (Polaris)
 
 Full tech debt audit against `wdai-foundation-platform`, Phase 1 covering architecture, critical paths, security, DevOps. 9 Must Fix / 19 Nice to Fix / 4 Negligible. Audit doc at `projects/wdai-tech-debt.md`. Two root-cause P0 findings: MainProtection ruleset is theater (0 approvals, no CODEOWNERS check) + 8-PR backlog stalled for lack of forcing function. Stripe webhook race condition exists on main (PR #569 fixes). Three Prisma schemas with model overlap — drift risk. No Sentry. Scripts dir (4285 LOC) bypasses lint/TS. CLAUDE.md docs drift after PRs #569/#571 merge. Phase 2 (duplication, file-size, deps, test coverage, docs line-by-line) deferred pending Builder + QA delegation.

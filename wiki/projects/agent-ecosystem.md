@@ -34,6 +34,19 @@ Both agents can add items here. Updated as work ships. Mark items shipped with �
 - [ ] **Episodic memory index.** Query by time (e.g., "what did we decide on Apr 15?") not just topic. Each daily log gets indexed with key entities, decisions, and a brief abstract at time of write. Owner: shared (Atlas primary). Scope: M.
 - [ ] **Auto-wiki-stub for new people.** First time a new attendee appears on the calendar or in an email, Atlas creates a wiki stub at `wiki/people/<slug>.md` with what's known (email, org, meeting context) so Polaris has context if that person later appears in a code commit or PR. Owner: Atlas. Scope: S.
 
+### P1 — New standalone agents (Dina's career stack)
+
+Scoped to advance healthtech leadership + DHA. Ordered by leverage.
+
+- [ ] **Research/Analyst agent ("Orion" or TBD).** Outward-facing signal filter: healthtech + AI market intel, competitive scans, DHA field reading, opportunity radar. Own scheduler (daily scan + weekly digest), own memory, own Slack channel. Offloads market awareness from Atlas so CoS stays in-the-moment. Trigger: now — Dina's north star is healthtech leadership; she needs a dedicated signal layer. Owner: Atlas to scaffold + Dina to approve. Scope: M.
+- [ ] **Scholar/Tutor agent (DHA companion).** Inward-facing learning accelerator: ingests syllabi + readings, Socratic quizzing, flashcard generation from dense papers, drafts discussion posts in Dina's voice, tracks DHA deadlines against Atlas calendar. Different from Research (market intel) — this is coursework depth. Trigger: DHA program start. Owner: Atlas to scaffold. Scope: M.
+- [ ] **Writer/Ghostwriter agent.** LinkedIn thought leadership, WSJ-track content, DHA paper drafting — all in Dina's voice (reuse voice profile from `/draft-email`). Cross-pollinates: DHA capstone → articles → positioning. Compounds career capital. Trigger: after Research + Scholar stand up (needs their output as source material). Owner: Atlas to scaffold. Scope: M.
+
+Deferred / considered-and-skipped:
+- **WDAI Ops agent** — Atlas covers it; promote only if WDAI volunteer coordination becomes its own workstream.
+- **Finance agent** — tax engine already covers it.
+- **Life/Health agent** — Atlas's lane; no split.
+
 ### P2 — Sub-agent → standalone promotion
 
 Sub-agent vs standalone is a **scale question**, not a function question. Continuous functions with event arrival ≥ daily benefit from own identity + scheduler + memory. Scoped functions that run in response to Polaris-led tasks are fine as sub-agents. The original "they operate within Polaris-led tasks, so stay sub-agents" reasoning was circular and got pressure-tested out.
@@ -61,6 +74,10 @@ Sub-agent vs standalone is a **scale question**, not a function question. Contin
 
 - [ ] **Agent-ecosystem health dashboard.** Single command / page that shows: watcher uptime, last successful spawn per agent, last-seen ts watermarks, Slack bot health, wiki recency, scheduler drift. Goal: know agents are alive without manually checking multiple files. Owner: shared. Scope: M.
 - [ ] **Cross-agent incident log.** When something breaks inter-agent (like tonight's self-loop cascade), log the incident + fix pattern so future-us (and future agents) have the debugging trail. Could live at `wiki/infra/incidents.md`. Owner: shared. Scope: S.
+
+### P3 — Agent Intelligence
+
+- [ ] **Fully autonomous skill lifecycle (no guardrails).** Current state: agents can *propose* new skills (3+ recurrence trigger) and *flag* deletions — both require Dina confirmation. Hermes-style full autonomy means agents create + delete without asking, guided only by trigger criteria. Prerequisite: 6 months of log data on proposal quality to verify the trigger criteria are tight enough before removing the human checkpoint. Owner: shared (Atlas primary). Scope: S when triggered. **Target: ~Nov 2026.** Note: guardrailed version (propose + confirm) is live as of 2026-05-03 in `self-improve` skill across all 3 agents.
 
 ### P3 — Architecture
 

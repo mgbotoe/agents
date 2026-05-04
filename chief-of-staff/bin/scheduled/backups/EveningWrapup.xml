@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="UTF-16"?>
+
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+
+  <RegistrationInfo>
+
+    <Date>2026-04-12T18:00:41</Date>
+
+    <Author>ZHALIANNA\Mgbot</Author>
+
+    <URI>\Atlas\EveningWrapup</URI>
+
+  </RegistrationInfo>
+
+  <Principals>
+
+    <Principal id="Author">
+
+      <UserId>S-1-5-21-2056547203-1880639938-2665374510-1001</UserId>
+
+      <LogonType>InteractiveToken</LogonType>
+
+    </Principal>
+
+  </Principals>
+
+  <Settings>
+
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+
+    <StartWhenAvailable>true</StartWhenAvailable>
+
+    <WakeToRun>true</WakeToRun>
+
+    <IdleSettings>
+
+      <Duration>PT10M</Duration>
+
+      <WaitTimeout>PT1H</WaitTimeout>
+
+      <StopOnIdleEnd>true</StopOnIdleEnd>
+
+      <RestartOnIdle>false</RestartOnIdle>
+
+    </IdleSettings>
+
+  </Settings>
+
+  <Triggers>
+
+    <CalendarTrigger>
+
+      <StartBoundary>2026-04-12T15:15:00</StartBoundary>
+
+      <ScheduleByWeek>
+
+        <WeeksInterval>1</WeeksInterval>
+
+        <DaysOfWeek>
+
+          <Monday />
+
+          <Tuesday />
+
+          <Wednesday />
+
+          <Thursday />
+
+        </DaysOfWeek>
+
+      </ScheduleByWeek>
+
+    </CalendarTrigger>
+
+  </Triggers>
+
+  <Actions Context="Author">
+
+    <Exec>
+
+      <Command>powershell</Command>
+
+      <Arguments>-ExecutionPolicy Bypass -NoProfile -File C:\Workspace\agents\chief-of-staff\bin\scheduled\evening-wrapup.ps1</Arguments>
+
+    </Exec>
+
+  </Actions>
+
+</Task>
