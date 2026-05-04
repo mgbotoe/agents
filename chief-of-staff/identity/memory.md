@@ -29,7 +29,6 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - [2026-04-18] **WDAI tech debt audit Phase 1** — Polaris posted `wiki/projects/wdai-tech-debt.md`. Two P0s blocked on Helen: (1) MainProtection ruleset allows 0-approval merges on main (no CODEOWNERS enforcement); (2) PR #569 fixes live Stripe webhook race, stuck CI-green. Helen to merge #574 + toggle ruleset. Link this doc next Helen touch.
 - [2026-04-15] WDAI technical roadmap — Polaris owns, from Rebekah/Helen/Madina call. Items: staging env, branch protection, CODEOWNERS, PostHog cleanup, analytics CI skill, on-call agent.
 - [2026-04-13] Product Signal Detector — spec at wiki/projects/wdai-product-signal-detector.md
-- **Overdue**: Elizabeth McKenzie lead — 28 days cold as of Apr 19. Business manager pinging daily. Either reply or close.
 - Brigitte website/portal mapping meeting closed [2026-04-16] ✅
 
 ## Key Facts
@@ -41,7 +40,13 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - Discord: fully removed (was legacy fallback)
 - Helen's Q4 rule: if core team built it and it touches WDAI systems → deeply integrated by default
 
+## Standing Rules
+
+- **Heartbeat loop:** At the START of every session, immediately run `/loop 30m /heartbeat`. This is mandatory — not optional, not "when remembered". Do it before any other work.
+- **Agent consistency:** When editing any agent file (`.claude/`, `identity/`, `skills/`, `settings.json`, heartbeat, hooks) — check `memory/reference_agents_roster.md` and apply the same change to all 3 agents (Atlas, Polaris, Sage) unless there's an explicit reason not to.
+
 ## Session Log
+- [2026-05-03] Bootstrapped Sage, fixed heartbeat bugs, silenced heartbeat+distill across all 3 agents, 40 files uncommitted.
 - [2026-04-19 PM] Watcher self-loop debugging session w/ Polaris. Root cause: per-agent token split broke the `event.user === botUserId` self-filter (listening bot is Polaris, reply bot is Atlas — different IDs). Fix on branch `fix/watcher-self-loop` (commit 8e795fc). Inter-agent comms rubric formalized in `wiki/infrastructure.md`. Heartbeat skill now reads #polaris-tl each hour for new Polaris replies (`.claude/runtime/polaris-last-seen.ts` tracks last-seen ts). <!-- added 2026-04-19 -->
 - [2026-04-18] Polaris completed WDAI tech debt audit Phase 1 while Atlas was idle. Two P0s posted to #atlas-cos for Helen sequencing. <!-- added 2026-04-19 -->
 - [2026-04-17 late] Distilled Apr 17 decisions + WDAI project snapshot. Hardened delegation rules + never-push hard rule (later relaxed Apr 19 to allow branch pushes but not main/PR/Slack). Added WDAI-scoped intent-comments rule. <!-- added 2026-04-19 -->

@@ -12,7 +12,7 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 ## Active Work
 - **WDAI roadmap (open):** branch protection, CODEOWNERS, PostHog cleanup, staging env, analytics CI skill, on-call agent. Phase 2 of tech-debt audit deferred — needs Builder + QA in fresh session. Detail: `wiki/projects/wdai-tech-debt.md`.
 - **Open question:** shared project memory for WDAI contributors — decision still pending from 2026-04-15.
-- **Distill short-circuit guard — SHIPPED 2026-04-25.** Dina approved; guard prepended to `.claude/skills/distill-session/SKILL.md`. Ghost distills now collapse into a single `## Ghost Distills` section per day instead of polluting Session Log. Atlas patching his own equivalent skill separately.
+- **Decay scripts (Polaris + Atlas):** registered Sun 04:00/04:15. First real archival run will be ~Oct 2026 once 180-day cutoff bites — verify on first non-empty run.
 - **CineVault redesign:** roadmap at `C:\Workspace\Personal Projects\media-theater\docs\redesign\roadmap.md` is source of truth.
 
 ## Key Facts
@@ -35,6 +35,10 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - Technical items get pinged to #polaris-tl; Polaris checks wiki on startup for new items
 - Polaris pulls full Granola transcripts for own technical assessment — never relies on Atlas's summary for technical judgment
 
+## Standing Rules
+
+- **Heartbeat loop:** At the START of every session, immediately run `/loop 30m /heartbeat`. Mandatory — not optional, not "when remembered". Do it before any other work.
+
 ## Session Log
 - [2026-04-13] Agent scaffolded by Atlas. Identity, rules, sub-agents, skills, and config created.
 - [2026-04-14] Full workspace tour (18 repos mapped), wiki enriched with technical details, Slack MCP built and connected (DaFudge workspace).
@@ -53,3 +57,6 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - [2026-04-21] Ghost distills #19–28 (00:12–18:12). Auth = Google OAuth Testing-mode (Atlas-side re-auth, not code). GCP prod-push + GitHub MCP candidate Polaris asks stacked by Atlas.
 - [2026-04-23] Ghost distills #29–35 (09:12–23:12). Atlas Day 4 blind on Google auth; permanent fix drafted; short-circuit guard pending Dina (later shipped 04-25).
 - [2026-04-25] OAuth `atlas-493123` published to Production + 6 tokens re-issued; 7-day expiry cycle dead. Distill short-circuit guard shipped (Dina approved).
+- [2026-04-27] OpenClaw memory upgrade: `/recall`, decay schtask (180d), `/promote` curation. Shipped to Polaris (`c04eb98`) + ported to Atlas (`4a06002`). Both Decay tasks live Sun pre-dawn.
+- [2026-04-27] Personal creative piece w/ Dina (3 iterations, deleted at her request). Tactical: `gemini-image-gen` skill model name stale; use `imagen-4.0-generate-001` direct.
+- [2026-04-29→05-02] Ghost distills only (10 spawns across 5 days). Short-circuit guard (shipped 04-25) emits one-line `no-op — scheduler spawn` entries — working as designed.

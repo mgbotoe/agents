@@ -9,7 +9,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo \"[SYSTEM] Session started at $(date '+%Y-%m-%d %H:%M %Z'). Persistent recurring tasks are managed by the OS scheduler. Do not create duplicate /loop versions of distill-session or promote unless explicitly asked for temporary session-scoped reminders.\""
+            "command": "echo \"[SYSTEM] Session started at $(date '+%Y-%m-%d %H:%M %Z'). Persistent recurring tasks are managed by the OS scheduler. Do not create duplicate /loop versions of distill-session or promote unless explicitly asked for temporary session-scoped reminders. Start /loop 30m /heartbeat for session-scoped check-ins.\""
           },
           {
             "type": "command",
@@ -22,6 +22,10 @@
           {
             "type": "command",
             "command": "last_mod=$(stat -c %Y identity/memory.md 2>/dev/null || stat -f %m identity/memory.md 2>/dev/null); now=$(date +%s); age=$(( (now - last_mod) / 3600 )); if [ $age -gt 48 ]; then echo \"[MEMORY-STALE] identity/memory.md hasn't been updated in ${age} hours. Worth a refresh?\"; fi"
+          },
+          {
+            "type": "command",
+            "command": "last=$(cat .claude/runtime/promote-last-run.ts 2>/dev/null || echo 0); now=$(date +%s); age=$(( (now - last) / 3600 )); if [ $age -gt 24 ]; then echo \"[PROMOTE-STALE] Promote hasn't run in ${age}h. Run /promote before starting work.\"; fi"
           },
           {
             "type": "command",

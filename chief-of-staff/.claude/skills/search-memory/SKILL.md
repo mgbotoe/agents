@@ -35,4 +35,10 @@ Search the memory system for past context:
 
 3. If the search returns results, read the full source file for more context if needed.
 
-4. Synthesize findings into a clear answer. Don't dump raw results — summarize what's relevant to the question.
+4. **Summarize** — structured pass before surfacing anything:
+   - **Direct answer** — one sentence answering the question
+   - **Confidence** — `high` (direct evidence found) / `medium` (inferred from context) / `low` (partial match only)
+   - **Supporting evidence** — 2-3 key facts or excerpts with dates
+   - **Gaps** — what wasn't found, if relevant to the question
+
+   Never dump raw log output. If confidence is `low`, say so explicitly rather than presenting weak matches as answers.

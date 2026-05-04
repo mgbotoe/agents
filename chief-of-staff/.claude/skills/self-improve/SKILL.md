@@ -62,7 +62,8 @@ Review and improve these in order:
 - **Document every change.** Append a summary to `daily-logs/YYYY-MM-DD.md` under `## [HH:MM] Self-Improvement` with what was changed and why.
 - **Preserve intent.** Improve clarity and coverage, don't change the agent's personality or role.
 - **Be conservative.** If unsure whether a change is an improvement, skip it. False positives erode trust.
-- **Never delete skills or rules.** Only add, refine, or consolidate. Flag candidates for removal in the daily log for the user to decide.
+- **Skill creation — propose, don't auto-create.** If a pattern appears 3+ times in the last 30 days AND no existing skill covers it AND it's domain-appropriate (not a one-off), propose a new skill via Slack #atlas-cos with: name, description, trigger conditions, and example use cases. Do NOT create the skill file until Dina explicitly approves.
+- **Skill deletion — flag, don't auto-delete.** If a skill hasn't appeared in any daily log invocation in 90+ days, or is clearly superseded by another skill, flag it via Slack #atlas-cos with reason. Do NOT delete until Dina explicitly confirms. Rules follow the same pattern.
 - **Test hooks after changing them.** If you modify `.claude/settings.json` or a script, verify the hook still fires correctly.
 
 ## Output

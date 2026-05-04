@@ -33,6 +33,9 @@ Adapted from unclaw (github.com/shahshrey/unclaw).
    - If nothing needs attention -> do nothing (don't generate output for the sake of it)
 
 5. **Only notify if something is actionable.** Silent heartbeats are good. Don't be noisy.
+   **Zero terminal output when silent.** If nothing is actionable, produce absolutely no output to the conversation — no "heartbeat complete", no summaries, no follow-up questions. The heartbeat is invisible unless something needs attention.
+
+6. **Distill session** — only if something new was accomplished since the last distill entry in today's log. Check the last `## [HH:MM] Session Distill` timestamp — if no new work happened since then, skip entirely (no ghost entry, no output). If there IS new work, execute the distillation steps inline (do NOT use the Skill tool — `distill-session` has `disable-model-invocation`). Read `.claude/skills/distill-session/SKILL.md` and follow the steps directly in this context. Write to the daily log silently — no confirmation message, no output to the conversation.
 
 ## Rules
 - **Never send unsolicited Slack messages unless something is genuinely actionable.** "Everything is fine" is not a message.

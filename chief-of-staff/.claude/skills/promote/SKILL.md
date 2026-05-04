@@ -44,6 +44,10 @@ Daily log promotion — extract signal from raw conversation logs into long-term
    - Remove stale entries that are clearly no longer relevant
 7. If `identity/memory.md` is over 2500 tokens, archive oldest entries to `memory/archive-YYYY-MM.md`
 8. Report what was promoted, where it went, what was skipped, and what got collapsed during curation.
+9. Write current Unix timestamp to `.claude/runtime/promote-last-run.ts`:
+   ```bash
+   date +%s > .claude/runtime/promote-last-run.ts
+   ```
 
 ## Decay (separate concern)
 
