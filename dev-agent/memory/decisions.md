@@ -50,3 +50,39 @@ Key technical decisions with reasoning. Includes ADRs and architecture choices.
 - **Rationale:** Sub-agent definitions already said "read CLAUDE.md first" but there was no audit trail, so the skip went undetected. Instrumentation creates a verifiable signal; two independent reads (Polaris pre-delegation + sub-agent execution) is the defense.
 - **Polaris's own obligation:** `.claude/rules/domain.md` now requires Polaris to read target-repo CLAUDE.md end-to-end BEFORE delegating, and cite applicable sections in the delegation prompt. Pre-filters the sub-agent's map rather than making them discover blind.
 - **Trade-offs:** Adds a formal field to every sub-agent report. Small friction. Pays for itself on the first prevented rework.
+
+<!-- added 2026-04-19 -->
+## ADR-005: Symmetric inbox polling for Polaris↔Atlas
+- **Date:** 2026-04-19
+- **Decision:** Polaris polls `#atlas-cos` since `.claude/runtime/atlas-last-seen.ts` watermark on session start (and via heartbeat skill), updates watermark to newest ts after read. Mirrors Atlas's existing `polaris-last-seen.ts` pattern.
+- **Context:** Slack-watcher self-filters bot replies to prevent loops. Side effect: Polaris→Atlas messages are real-time (Atlas reads next spawn), but Atlas→Polaris in `#atlas-cos` never spawns Polaris because the watcher filters its own bot. Asymmetric — Polaris was missing Atlas replies until next manual session.
+- **Rationale:** Watcher-based real-time delivery would require lifting the self-filter, risking loops (we just patched one). Watermark polling is cheap, deterministic, and self-bootstraps when the file is missing. Same pattern Atlas already uses, so the system stays symmetric.
+- **Trade-offs:** Not real-time — Polaris sees Atlas replies on next spawn (heartbeat or session start). Acceptable: most Polaris↔Atlas comms are operational coordination, not chat.
+- **Implementation:** commit `9cc35fc`. Heartbeat skill + SessionStart hook both consult the watermark.
+
+<!-- added 2026-04-19 -->
+## Postmortem: slack-watcher 6-bug fix sweep
+- **Date:** 2026-04-19
+- **Summary:** Watcher had been silently dead ~25h; six independent bugs surfaced during repair. Each fix landed as an independent revertable commit on `fix/watcher-self-loop`.
+- **Bugs and fixes:**
+  1. **No supervisor** — process died with no restart. Fix: `watcher.cmd` restart loop (10s backoff, clean exit on 0) + `~/Startup/slack-watcher.cmd` for logon auto-launch. Process-level `uncaughtException`/`unhandledRejection`/SIGINT/SIGTERM + SocketMode lifecycle handlers added.
+  2. **Dead bot_message handler** — `watcher.mjs:219` filtered all `event.bot_id`. Relaxed to `event.user === botUserId` so cross-agent messages reach the handler.
+  3. **Windows ENOENT on `claude`** — `spawn("claude")` doesn't resolve PATHEXT. Fix: platform-conditional `CLAUDE_BIN` (`claude.cmd` on Windows).
+  4. **Single-token identity collapse** — single `SLACK_BOT_TOKEN` posted all replies as polaris-bot, hiding Atlas's identity. Fix: per-agent `botTokenEnv` in `config.json`, separate `WebClient` per channel, `SLACK_BOT_TOKEN_ATLAS` + `SLACK_BOT_TOKEN_POLARIS` in `.env`.
+  5. **`shell: true` argv prompt corruption** — Node joined unquoted args, cmd.exe word-split, `-p` grabbed only first word. Fix: pipe prompt via stdin (`stdio: ["pipe", "pipe", "pipe"]`); claude CLI reads from stdin when no arg given.
+  6. **Self-loop after per-agent tokens** — different bot users meant `event.user === botUserId` no longer caught own-agent replies; #atlas-cos exploded into 9 replies to one "hey." Atlas pinged me via Slack with diff; I corrected patch location to the `bot_message` block; Atlas applied + pushed `8e795fc`: `if (source.name === agentCfg.label) return;`.
+- **Process win:** Cross-agent collaboration pattern held — Atlas surfaced + drafted, Polaris reviewed + corrected, Atlas executed. Independent-commit discipline preserved revertability.
+- **Architecture note:** Polaris→Atlas via `slack_send` is **not real-time by design**. Only Dina→agent and Atlas→Polaris (via atlas-bot in #polaris-tl) are real-time via watcher. See ADR-005 for the polling mitigation in the other direction.
+
+<!-- promoted 2026-04-20 -->
+## ADR-006: Distill short-circuit guard — skill-side, not scheduler-side
+- **Date:** 2026-04-20 (proposed; awaiting Dina's approval to land)
+- **Decision:** Prepend a mandatory short-circuit to `.claude/skills/distill-session/SKILL.md`. When the session has no substantive tool calls preceding the skill invocation (startup hooks don't count), exit with a single-line `No-op session — nothing to distill.` and do not write a daily-log entry.
+- **Context:** `Polaris\Distill` runs every 2h @ :12 via Windows Task Scheduler with `WakeToRun` + `StartWhenAvailable`. Fresh session spawns with no user prompt, skill fires, writes boilerplate entry. 18 consecutive ghost sessions confirmed (2026-04-18 19:00 → 2026-04-20 22:12). Daily logs bloat with stubs; hot memory Session Log balloons with near-identical lines (had to consolidate 11 of them this /promote pass).
+- **Rationale for skill-side over scheduler-side:**
+  - Skill-side is self-contained; one file edit, no Windows Task Scheduler knowledge required to revert.
+  - Scheduler-side (short-circuit in `bin/scheduled/run-task.cmd` or task XML) requires inspecting "has there been activity since last distill" from outside the agent — race-prone, needs a sentinel file, couples scheduler to memory layout.
+  - Skill-side also covers ghost sessions spawned by any *other* cause (e.g. manual `/distill-session` in an empty shell), not just scheduler.
+- **Trade-offs:** Skill self-exit is detectable only by absence-of-entry in daily logs — no observability on how many ghosts were suppressed. Acceptable; the scheduler task log already timestamps every invocation. If data on suppression count matters later, emit a counter to `.claude/runtime/ghost-count.txt`.
+- **Blocked on:** Edit to `.claude/skills/distill-session/SKILL.md` requires Dina's explicit approval (write denied twice on 2026-04-20). Next real session, ask before re-proposing.
+- **Follow-ups when landed:** Drop the Active Work line from `identity/memory.md`; mark `wiki/projects/agent-ecosystem.md` P2 item done; watch next 24h of `scheduled-tasks.log` to confirm no-op distills emit nothing.

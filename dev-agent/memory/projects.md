@@ -34,3 +34,34 @@ Stack: Next.js 16 + Clerk + Stripe + Prisma + Supabase Postgres. Node 20, Biome,
 - `web/app/api/staging-status/route.ts` — leader-gated observability endpoint
 - `web/prisma/schema.prisma` `StagingMeta` model (single-row, CHECK id=1)
 - V1 ships without PII anonymization. V2 triggers documented in `docs/plans/staging-refresh-pipeline.md`.
+
+<!-- added 2026-04-19 -->
+## WDAI tech debt audit — Phase 1
+
+Audit results: `wiki/projects/wdai-tech-debt.md`. **9 Must Fix / 19 Nice / 4 Negligible.**
+
+**P0s (flagged to Atlas via #atlas-cos):**
+- `MainProtection` GitHub ruleset allows 0-approval merges → tighten to require ≥1 review before contributor access broadens.
+- 8-PR backlog stalled in review (incl. #569 Stripe race fix) — needs unblock pass.
+
+**Phase 2 deferred** (needs Builder + QA delegation in a fresh session): duplication, file-size scan, dep CVE triage, test coverage map, docs gaps, rate limiting, CSP, secrets rotation, PII in logs, backup/DR.
+
+<!-- added 2026-04-19 -->
+## Agent ecosystem roadmap
+
+Location: `wiki/projects/agent-ecosystem.md`. Living doc parallel to `wdai-tech-debt.md` but for agent infrastructure. Both Atlas and Polaris write here.
+
+**Scope rule:** agent infra → this roadmap; external repos → per-project doc; agent-internals → that agent's memory.
+
+**Tier seed:**
+- **P0** — symmetric inbox polling (shipped 2026-04-19, commit `9cc35fc`).
+- **P1** — cross-post migration at N=3 channels; Atlas's 5 UX items.
+- **P2** — watcher hardening, distill short-circuit guard (fix drafted 2026-04-20, blocked on Dina's approval — see `memory/decisions.md` ADR-006; 18 ghost sessions since 04-18 argue for P1 bump), log rotation, runtime state centralization.
+- **P3** — shared agent-core extraction, sub-agent SDK.
+
+<!-- added 2026-04-19 -->
+## CineVault redesign
+
+Location: `C:\Workspace\Personal Projects\media-theater\docs\redesign\roadmap.md` — source of truth. Check there before recomputing scope from session memory or git log.
+
+**Open buckets:** spotlight B, button primitive, Trakt CTA, YIR conform, vote/convince, share review, error parity, audit infra, a11y.
