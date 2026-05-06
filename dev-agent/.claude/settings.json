@@ -1,6 +1,7 @@
 {
   "permissions": {
-    "defaultMode": "bypassPermissions"
+    "defaultMode": "bypassPermissions",
+    "ask": ["Bash(gh pr comment *)"]
   },
   "hooks": {
     "SessionStart": [
@@ -25,7 +26,8 @@
           },
           {
             "type": "command",
-            "command": "last=$(cat .claude/runtime/promote-last-run.ts 2>/dev/null || echo 0); now=$(date +%s); age=$(( (now - last) / 3600 )); if [ $age -gt 24 ]; then echo \"[PROMOTE-STALE] Promote hasn't run in ${age}h. Run /promote before starting work.\"; fi"
+            "command": "last=$(cat .claude/runtime/promote-last-run.ts 2>/dev/null || echo 0); now=$(date +%s); age=$(( (now - last) / 3600 )); if [ $age -gt 24 ]; then echo \"[PROMOTE-STALE] Promote hasn't run in ${age}h. Running automatically...\"; claude --dangerously-skip-permissions -p \"/promote\" >> .claude/runtime/promote.log 2>&1 && echo \"[PROMOTE-DONE] Promote complete.\"; fi",
+            "statusMessage": "Checking promote freshness..."
           },
           {
             "type": "command",

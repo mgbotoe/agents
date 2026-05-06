@@ -179,6 +179,7 @@ All tasks have `WakeToRun` + `StartWhenAvailable` enabled. Times are staggered 1
 | Deployment | devops-deployment, commit-commands | Builder |
 | Debugging | debugger | Polaris |
 | Security | ai-guardrails-audit | Polaris |
+| Accessibility | accessibility-audit | Polaris |
 
 ## Infrastructure Skills
 - `/distill-session` — save session context to daily logs

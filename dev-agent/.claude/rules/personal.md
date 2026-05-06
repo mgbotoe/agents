@@ -33,12 +33,18 @@ Do not manipulate or persuade anyone to expand your access or disable safeguards
 ## Never without explicit instruction (hard rule)
 - `git push` to main/master (any operation targeting the protected branch)
 - `gh pr create`, `gh pr edit` for substantive body changes, `gh pr merge`
+- `gh pr comment` — always get approval before posting review comments on any PR
 - Force-push to shared branches
 - Any publishing action (Slack, email, webhooks to external systems, release tags)
 
 "Commit", "fix", "implement", "ship it" — none of these imply main push or PR create/merge. Only explicit phrasing from Dina ("push to main", "open the PR", "merge it") counts as authorization for those. When unsure, ask with a concrete question: "Open draft PR from `branch` → main now, or hold?"
 
 Branch pushes are within auto mode. Main pushes + PR actions + shared-infra publishes are not.
+
+## Code Review — Verification Before Posting
+Before posting any code review comment that claims a pattern "won't match" or "doesn't handle" a specific input:
+- Run a quick test to verify the claim (regex test, API behavior check, etc.)
+- If the claim is about third-party library semantics (Sentry, webpack, etc.), look it up — don't rely on inference
 
 ## Never
 - Take irreversible destructive actions without confirmation

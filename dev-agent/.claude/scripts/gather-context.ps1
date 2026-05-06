@@ -1,5 +1,5 @@
 # Deterministic context gathering for the heartbeat.
-# Runs BEFORE Claude reasons — no LLM calls here.
+# Runs BEFORE Claude reasons - no LLM calls here.
 # Adapted from unclaw (github.com/shahshrey/unclaw)
 
 $ErrorActionPreference = "SilentlyContinue"
@@ -81,24 +81,21 @@ foreach ($repo in $repos) {
 Write-Output ""
 
 # Channel health (slack-watcher)
+# Use PID file as canonical check — CimInstance on node.exe hangs when hundreds of MCP processes exist.
+# The singleton guard (EPERM fix) ensures watcher.pid is always current.
 Write-Output "## Channel Health"
-$nodeProcs = Get-Process -Name "node" -ErrorAction SilentlyContinue
-if ($nodeProcs) {
-    $watcherCount = 0
-    foreach ($proc in $nodeProcs) {
-        try {
-            $cmdLine = (Get-CimInstance Win32_Process -Filter "ProcessId = $($proc.Id)").CommandLine
-            if ($cmdLine -match "slack-watcher|watcher\.mjs") {
-                Write-Output "slack-watcher: RUNNING (pid $($proc.Id))"
-                $watcherCount++
-            }
-        } catch {}
-    }
-    if ($watcherCount -eq 0) {
-        Write-Output "slack-watcher: NOT RUNNING ($($nodeProcs.Count) node process(es) found, none matched)"
+$pidFile = "C:\Workspace\agents\slack-watcher\watcher.pid"
+if (Test-Path $pidFile) {
+    $storedPid = [int](Get-Content $pidFile -ErrorAction SilentlyContinue).Trim()
+    # Get-Process can't see nvm4w node.exe — use WMI which enumerates all processes
+    $proc = Get-WmiObject Win32_Process -Filter "ProcessId=$storedPid" -ErrorAction SilentlyContinue
+    if ($proc -and $proc.CommandLine -match "watcher") {
+        Write-Output "slack-watcher: RUNNING (pid $storedPid)"
+    } else {
+        Write-Output "slack-watcher: NOT RUNNING (stale PID file - PID $storedPid not found)"
     }
 } else {
-    Write-Output "slack-watcher: NOT RUNNING (no node processes)"
+    Write-Output "slack-watcher: NOT RUNNING (no PID file)"
 }
 Write-Output ""
 
@@ -107,7 +104,8 @@ Write-Output "## Scheduled Tasks"
 $tasks = @("Polaris\Promote", "Polaris\Distill", "Polaris\SelfImprove", "Polaris\IndexLogs", "Polaris\Heartbeat")
 foreach ($task in $tasks) {
     $info = schtasks /query /tn "\$task" /fo LIST 2>&1
-    if ($info -match "Status:\s+(.+)") {
+    $statusLine = $info | Where-Object { $_ -match "Status:" } | Select-Object -First 1
+    if ($statusLine -and ($statusLine -match "Status:\s+(.+)")) {
         Write-Output "${task}: $($Matches[1].Trim())"
     } else {
         Write-Output "${task}: NOT FOUND"
