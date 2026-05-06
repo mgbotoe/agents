@@ -14,8 +14,8 @@
 
 import { SocketModeClient } from "@slack/socket-mode";
 import { WebClient } from "@slack/web-api";
-import { spawn } from "child_process";
-import { readFileSync, writeFileSync, mkdirSync, existsSync, appendFileSync } from "fs";
+import { spawn, execFileSync } from "child_process";
+import { readFileSync, writeFileSync, unlinkSync, mkdirSync, existsSync, appendFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -62,6 +62,7 @@ for (const [chId, agentCfg] of Object.entries(config.agents)) {
 
 const SESSIONS_DIR = join(__dirname, "sessions");
 const LOG_FILE = join(__dirname, "watcher.log");
+const PID_FILE = join(__dirname, "watcher.pid");
 const MAX_HISTORY = config.maxHistory || 20;
 const SESSION_TTL = (config.sessionTtlMinutes || 30) * 60 * 1000;
 const TIMEOUT_MS = config.timeoutMs || 120000;
@@ -74,6 +75,57 @@ const processing = new Map();
 
 // Resolve bot's own user ID on startup (to ignore own messages)
 let botUserId = null;
+
+// --- Single-instance guard via PID file ---
+
+function checkSingleInstance() {
+  if (existsSync(PID_FILE)) {
+    try {
+      const existingPid = parseInt(readFileSync(PID_FILE, "utf-8").trim(), 10);
+      try {
+        process.kill(existingPid, 0); // signal 0 = existence check only, no actual signal
+        console.error(`[watcher] Already running as PID ${existingPid}. Exiting to prevent duplicate.`);
+        process.exit(0);
+      } catch (err) {
+        if (err.code === "EPERM") {
+          // Windows: EPERM fires for both live processes we can't signal AND dead PIDs
+          // recycled to system processes. Verify with tasklist before treating as running.
+          let isRunning = false;
+          if (process.platform === "win32") {
+            try {
+              const out = execFileSync("tasklist", ["/FI", `PID eq ${existingPid}`, "/NH"], { encoding: "utf8" });
+              isRunning = out.includes(String(existingPid));
+            } catch {
+              isRunning = false;
+            }
+          } else {
+            isRunning = true; // non-Windows EPERM = no permission = process exists
+          }
+          if (isRunning) {
+            console.error(`[watcher] Already running as PID ${existingPid}. Exiting to prevent duplicate.`);
+            process.exit(0);
+          }
+          console.log(`[watcher] Stale PID file (PID ${existingPid} not running). Starting fresh.`);
+        } else {
+          // ESRCH = process genuinely not found — stale PID file from a crash, continue
+          console.log(`[watcher] Stale PID file (PID ${existingPid} not running). Starting fresh.`);
+        }
+      }
+    } catch {
+      // Unreadable PID file, ignore and continue
+    }
+  }
+  writeFileSync(PID_FILE, String(process.pid));
+}
+
+function removePidFile() {
+  try {
+    if (existsSync(PID_FILE)) {
+      const stored = parseInt(readFileSync(PID_FILE, "utf-8").trim(), 10);
+      if (stored === process.pid) unlinkSync(PID_FILE);
+    }
+  } catch { /* ignore */ }
+}
 
 function log(msg) {
   const ts = new Date().toISOString().replace("T", " ").slice(0, 19);
@@ -185,7 +237,7 @@ Rules:
 // Without these, the watcher dies with ENOENT / EINVAL when launched from a
 // detached cmd.exe (Startup folder / Task Scheduler).
 const IS_WIN = process.platform === "win32";
-const CLAUDE_BIN = IS_WIN ? "claude.cmd" : "claude";
+const CLAUDE_BIN = "claude"; // claude.exe on Windows, claude on Unix — both resolved via shell/PATH
 
 function spawnClaude(agentCfg, prompt) {
   return new Promise((resolve) => {
@@ -342,24 +394,30 @@ socketClient.on("connected", () => {
 // and the watcher stays dead until manual restart.
 process.on("uncaughtException", (err) => {
   log(`[FATAL uncaughtException] ${err?.stack || err}`);
+  removePidFile();
   process.exit(1);
 });
 process.on("unhandledRejection", (reason) => {
   log(`[FATAL unhandledRejection] ${reason?.stack || reason}`);
+  removePidFile();
   process.exit(1);
 });
 process.on("SIGINT", () => {
   log("[SIGINT] shutting down");
+  removePidFile();
   process.exit(0);
 });
 process.on("SIGTERM", () => {
   log("[SIGTERM] shutting down");
+  removePidFile();
   process.exit(0);
 });
 
 // --- Start ---
 
 (async () => {
+  checkSingleInstance();
+
   try {
     const authResult = await webClient.auth.test();
     botUserId = authResult.user_id;
