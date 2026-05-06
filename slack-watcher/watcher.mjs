@@ -84,6 +84,33 @@ function checkSingleInstance() {
       const existingPid = parseInt(readFileSync(PID_FILE, "utf-8").trim(), 10);
       try {
         process.kill(existingPid, 0); // signal 0 = existence check only, no actual signal
+        // On Windows, process.kill(pid, 0) succeeds for any live process — including
+        // recycled PIDs that belong to unrelated processes. Verify it's actually watcher.mjs
+        // before treating as a duplicate.
+        if (process.platform === "win32") {
+          // process.kill(pid, 0) on Windows succeeds for dead/recycled PIDs too.
+          // Use wmic to confirm the PID actually belongs to watcher.mjs.
+          let confirmed = false;
+          try {
+            const out = execFileSync(
+              "wmic",
+              ["process", "where", `processid=${existingPid}`, "get", "commandline", "/format:list"],
+              { encoding: "utf8" }
+            );
+            confirmed = out.toLowerCase().includes("watcher.mjs");
+          } catch {
+            // wmic failed — can't confirm; treat as stale to avoid blocking startup
+            confirmed = false;
+          }
+          if (confirmed) {
+            console.error(`[watcher] Already running as PID ${existingPid}. Exiting to prevent duplicate.`);
+            process.exit(0);
+          }
+          console.log(`[watcher] Stale PID file (PID ${existingPid} not a running watcher). Starting fresh.`);
+          writeFileSync(PID_FILE, String(process.pid));
+          return;
+        }
+        // Non-Windows: process.kill succeeded → process is genuinely running
         console.error(`[watcher] Already running as PID ${existingPid}. Exiting to prevent duplicate.`);
         process.exit(0);
       } catch (err) {
