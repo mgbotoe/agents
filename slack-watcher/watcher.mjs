@@ -15,7 +15,7 @@
 import { SocketModeClient } from "@slack/socket-mode";
 import { WebClient } from "@slack/web-api";
 import { spawn, execFileSync } from "child_process";
-import { readFileSync, writeFileSync, unlinkSync, mkdirSync, existsSync, appendFileSync } from "fs";
+import { readFileSync, writeFileSync, unlinkSync, openSync, closeSync, mkdirSync, existsSync, appendFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -77,72 +77,63 @@ const processing = new Map();
 let botUserId = null;
 
 // --- Single-instance guard via PID file ---
+// Uses two-layer protection:
+//   Layer 1: atomic exclusive-create lock file (wx flag) — prevents concurrent startup race
+//   Layer 2: PID file with wmic/tasklist verification — handles stale PIDs from crashes
+
+const LOCK_FILE = PID_FILE + ".lock";
+
+function isLiveWatcher(pid) {
+  if (process.platform !== "win32") {
+    try { process.kill(pid, 0); return true; } catch { return false; }
+  }
+  // Windows: wmic is deprecated on Win11; use PowerShell Get-WmiObject to verify
+  // the PID is actually running watcher.mjs (process.kill is unreliable on Windows).
+  try {
+    const out = execFileSync(
+      "powershell.exe",
+      ["-NonInteractive", "-NoProfile", "-Command",
+        `(Get-WmiObject Win32_Process -Filter 'ProcessId=${pid}').CommandLine`],
+      { encoding: "utf8", timeout: 5000 }
+    );
+    return out.toLowerCase().includes("watcher.mjs");
+  } catch { return false; }
+}
 
 function checkSingleInstance() {
+  // Layer 1: atomic lock — only one process can create this file (O_EXCL).
+  // Concurrent starts all race here; exactly one wins, the rest get EEXIST.
+  let lockFd = null;
+  try {
+    lockFd = openSync(LOCK_FILE, "wx");
+  } catch (err) {
+    if (err.code === "EEXIST") {
+      // Another instance is in the middle of starting up right now. Exit.
+      console.error("[watcher] Startup lock held by concurrent process. Exiting.");
+      process.exit(0);
+    }
+    // Any other error (permissions, disk full) — log and continue without lock
+    console.warn(`[watcher] Could not create lock file: ${err.message}. Proceeding without lock.`);
+  }
+  if (lockFd !== null) closeSync(lockFd);
+
+  // Layer 2: PID file check — handles restarts after crash (lock file gone, PID file stale).
   if (existsSync(PID_FILE)) {
     try {
       const existingPid = parseInt(readFileSync(PID_FILE, "utf-8").trim(), 10);
-      try {
-        process.kill(existingPid, 0); // signal 0 = existence check only, no actual signal
-        // On Windows, process.kill(pid, 0) succeeds for any live process — including
-        // recycled PIDs that belong to unrelated processes. Verify it's actually watcher.mjs
-        // before treating as a duplicate.
-        if (process.platform === "win32") {
-          // process.kill(pid, 0) on Windows succeeds for dead/recycled PIDs too.
-          // Use wmic to confirm the PID actually belongs to watcher.mjs.
-          let confirmed = false;
-          try {
-            const out = execFileSync(
-              "wmic",
-              ["process", "where", `processid=${existingPid}`, "get", "commandline", "/format:list"],
-              { encoding: "utf8" }
-            );
-            confirmed = out.toLowerCase().includes("watcher.mjs");
-          } catch {
-            // wmic failed — can't confirm; treat as stale to avoid blocking startup
-            confirmed = false;
-          }
-          if (confirmed) {
-            console.error(`[watcher] Already running as PID ${existingPid}. Exiting to prevent duplicate.`);
-            process.exit(0);
-          }
-          console.log(`[watcher] Stale PID file (PID ${existingPid} not a running watcher). Starting fresh.`);
-          writeFileSync(PID_FILE, String(process.pid));
-          return;
-        }
-        // Non-Windows: process.kill succeeded → process is genuinely running
+      if (!isNaN(existingPid) && isLiveWatcher(existingPid)) {
         console.error(`[watcher] Already running as PID ${existingPid}. Exiting to prevent duplicate.`);
+        try { unlinkSync(LOCK_FILE); } catch { /* ok */ }
         process.exit(0);
-      } catch (err) {
-        if (err.code === "EPERM") {
-          // Windows: EPERM fires for both live processes we can't signal AND dead PIDs
-          // recycled to system processes. Verify with tasklist before treating as running.
-          let isRunning = false;
-          if (process.platform === "win32") {
-            try {
-              const out = execFileSync("tasklist", ["/FI", `PID eq ${existingPid}`, "/NH"], { encoding: "utf8" });
-              isRunning = out.includes(String(existingPid));
-            } catch {
-              isRunning = false;
-            }
-          } else {
-            isRunning = true; // non-Windows EPERM = no permission = process exists
-          }
-          if (isRunning) {
-            console.error(`[watcher] Already running as PID ${existingPid}. Exiting to prevent duplicate.`);
-            process.exit(0);
-          }
-          console.log(`[watcher] Stale PID file (PID ${existingPid} not running). Starting fresh.`);
-        } else {
-          // ESRCH = process genuinely not found — stale PID file from a crash, continue
-          console.log(`[watcher] Stale PID file (PID ${existingPid} not running). Starting fresh.`);
-        }
       }
+      console.log(`[watcher] Stale PID file (PID ${existingPid} not a live watcher). Starting fresh.`);
     } catch {
-      // Unreadable PID file, ignore and continue
+      // Unreadable PID file — ignore and continue
     }
   }
+
   writeFileSync(PID_FILE, String(process.pid));
+  try { unlinkSync(LOCK_FILE); } catch { /* ok */ }
 }
 
 function removePidFile() {
@@ -152,6 +143,7 @@ function removePidFile() {
       if (stored === process.pid) unlinkSync(PID_FILE);
     }
   } catch { /* ignore */ }
+  try { unlinkSync(LOCK_FILE); } catch { /* ignore */ }
 }
 
 function log(msg) {
@@ -452,6 +444,10 @@ process.on("SIGTERM", () => {
   } catch (err) {
     log(`Failed to get bot identity: ${err.message}`);
   }
+
+  // Keep the event loop alive even when all sessions have resolved and the
+  // WebSocket is mid-reconnect (brief gap where no active handles remain).
+  setInterval(() => {}, 60000);
 
   await socketClient.start();
   log(`Socket Mode connected. Watching ${channelMap.size} channel(s):`);
