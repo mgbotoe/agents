@@ -40,7 +40,7 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 
 ## Standing Rules
 
-- **Heartbeat loop:** At the START of every session, immediately run `/loop 30m /heartbeat`. Mandatory — not optional, not "when remembered". Do it before any other work.
+- **Heartbeat:** At the START of every session, run `/heartbeat` once. Mandatory — not optional, not "when remembered". Do it before any other work. No loop, no scheduler.
 
 ## Session Log
 - [2026-04-13] Agent scaffolded by Atlas. Identity, rules, sub-agents, skills, and config created.
@@ -69,3 +69,4 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - [2026-05-05] Session startup: watcher EPERM fix confirmed committed (`0b81411` by Atlas). context-mode v1.0.75 broken (missing bindings). Node count 387, watcher live PID 95856.
 - [2026-05-05] Session startup: watcher RUNNING (PID 74940), Polaris\Heartbeat task missing, context-mode still broken. DM sent to Dina on both.
 - [2026-05-06] Watcher root cause fixed: event loop drain when all sessions resolve + WebSocket mid-reconnect. Fixes: `setInterval` keepalive, PowerShell-based `isLiveWatcher` (wmic deprecated on Win11), atomic lock file singleton guard. Three commits auto-applied by linter (`0b81411`, `30aee63`, `b15520f`). gather-context.ps1 WMI check fixed (was using Get-Process which misses nvm4w node.exe). Watcher stable, PID confirmed in watcher.pid.
+- [2026-05-05] Session startup 22:39: watcher dead at start, restarted (PID 36172). Heartbeat cron live. Polaris\Heartbeat confirmed registered. ctx-upgrade still pending Dina.

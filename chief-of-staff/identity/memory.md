@@ -16,7 +16,7 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - GDrive MIME type fix deployed — pptx/xlsx uploads now open correctly in Google Slides/Sheets
 - CPO folder: https://drive.google.com/drive/folders/1d7OR7Sy0BW5Qb-Fjr8vq-jOPCiniGsAy
 - **Polaris** (dev agent) live at `C:\Workspace\agents\dev-agent\` — tech lead role, Opus, delegates to Builder/Designer/QA (Sonnet). Posts to #polaris-tl (C0ASYTE8PB4). General purpose across all repos.
-- **Slack Socket Mode Watcher** live at `C:\Workspace\agents\slack-watcher\` — persistent listener, routes messages to correct agent, config-driven (add agents via config.json). Replaces Discord watcher.
+- **Slack Socket Mode Watcher** live at `C:\Workspace\agents\slack-watcher\` — persistent listener, routes messages to correct agent, config-driven (add agents via config.json). Replaces Discord watcher. Singleton guard fixed commit `0b81411` (May 5): uses `tasklist` to verify PID on Windows EPERM — signal-0 alone was unreliable. Clean shutdown hooks added.
 - **Inter-agent pipeline:** Atlas → wiki/sources/ (with routing tag) → Slack notification → Polaris pulls Granola transcript. Wiki log for async messages. Slack for notifications.
 - **Post-meeting transcript pipeline** (WDAI only): MeetingPrep hourly task checks Granola after meetings end, writes to wiki, routes technical items to Polaris via #polaris-tl.
 - `/draft-email` skill created — drafts in Dina's voice using wiki voice profile. Never sends without approval.
@@ -24,6 +24,9 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - Synced with UnClaw upstream: added `.claude/agents/` (researcher, reviewer) and 9 playwright reference docs.
 - **Heartbeat auto-starts** on session start (no manual `/loop 60m /heartbeat` needed) — commit 530c3ad, Apr 17.
 - Wiki reorganized + 45 Granola transcripts (Mar 1–Apr 15) ingested — commit 7279d6c, Apr 17.
+- **Sage** (content ops agent for SAME SF Post) live at `C:\Workspace\SAMESF\` — bootstrapped May 3. Identity, rules, core skills, heartbeat, memory arch all in place.
+- **Agent roster** at `memory/reference_agents_roster.md` — consistency checklist for all 3 agents (Atlas, Polaris, Sage). Standing rule: apply infra changes to all 3 unless explicit reason not to.
+- **Promote/Distill cron jobs removed** (`\Atlas\Promote`, `\Atlas\Distill`, `\Polaris\Promote`, `\Polaris\Distill`) — by design. Heartbeat distills every 30m; session-start hook auto-runs promote if >24h since last run. Sage had this right from day 1; Atlas+Polaris hooks fixed May 5.
 
 ## Active Work
 - [2026-04-18] **WDAI tech debt audit Phase 1** — Polaris posted `wiki/projects/wdai-tech-debt.md`. Two P0s blocked on Helen: (1) MainProtection ruleset allows 0-approval merges on main (no CODEOWNERS enforcement); (2) PR #569 fixes live Stripe webhook race, stuck CI-green. Helen to merge #574 + toggle ruleset. Link this doc next Helen touch.
@@ -42,11 +45,13 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 
 ## Standing Rules
 
-- **Heartbeat loop:** At the START of every session, immediately run `/loop 30m /heartbeat`. This is mandatory — not optional, not "when remembered". Do it before any other work.
+- **Heartbeat:** At the START of every session, run `/heartbeat` once. Mandatory — not optional, not "when remembered". Do it before any other work. No loop, no scheduler.
 - **Agent consistency:** When editing any agent file (`.claude/`, `identity/`, `skills/`, `settings.json`, heartbeat, hooks) — check `memory/reference_agents_roster.md` and apply the same change to all 3 agents (Atlas, Polaris, Sage) unless there's an explicit reason not to.
 
 ## Session Log
-- [2026-05-03] Bootstrapped Sage, fixed heartbeat bugs, silenced heartbeat+distill across all 3 agents, 40 files uncommitted.
+- [2026-05-05 PM] Watcher `0b81411` committed. Second watcher fix: `wmic` is NOT available on this machine — that code path silently falls to "treat as stale" (dead code). Fix needs revision before commit. Watcher also dying with WebSocket pong timeouts (~355 node processes, possible resource contention). Disk: 487GB free (false alarm cleared).
+- [2026-05-05] Diagnosed cron job status post Claude-deletion. Most tasks running fine. Promote hooks fixed on Atlas+Polaris (now auto-run, matching Sage). Context-mode broken (needs /ctx-upgrade).
+- [2026-05-03] Bootstrapped Sage. Fixed heartbeat ghost-entry bug + disable-model-invocation bug across all 3 agents. Silenced heartbeat+distill output. Committed 43 files (0df4846, 117aa8c, 444b458). Agent roster created.
 - [2026-04-19 PM] Watcher self-loop debugging session w/ Polaris. Root cause: per-agent token split broke the `event.user === botUserId` self-filter (listening bot is Polaris, reply bot is Atlas — different IDs). Fix on branch `fix/watcher-self-loop` (commit 8e795fc). Inter-agent comms rubric formalized in `wiki/infrastructure.md`. Heartbeat skill now reads #polaris-tl each hour for new Polaris replies (`.claude/runtime/polaris-last-seen.ts` tracks last-seen ts). <!-- added 2026-04-19 -->
 - [2026-04-18] Polaris completed WDAI tech debt audit Phase 1 while Atlas was idle. Two P0s posted to #atlas-cos for Helen sequencing. <!-- added 2026-04-19 -->
 - [2026-04-17 late] Distilled Apr 17 decisions + WDAI project snapshot. Hardened delegation rules + never-push hard rule (later relaxed Apr 19 to allow branch pushes but not main/PR/Slack). Added WDAI-scoped intent-comments rule. <!-- added 2026-04-19 -->

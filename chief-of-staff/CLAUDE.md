@@ -128,7 +128,7 @@ Two agents share this workspace. Communication flows through two channels:
 - Persistent recurring tasks are managed by **Windows Task Scheduler** (folder: `\Atlas\`).
 - Each task runs a short-lived Claude Code session via `bin/scheduled/run-task.cmd`.
 - Do NOT create duplicate `/loop` jobs for `/distill-session` or `/promote`.
-- On session start, run `/loop 30m /heartbeat` for check-ins during active sessions.
+- On session start, run `/heartbeat` once. No loop, no scheduler.
 - `/loop` is for **temporary, session-scoped** tasks only — dies when session ends.
 
 ## Active Tasks
