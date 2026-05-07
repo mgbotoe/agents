@@ -94,7 +94,7 @@ function isLiveWatcher(pid) {
       "powershell.exe",
       ["-NonInteractive", "-NoProfile", "-Command",
         `(Get-WmiObject Win32_Process -Filter 'ProcessId=${pid}').CommandLine`],
-      { encoding: "utf8", timeout: 5000 }
+      { encoding: "utf8", timeout: 5000, windowsHide: true }
     );
     return out.toLowerCase().includes("watcher.mjs");
   } catch { return false; }
@@ -269,6 +269,7 @@ function spawnClaude(agentCfg, prompt) {
       cwd: agentCfg.cwd,
       stdio: ["pipe", "pipe", "pipe"],
       shell: IS_WIN,
+      windowsHide: true,
     });
 
     let stdout = "";

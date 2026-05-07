@@ -15,8 +15,8 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - **Decay scripts (Polaris + Atlas):** registered Sun 04:00/04:15. First real archival run will be ~Oct 2026 once 180-day cutoff bites — verify on first non-empty run.
 - **CineVault redesign:** roadmap at `C:\Workspace\Personal Projects\media-theater\docs\redesign\roadmap.md` is source of truth.
 - **mailchimp-cc PR #16 (open):** Reviewed Helen's dark mode fix. Two bugs found and fixed on branch `fix-dark-mode-email-rendering` (commit `01f23ad`, local only). Review comment posted at https://github.com/WomenDefiningAI/mailchimp-cc/pull/16#issuecomment-4384163416. Push blocked — mgbotoe is read-only on WomenDefiningAI/mailchimp-cc. Helen needs to apply fixes or Dina needs collaborator access.
-- **Infra resolved (2026-05-06):** slack-watcher event-loop drain fixed (keepalive + PowerShell PID check). Watcher running, singleton guard stable. `run-task.cmd` fixed (full claude.exe path). All scheduler tasks live.
-- **Watcher singleton fix committed (2026-05-05):** `fix(watcher): robust singleton guard` — commit `0b81411`. Uses `tasklist` to verify PID on Windows EPERM (signal-0 throws EPERM for both live+recycled-to-system PIDs). Watcher now correctly self-terminates on duplicate start. PID 95856 live, machine clean.
+- **Infra resolved (2026-05-06):** slack-watcher event-loop drain fixed (keepalive + PowerShell PID check, atomic lock singleton). Watcher running. `run-task.cmd` fixed (full claude.exe path + process-tree kill via commit `4706af0`). All scheduler tasks live.
+- **Pending Dina:** (1) `ctx-upgrade` — context-mode v1.0.75 broken (EBUSY); requires closing Claude Code first. (2) `slack-watcher/test-singleton.mjs` — commit or delete decision. (3) gather-context.ps1 disk display shows 0GB instead of 454GB.
 
 ## Key Facts
 - Slack: DaFudge workspace, channel C0ASYTE8PB4 (polaris-slack MCP, `slack_dm_owner` shortcut) — full read/write working
@@ -39,8 +39,6 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - Polaris pulls full Granola transcripts for own technical assessment — never relies on Atlas's summary for technical judgment
 
 ## Standing Rules
-
-- **Heartbeat:** At the START of every session, run `/heartbeat` once. Mandatory — not optional, not "when remembered". Do it before any other work. No loop, no scheduler.
 
 ## Session Log
 - [2026-04-13] Agent scaffolded by Atlas. Identity, rules, sub-agents, skills, and config created.
@@ -65,8 +63,7 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - [2026-04-27] Personal creative piece w/ Dina (3 iterations, deleted at her request). Tactical: `gemini-image-gen` skill model name stale; use `imagen-4.0-generate-001` direct.
 - [2026-04-29→05-02] Ghost distills only (10 spawns across 5 days). Short-circuit guard (shipped 04-25) emits one-line `no-op — scheduler spawn` entries — working as designed.
 - [2026-05-05] Reviewed mailchimp-cc PR #16 (Helen's dark mode fix). Found P2 + P1 bugs, fixes on branch `fix-dark-mode-email-rendering` (commit `01f23ad`, local). Push blocked — read-only on org. Restarted slack-watcher (multiple attempts; final: PID 102332 via .NET detached spawn). Promote + Distill were genuinely missing — re-registered. `run-task.cmd` fixed with full `claude.exe` path (Task Scheduler PATH issue). Tasks were failing silently since ~May 4.
-- [2026-05-05] Heartbeat: found 7 duplicate watcher.mjs instances running; notified Dina. Gather-context detection broken (false NOT RUNNING). Watcher needs cleanup.
-- [2026-05-05] Session startup: watcher EPERM fix confirmed committed (`0b81411` by Atlas). context-mode v1.0.75 broken (missing bindings). Node count 387, watcher live PID 95856.
-- [2026-05-05] Session startup: watcher RUNNING (PID 74940), Polaris\Heartbeat task missing, context-mode still broken. DM sent to Dina on both.
-- [2026-05-06] Watcher root cause fixed: event loop drain when all sessions resolve + WebSocket mid-reconnect. Fixes: `setInterval` keepalive, PowerShell-based `isLiveWatcher` (wmic deprecated on Win11), atomic lock file singleton guard. Three commits auto-applied by linter (`0b81411`, `30aee63`, `b15520f`). gather-context.ps1 WMI check fixed (was using Get-Process which misses nvm4w node.exe). Watcher stable, PID confirmed in watcher.pid.
-- [2026-05-05] Session startup 22:39: watcher dead at start, restarted (PID 36172). Heartbeat cron live. Polaris\Heartbeat confirmed registered. ctx-upgrade still pending Dina.
+- [2026-05-05] Watcher chaos day: 7 duplicate watcher.mjs instances found, gather-context detection broken (false NOT RUNNING), context-mode v1.0.75 broken (missing bindings), Polaris\Heartbeat missing then re-confirmed registered. Multiple restart cycles across sessions (PIDs 95856 → 74940 → 36172). ctx-upgrade still pending Dina (close Claude Code + `npm install -g context-mode`).
+- [2026-05-05] `run-task.cmd` process-tree kill fix shipped (commit `4706af0`): wraps claude.exe in PowerShell with `-PassThru`, captures PID, kills MCP children via CimInstance + `taskkill /T /F` after session exit. Closes the 99-claude.exe orphan accumulation.
+- [2026-05-06] Watcher root cause fixed: event loop drain when all sessions resolve + WebSocket mid-reconnect. Fixes: `setInterval` keepalive, PowerShell-based `isLiveWatcher` (wmic deprecated on Win11), atomic lock file singleton guard. Three commits auto-applied by linter (`0b81411`, `30aee63`, `b15520f`). gather-context.ps1 WMI check fixed (was using Get-Process which misses nvm4w node.exe). Watcher stable.
+- [2026-05-06] Promote run: curated Session Log (collapsed redundant 2026-05-05 watcher restart entries). No new cold-memory entries — all 2026-05-05 work already promoted in prior sessions.

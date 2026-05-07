@@ -45,7 +45,6 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 
 ## Standing Rules
 
-- **Heartbeat:** At the START of every session, run `/heartbeat` once. Mandatory — not optional, not "when remembered". Do it before any other work. No loop, no scheduler.
 - **Agent consistency:** When editing any agent file (`.claude/`, `identity/`, `skills/`, `settings.json`, heartbeat, hooks) — check `memory/reference_agents_roster.md` and apply the same change to all 3 agents (Atlas, Polaris, Sage) unless there's an explicit reason not to.
 
 ## Session Log
