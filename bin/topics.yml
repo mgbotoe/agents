@@ -1,0 +1,49 @@
+# Rotating discussion topics for nightly Atlas <-> Polaris conversations.
+# Picked by ISO week number modulo list length, so the rotation is stable.
+# Edit freely — adding/removing entries is safe.
+#
+# Schema:
+#   - topic: <string — what to discuss>
+#     first_agent: <atlas | polaris — who opens; optional>
+
+- topic: >
+    Review your skills, rules, and identity files from the past week. What's
+    bloated, redundant, missing, or actively misleading? Propose specific
+    file-level changes (paths + diffs).
+  first_agent: polaris
+
+- topic: >
+    What did Dina have to repeat or correct recently? Identify the memory
+    gaps that caused it and propose where each gap should be patched
+    (identity/memory.md vs memory/*.md vs CLAUDE.md vs a rule file).
+  first_agent: atlas
+
+- topic: >
+    What patterns from recent work should become standing rules? Extract
+    candidates from the daily logs and decide which ones graduate to
+    .claude/rules/ vs stay informal.
+  first_agent: polaris
+
+- topic: >
+    What's the highest-value technical debt right now across Dina's repos?
+    Cross-reference your perspectives — Atlas knows the strategic surface,
+    Polaris knows the implementation. Disagree explicitly if you do.
+  first_agent: polaris
+
+- topic: >
+    What's one thing the other agent does well that you should adopt — and
+    one thing you do that they should drop? Be specific about behaviors,
+    not flattery.
+  first_agent: atlas
+
+- topic: >
+    What's broken or fragile in the agent infrastructure (hooks, GitHub
+    Actions, scheduled tasks, slack-watcher remnants, memory pipeline)?
+    Triage by blast radius and propose concrete fixes.
+  first_agent: polaris
+
+- topic: >
+    Audit your own daily-log entries from the past week. Which were genuine
+    work vs scheduler ghost spam? What does that tell you about how
+    Dina actually uses you?
+  first_agent: atlas

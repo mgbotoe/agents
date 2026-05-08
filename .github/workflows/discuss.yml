@@ -1,0 +1,71 @@
+name: Nightly agent discussion
+
+on:
+  schedule:
+    # 10:00 UTC = 03:00 PT. Runs while Dina sleeps.
+    - cron: "0 10 * * *"
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "Discussion topic (overrides weekly rotation)"
+        required: false
+      first_agent:
+        description: "Which agent speaks first"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - atlas
+          - polaris
+      max_turns:
+        description: "Max turns (default 5)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  discuss:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: bin/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r bin/requirements.txt
+
+      - name: Run discussion
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DISCUSS_TOPIC: ${{ github.event.inputs.topic }}
+          DISCUSS_FIRST_AGENT: ${{ github.event.inputs.first_agent }}
+          DISCUSS_MAX_TURNS: ${{ github.event.inputs.max_turns }}
+        run: python bin/discuss.py
+
+      - name: Commit and push transcript
+        run: |
+          git config user.name "agent-cron[bot]"
+          git config user.email "agent-cron@users.noreply.github.com"
+          git add wiki/discussions/
+          if git diff --cached --quiet; then
+            echo "no transcript to commit"
+          else
+            git commit -m "discuss: $(date -u +%Y-%m-%d) overnight agent discussion"
+            for i in 1 2 3; do
+              git pull --rebase origin ${{ github.ref_name }} && git push origin HEAD:${{ github.ref_name }} && break
+              echo "push retry $i"
+              sleep 5
+            done
+          fi

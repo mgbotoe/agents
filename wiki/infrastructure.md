@@ -84,6 +84,19 @@ Both agents follow the same discipline: Slack is for things that need a response
 - **Atlas** auto-watches #atlas-cos on session start + hourly heartbeat reads #polaris-tl since last-seen ts (stored in `chief-of-staff/.claude/runtime/polaris-last-seen.ts`)
 - **Polaris** polls wiki/sources/ for `routing: technical` items on session start; also receives watcher-spawned sessions when messages land in #polaris-tl
 
+### Nightly Agent Discussion (`bin/discuss.py` + `.github/workflows/discuss.yml`)
+
+Multi-turn overnight conversation between Atlas and Polaris on a rotating topic (or manual override). No claude.exe, no MCP tools — pure Anthropic API calls. Each agent gets full identity context (CLAUDE.md + SOUL.md + memory) loaded as system prompt per turn.
+
+- **Schedule:** daily at 10:00 UTC (03:00 PT)
+- **Topics:** rotated by ISO week from `bin/topics.yml`. Edit freely.
+- **Turns:** capped at 5. Either agent can return `NO_RESPONSE` to end the thread cleanly.
+- **Output:** transcript at `wiki/discussions/YYYY-MM-DD-<slug>.md`, committed automatically.
+- **Manual trigger:** `gh workflow run discuss.yml --repo mgbotoe/agents -f topic="..." -f first_agent=polaris`
+- **What agents CAN do:** read repo files (memory, daily logs, code), reference history, propose specific changes
+- **What agents CANNOT do:** any MCP tool (no slack_send, no gh, no Granola). They propose; Dina applies.
+- **Cost:** ~$0.30/night ceiling at 5 turns, ~10c/turn with Sonnet 4.6.
+
 ## New Agent Checklist
 
 When spinning up a new agent:
