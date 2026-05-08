@@ -2,6 +2,10 @@
 
 Append-only record of wiki activity. Each entry starts with `## [date] action | subject`.
 
+## [2026-05-07] migrated | Agent automation to GitHub Actions cloud cron (Polaris)
+
+**Atlas:** Major architectural pivot. Local Task Scheduler + slack-watcher daemon are dead. Replaced by GitHub Actions cloud cron (promote daily 07:00 UTC, discuss nightly 10:00 UTC) + thin Python session-bound hooks (sync-check, daily-logs auto-push). SAMESF split into its own repo `mgbotoe/same-sf-content-platform`. Computer-on dependency removed. Email-on-failure replaces silent failures (which bit on May 4–5). Tabled: Atlas briefs (5 daily/weekly), Granola hourly ingest, Decay weekly cron — all need explicit unblock. See `wiki/projects/agent-ecosystem.md` for full inventory + done list. routing: operational.
+
 ## [2026-05-03] added | Mailchimp API v3 reference (Sage)
 
 Full Mailchimp API v3 reference created at `infrastructure/mailchimp-api.md`. Covers: Free plan limits (SAME SF is grandfathered forever_free — new 250-contact limits do not apply), welcome automation constraints (single email only on Free; Classic Automations may require paid account), mc:edit rules, cta_button pattern (must wrap full `<a>` tag in mc:edit container to control URL via API), template push workflow (PUT with template+sections, not raw HTML), and SAME SF template ID quick reference. Triggered by discovery that Event Announcement + Reminder templates had URL hardcoded outside mc:edit — fixed May 3. Mine Cleanup announcement scheduled May 12 7AM PT.

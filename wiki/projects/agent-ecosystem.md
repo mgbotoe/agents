@@ -4,6 +4,18 @@
 
 Both agents can add items here. Updated as work ships. Mark items shipped with ✅ + commit SHA.
 
+## Architecture Pivot (2026-05-07)
+
+Agent automation moved from **local Task Scheduler + persistent watcher daemon** to **GitHub Actions cloud cron + lightweight session-bound hooks**. Driver: the May 5–6 watcher reliability fixes inadvertently exposed the cost of every scheduled task spawning a full `claude.exe` session with all MCP servers — token drain + CPU + memory + 80-process orphan piles.
+
+**Current model:**
+- **Cloud cron** for anything pure-file-I/O: promote, nightly discussion. Runs without local machine on. Email-on-failure.
+- **Lightweight local hooks** for session-bound work: FTS5 index rebuild, Mailchimp snapshot, git sync-check (start), daily-logs auto-push (end). Subsecond Python only. No `claude.exe` spawn, no MCP.
+- **In-session agent judgment** for memory/code commits: agent runs Session Discipline at end of session, asks Dina before push to master.
+- **Killed:** slack-watcher daemon, all 20 scheduled tasks (`\Atlas\*` + `\Polaris\*`), all recursive `claude -p` hooks. Windows Startup entries removed.
+
+Implication: any future automation should default to cloud cron unless it genuinely requires session context (live MCP tools, in-conversation state).
+
 ---
 
 ## Prioritized Backlog
@@ -63,12 +75,21 @@ Sub-agent vs standalone is a **scale question**, not a function question. Contin
 
 - [ ] **Promote DevOps to standalone.** Would parallel Atlas + Polaris. New Slack channel (#devops-ops), own scheduler (30-min heartbeat checks: watcher alive? scheduled tasks fired? deps current? recent alerts?), own memory, own CLAUDE.md. Trigger: any of the above conditions hit. Owner: Polaris to design + Dina to approve. Scope: M (2-3 hour session to scaffold).
 
+### P1 — Tabled from 2026-05-07 inventory
+
+Lost capability when local automation was stripped. Decided not to rebuild yet. Pick up when ready.
+
+- [ ] **Atlas briefs (Morning / Midday / Evening / Friday / Weekly).** 5 strategic briefs gone. Skill (`daily-standup`) still works on-demand in Atlas session — just no auto-push pattern. Pending Dina decision: option A (manual + calendar reminder), option B (cloud-prep `wiki/briefs/YYYY-MM-DD.md` + manual full brief that layers in MCP tools), or option C (restore local Task Scheduler for this one task — defeats the goal). Owner: Polaris to build per Dina's choice. Scope: M.
+- [ ] **Granola hourly ingest.** Atlas's transcript-routing pipeline is dead. Cloud-cron rebuild requires Granola REST API access. Currently only Granola MCP works (claude.ai-bound, interactive only). Pending: confirm whether Dina has/can get a Granola API key. If yes → cloud cron 1-hour pull. If no → manual on Atlas session start. Owner: Polaris. Scope: S (with key) / negligible (without).
+- [ ] **Decay weekly cron** (Polaris + Atlas). Move daily logs >180d to `memory/archive-YYYY-MM.md`. Trivial Python + workflow. Non-urgent — first real archival pass was Oct 2026; can wait ~6 months. Owner: Polaris. Scope: S.
+- [ ] **PreCompact summary writer (directive, not hook).** When context fills mid-session, agent should write a session summary to today's `daily-logs/` before continuing — directive in CLAUDE.md, not automation. 5-min edit when ready. Owner: shared. Scope: trivial.
+
 ### P2 — Reliability / DevEx
 
-- [ ] **Proper Windows service wrapper for slack-watcher.** Current setup: Startup-folder `.cmd` with internal restart loop. Fine but: (a) doesn't survive a reboot without user logon, (b) no `WakeToRun` from sleep, (c) no log rotation. Either register a Task Scheduler entry with `WakeToRun + StartWhenAvailable` (requires elevated shell) or wrap with `nssm` / `winsw` as a real Windows service. Owner: Polaris. Scope: S (Task Scheduler) or M (service wrapper).
-- [ ] **Distill skill short-circuit.** Scheduled distill runs every 2h at :12. Recent pattern: 5+ consecutive no-op distills with no substantive session work to distill. Short-circuit: skill detects empty-session state and exits early, no log entry. Owner: Polaris. Scope: S.
-- [ ] **Watcher log rotation.** `watcher.log` grows unbounded. Add size-based rotation (e.g., roll at 5 MB). Owner: Polaris. Scope: S.
-- [ ] **Centralize agent runtime state.** Per-agent `.claude/runtime/*.ts` watermarks, scheduled_tasks.lock, and other transient state should live in a single conventional location with cleanup semantics. Today each agent freelances. Owner: shared. Scope: M.
+- ❌ **slack-watcher Windows service wrapper** — abandoned 2026-05-07. Watcher killed entirely; agent-to-agent comm now via session-start polling + scheduled `discuss.yml` workflow.
+- ❌ **slack-watcher log rotation** — abandoned with the watcher itself.
+- ✅ **Distill skill short-circuit** — shipped 2026-04-25. Skill detects empty-session state and writes single ghost-distill line instead of full distill.
+- [ ] **Centralize agent runtime state.** Per-agent `.claude/runtime/*.ts` watermarks, transient state. Less urgent now that scheduled_tasks.lock and similar are dead. Still useful for the watermark pattern. Owner: shared. Scope: M.
 
 ### P2 — Observability
 
@@ -88,10 +109,16 @@ Sub-agent vs standalone is a **scale question**, not a function question. Contin
 
 ## Done
 
-- ✅ **slack-watcher reliability fixes** (2026-04-19, commits `f07977c` through `4564724`). Process-level handlers, supervisor loop, per-agent bot tokens, Windows spawn gotchas, self-loop fix, user-ID filter removal. 6 distinct bugs. See `wiki/log.md` for full story.
+- ✅ **Cloud-cron migration** (2026-05-07, commits `5307cca` agents, `2b0c016` samesf). Promote moved from local Task Scheduler `claude.exe -p /promote` spawns to `bin/promote.py` (single Anthropic API call) on GitHub Actions cron daily 07:00 UTC. Computer-on dependency removed. Email-on-failure replaces silent failures.
+- ✅ **Nightly Atlas↔Polaris discussion** (2026-05-07, commit `660a9ec`). `bin/discuss.py` + `discuss.yml` cron 10:00 UTC, multi-turn dialogue bounded at 5 turns or `NO_RESPONSE`. Topic rotates by ISO week from `bin/topics.yml`. Transcripts to `wiki/discussions/`. ~$0.30/night ceiling. Manual trigger via `gh workflow run`.
+- ✅ **SAMESF separated into own repo** (2026-05-07). `mgbotoe/same-sf-content-platform`. Mirrored promote pipeline + Session Discipline. Different domain (marketing) so independent failure mode + lifecycle.
+- ✅ **Safe SessionStart/SessionEnd hooks across all 3 agents** (2026-05-07, commits `588aa69`, `354e2da`, `6fef866`, `7db5369`, `0d2a95e`, `c84060e`). Subsecond Python only — no `claude.exe` spawn, no recursive `-p`. SessionStart: index rebuild + sync-check (remote ahead/behind + local dirty paths split by daily-logs vs other). SessionEnd: auto-commit + push daily-logs only (append-only, low-risk). Memory/code stay gated by agent's CLAUDE.md "Session Discipline" flow.
+- ✅ **Daily-logs tracked in repo** (2026-05-07, commit `8ad211b`). `daily-logs/` removed from `chief-of-staff/.gitignore`; backfilled 10 Atlas logs + Polaris 2026-05-05. Cloud cron now has data to curate.
+- ✅ **20 scheduled tasks deleted, all hooks stripped, slack-watcher autostart removed** (2026-05-07, commit `741d687`). Root cause of token bleed: SessionStart hooks recursively spawning `claude --dangerously-skip-permissions -p /promote` + 20 cron tasks each loading full identity context per spawn.
+- ✅ **slack-watcher reliability fixes** (2026-04-19, commits `f07977c` through `4564724`). Now superseded — watcher itself killed 2026-05-07. Kept here for history.
 - ✅ **Polaris → Atlas comm-spec expanded** (commit `b10ec73`). Tiered triggers in `infrastructure.md`.
-- ✅ **Atlas hourly heartbeat reads #polaris-tl** (commit `fd315d6`). Polling half of real-time bidirectional.
-- ✅ **SessionEnd hook for uncommitted-drift detection** (commit `8d439b0`). Runs `git status` at session close.
+- ✅ **Atlas hourly heartbeat reads #polaris-tl** (commit `fd315d6`). Polling half of real-time bidirectional. Now superseded by Session Discipline + sync-check pattern.
+- ✅ **SessionEnd hook for uncommitted-drift detection** (commit `8d439b0`). Original implementation; replaced 2026-05-07 with `session-end-sync.py` (auto-commit + push daily-logs).
 - ✅ **Branch protection / stalled PR backlog on WDAI** surfaced (Phase 1 audit at `wiki/projects/wdai-tech-debt.md`).
 
 ---
