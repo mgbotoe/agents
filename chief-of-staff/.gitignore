@@ -11,7 +11,6 @@ node_modules/
 mcp/**/node_modules/
 
 # Runtime / logs
-daily-logs/
 .claude/edit-log.txt
 .claude/memory.db
 .claude/runtime/
