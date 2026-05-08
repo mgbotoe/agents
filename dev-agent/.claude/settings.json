@@ -18,6 +18,17 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/scripts/session-end-sync.py 2>&1 || true"
+          }
+        ]
+      }
     ]
   }
 }
