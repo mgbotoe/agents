@@ -132,9 +132,22 @@ This is not optional — closing the loop with Atlas is part of completing any r
 
 ## Daily Logs
 - Every session's work is captured in `daily-logs/YYYY-MM-DD.md`
-- The PreCompact hook automatically saves a summary before context compaction
 - Run `/distill-session` before ending long sessions to save context
-- Run `/promote` (or it runs daily via scheduler) to extract key learnings into identity/memory.md
+- `/promote` runs daily via GitHub Actions cron (07:00 UTC) — extracts key learnings into `identity/memory.md` and commits back to the repo
+
+## Session Discipline (commit + sync hygiene)
+
+Cloud cron (`promote.yml`, `discuss.yml`) sees only what's pushed to GitHub. Local sessions must keep the repo current both ways or cron operates on stale state.
+
+**On session start** the SessionStart hook runs `git fetch -q origin` + a sync-check script. If output shows `behind N`, run `git pull --rebase --autostash` before doing significant work in tracked files (especially `identity/memory.md`).
+
+**Before ending a session**, run `git status`. Then:
+- **`daily-logs/`** changes → auto-commit + auto-push. Append-only data, low risk, cron needs them current.
+- **`identity/memory.md` or `memory/*.md`** → propose commits, summarize what changed, ask Dina before pushing to master.
+- **Code changes** (`bin/`, `.claude/`, `wiki/`, etc.) → propose commits with conventional-commit messages, ask Dina before push.
+- **Clean tree** → confirm and exit.
+
+If context is filling up mid-session, write a session summary to `daily-logs/YYYY-MM-DD.md` before continuing — don't rely on a hook to do it.
 
 # Security
 

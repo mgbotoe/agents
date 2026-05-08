@@ -1,5 +1,22 @@
 {
   "permissions": {
     "defaultMode": "bypassPermissions"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/scripts/index-daily-logs.py 2>/dev/null || true"
+          },
+          {
+            "type": "command",
+            "command": "python .claude/scripts/sync-check.py 2>&1 || true"
+          }
+        ]
+      }
+    ]
   }
 }
