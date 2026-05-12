@@ -1,5 +1,7 @@
 # Pass 1 — WDAI Operational System Context
 
+> **Status:** Last probe 2026-05-12 · Pass 1 v6 (post-probe-sweep) · 32 findings · 28 ✓ probe-verified, 4 ◐ sourced-but-not-deep-verified.
+
 **Pass 1 documents WDAI's current operational state.** It is the audit-grounded evidence base that frames Pass 2 (coordination surface) and Pass 3 (federation design).
 
 **Important: "team-OS" refers to a proposed future federation that Pass 3 will design. It does not exist today.** Where this document set says "Pass 3 must X" or "any federation design must Y," it means "X / Y is a constraint surfaced by current state" — not an existing obligation.

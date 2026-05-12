@@ -1,5 +1,7 @@
 # Pass 1 · People and process
 
+> **Status:** Updated 2026-05-12 from Drive's Personal Operating Manuals · Confidence: **high for 6 of 8 stakeholders** (DIRECT-sourced from Helen's Feb 6-9 Operating Manual doc) · 2 of 8 remain inferred (Sheena, Rebekah).
+
 **Part of the Pass 1 split.** See `01-system-context.md` for framing, the 7 Pass-3 design questions, and the C4 system overview. This file is one of the supplementary surfaces.
 
 **Important framing:** "team-OS" throughout these documents refers to a **proposed future federation** that Pass 3 will design. It does not exist today. Phrasings like "Pass 3 must X" mean "X is a constraint surfaced by current state."

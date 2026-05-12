@@ -1,5 +1,7 @@
 # Pass 1 · One-page system summary
 
+> **Status:** Last updated 2026-05-12 · Confidence: **high** — synthesis from probe-verified findings in `01-system-context.md` (28 of 32 ✓). Read `_pressure-test.md` and `08-probe-sweep.md` before treating any specific claim as ground truth.
+
 **Five-minute read.** What WDAI's operational system looks like today, condensed.
 
 This is a SUMMARY — every claim below is sourced in one of the Pass 1 siblings (`01-system-context.md` through `05-people-and-process.md`) or one of the deep-dives in `../`. Read `_pressure-test.md` before treating any specific claim as ground truth.

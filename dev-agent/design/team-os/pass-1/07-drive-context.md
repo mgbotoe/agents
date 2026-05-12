@@ -1,5 +1,7 @@
 # Pass 1 · Drive context (deltas surfaced 2026-05-12)
 
+> **Status:** Drive read 2026-05-12 · Confidence: **high for primary-source quotes** (Helen's 3Y vision · Madina's planning quote · Brigitte's Drive SOP · contributor onboarding doc) — all sourced from named Google Docs with view URLs.
+
 **What this file is:** context surfaced by reading WDAI's Google Drive that strengthens or corrects claims elsewhere in Pass 1. Pass 1 was built primarily from Slack + repo audits; Drive is the parallel knowledge layer that Pass 3 must also account for.
 
 **What this file is NOT:** the team's project tracker. Q2 Priorities, partnerships, fundraising, grant applications, content-calendar logistics — out of scope. Pass 1 documents current state, not in-flight work.

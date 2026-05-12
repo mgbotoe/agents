@@ -1,5 +1,7 @@
 # Pass 1 · Operational architecture
 
+> **Status:** Last updated 2026-05-12 · Confidence: **medium** — SLA tiering is judgment-based; external risk register dates are approximate (sourced from Slack audit, not all date-verified).
+
 **Part of the Pass 1 split.** See `01-system-context.md` for framing, the 7 Pass-3 design questions, and the C4 system overview. This file is one of the supplementary surfaces.
 
 **Important framing:** "team-OS" throughout these documents refers to a **proposed future federation** that Pass 3 will design. It does not exist today. Phrasings like "Pass 3 must X" mean "X is a constraint surfaced by current state."

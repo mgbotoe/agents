@@ -1,5 +1,7 @@
 # Pass 1 · Process flows and user journeys
 
+> **Status:** Last updated 2026-05-12 · Confidence: **mixed** — sequence diagrams reflect code-of-record where probed, illustrative ops journeys (Lauren's, Helen's morning brief, member lifecycle) explicitly flagged in-section.
+
 **Part of the Pass 1 split.** See `01-system-context.md` for framing, the 7 Pass-3 design questions, and the C4 system overview. This file is one of the supplementary surfaces.
 
 **Important framing:** "team-OS" throughout these documents refers to a **proposed future federation** that Pass 3 will design. It does not exist today. Phrasings like "Pass 3 must X" mean "X is a constraint surfaced by current state."

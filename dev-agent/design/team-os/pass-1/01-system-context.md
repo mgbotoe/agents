@@ -1,6 +1,27 @@
-# WDAI Operational System Context — Pass 1 v5
+# WDAI Operational System Context — Pass 1 v6
+
+> **Status:** Last probe 2026-05-12 · Confidence: **high for code-of-record claims**, medium for inferred behavioral claims, see `_pressure-test.md` for full tier breakdown.
 
 **C4-disciplined rebuild.** Diagrams obey strict levels (L1 Context → L2 Container → L3 Component). Node labels carry name only; meaning lives in color (classDef) and edge style. Every diagram earns its keep by serving one of the seven Pass-3 design questions named below.
+
+## Table of contents
+
+- [What Pass 1 is for](#what-pass-1-is-for)
+- [Sibling files in this Pass 1 set](#sibling-files-in-this-pass-1-set)
+- [The seven Pass-3 design questions](#the-seven-pass-3-design-questions)
+- [Problem statement](#problem-statement)
+- [Guiding principles](#guiding-principles-validated-by-audit-kept-verbatim-from-v4)
+- [Edge style legend](#edge-style-legend)
+- **C4 levels**
+  - [L1 — System Context](#l1--system-context)
+  - [L2 — Container](#l2--container)
+  - [L3a — Inside `wdai-foundation-platform`](#l3a--inside-wdai-foundation-platform)
+  - [L3b — Inside the two OpenClaw stacks](#l3b--inside-the-two-openclaw-stacks)
+- [Cross-cutting views](#cross-cutting-views)
+- [Audit gaps](#audit-gaps--what-i-deliberately-havent-looked-at-10)
+- [Findings table (32 observations)](#findings-table-32-observations-each-tagged-with-the-pass-3-question-it-serves)
+- [Open questions](#open-questions-pass-1-factual-gaps)
+- [Source deep-dives](#source-deep-dives)
 
 ---
 
@@ -868,40 +889,44 @@ Four different decision-discipline conventions. No shared standard.
 
 ## Findings table (32 observations, each tagged with the Pass-3 question it serves)
 
-| # | Observation | Source | Q# |
-|---|-------------|--------|----|
-| 1 | 6 execution paradigms in production; paradigm 4 has 3 sub-flavors (4a GH Actions, 4b Vercel Cron, 4c platform-hosted Slack apps) | Audit | Q1 |
-| 2 | WDAI Newswire and AdminBot live as code inside `wdai-foundation-platform/web/lib/slack*.ts` — not external Slack apps | Direct inspection | Q7 |
-| 3 | AdminBot is migrating from Railway (`wdai-admin`) to Vercel (platform). Verbatim header: "This replaces the Railway internal webhook relay." | Code comment | Q1, Q5 |
-| 4 | **12 unique Vercel cron functions** (14 schedule rules; `sync-guests` has 3 separate schedules pointing at the same path) + **4 GH Actions crons** (course-content-agent 15th, website-content-agent 1st, marketing calendar-sync PAUSED, wdai-admin weekly-stats) + 1+ Slack Workflow Builder = **total 17 scheduled automations** | vercel.json read + 2026-05-12 probe sweep | Q1 |
-| 5 | `AuditLog` Prisma table is where every cron run, member action, and Slack click lands | Schema + `daily-digest` cron code | Q3 |
-| 6 | `daily-digest` cron at 8am UTC self-monitors all other crons; posts health summary to `#devops-website-alerts` | Platform code | Q3 |
-| 7 | Platform pushes events INTO Gumloop via `GUMLOOP_CRON_WEBHOOK_URL` + `GUMLOOP_WEBHOOK_URL`. Bidirectional. | `cron-notify.ts` | Q7 |
-| 8 | Two parallel mature OpenClaw stacks (Helen Mac mini, Madina Windows) have no communication channel | Bot registry + Slack audit | Q1, Q6 |
-| 9 | `wdai-marketing` runs a pillar-level federation pattern (vault/, skills/, MEMORY.md, GH Action posting Approve/Edit) | Deep dive | Q2 |
-| 10 | `wdai-marketing`'s daily cron has been PAUSED since 2026-04-21 | Workflow YAML | Q2 (open) |
-| 11 | `wdai-foundation-platform` has 2 monthly autonomous code-modifying agents (**website-content-agent 1st of month, course-update-agent 15th of month** — verified by workflow `cron` lines 2026-05-12) opening PRs for review | `.github/workflows/{course-content,website-content}-agent.yml` | Q2 |
-| 12 | Pattern is the only OpenClaw agent that writes into shared team Slack space today (`#team-core` weekly report + GH Pages publish) | Bot registry | Q1 |
-| 13 | Zero Cowork-scheduled-task automations in WDAI production | Cowork audit | Q1 |
-| 14 | All Gumloop flows post under ONE Slack user_id (`U089ZGUGCUR`). Per-flow identity only exists inside Gumloop UI. | Bot registry | Q7 |
-| 15 | `mailchimp-cc` has a tiered contributor risk model in `CONTRIBUTING.md` (runbooks → skills → source code) | Deep dive | Q4 |
-| 16 | `wdai-lumabot` reads Airtable as silent source-of-truth for active-member approval | Sub-agent deep dive | Q5 |
-| 17 | Four different decision-discipline conventions across the four repos that have CLAUDE.md | Deep dives | Q4 |
-| 18 | `docs/adr/` directory exists in `wdai-foundation-platform` but is empty | Direct inspection | Q4 |
-| 19 | Sheena (Marketing co-lead) has no agent today and is in "reading and what-can-I-do phase" | Slack audit | Q4 |
-| 20 | `.github/CODEOWNERS` exists only in `wdai-foundation-platform` (49 lines). Other repos enforce socially. | Inspection | Q2, Q7 |
-| 21 | `SavedPrompt` entity exists in platform — members already save AI prompts | Schema inspection | — (orphan: member-feature, no Pass-3 hook) |
-| 22 | `ContentChangeBatch` + `ContentChangeProposal` entities back `course-update-agent`'s autonomous PR proposals | Schema inspection | Q2 |
-| 23 | `Announcement` entity is the no-deploy banner system (built by Madina Feb 13) | Schema inspection | — (orphan: member-feature, no Pass-3 hook) |
-| 24 | 17+ geographic chapters and 5+ affinity groups exist as member-led Slack channels. Some have named leads. | Member surface deep dive | — (orphan: member-led infra, deliberately out of team-OS scope) |
-| 25 | Granola transcripts are per-user (Helen ≠ Madina). Helen's Business plan ended 2026-04-07. | Slack audit + wiki | Q6 |
-| 26 | **Helen personally operates ~12 of 17 named bots** (Syl/Pattern as OpenClaw on Mac mini · Newswire/AdminBot/CourseRefl as code · Gumloop fleet config · collect-recordings + process-uploads as platform crons she authored) plus the pillar-owned Marketing Content Calendar she contributes to. Single-owner concentration is structural — federation must address bus-factor. **Count corrected 2026-05-12** — Pass 1 v5 listed "Wit" as a third OpenClaw agent but probe sweep showed the Meet→Vimeo pipeline lives in the platform, not OpenClaw. | Bot registry + ownership audit + probe sweep 2026-05-12 | Q1, Q7 |
-| 27 | **Undocumented `#get-help` Q&A capture bot** — auto-captures member questions + community-sourced answers into a "Pending Review — New Q&A Candidates" section in Helen's `Get-Help WDAI Knowledge Base` Google Doc. 4 weekly batches visible (2026-04-22 through 2026-05-08). Not in bot-registry; paradigm unknown (Gumloop suspected). | Drive read of Get-Help KB | Q3, Q4 |
-| 28 | **Platform is a Turborepo** with 6 packages (`course-update-agent`, `website-agent`, `database`, `lib`, `test-utils`, `ui`) + the `web/` Next.js app. `apps/web/` is a 2-file stub (abandoned migration). No root `turbo.json` — wiring incomplete. Pass 1 v5 only audited `web/`; the package layer was missed. | Probe sweep 2026-05-12 (`ls packages/`) | Q1, Q5 |
-| 29 | **Wit Meet→Vimeo pipeline runs in the platform**, not on Helen's Mac mini. Implemented as Vercel cron `/api/cron/collect-recordings` (daily midnight UTC) + companion `/api/cron/process-uploads` (every 2hr). Uses Google Meet API + Drive Service Account + `RecordingUpload` Prisma table + `postRecordingApprovalRequest` to admin Slack. Pass 1 v5's L3b listing "Wit" as a Helen-OpenClaw agent is contradicted by `web/app/api/cron/collect-recordings/route.ts`. | Probe sweep 2026-05-12 (route source read) | Q1 |
-| 30 | **New `intro-matcher` API** (Madina, May 10 commits) — `/api/intro/suggest-matches` replaces stale Gumloop+Airtable matcher with live DB-backed logic. Env: `INTRO_MATCHER_ENABLED`, `MATCHER_API_SECRET`. Pass 1 v5 missed this entirely. | git log + `.env.example` 2026-05-12 | Q5 |
-| 31 | **`MAILCHIMP_ENABLED` feature flag** in platform env — Mailchimp integration can be toggled off (graceful-degradation pattern). Implies Mailchimp is not assumed-always-available; Pass 3 should treat the toggle as the existing primitive for marketing-system outages. | `wdai-foundation-platform/web/.env.example` | Q3 |
-| 32 | **Wix is fully retired (2026-05).** Zero Wix env keys in any active `.env.example`. Wix code lives only in dormant `wdai-admin` (`src/services/wixsync.ts` + 5 related files). `wdai-admin` has zero commits in 30 days. WixSync code path is dead. | Probe sweep + user confirmation 2026-05-12 | Q5 (resolved) |
+**Confidence glyphs:** ✓ = probe-verified (code, config, or direct file read) · ◐ = sourced (doc/Slack/transcript, not deep-verified) · ? = inferred (reasoning, not direct evidence)
+
+| # | ✓◐? | Observation | Source | Q# |
+|---|---|-------------|--------|----|
+| 1 | ✓ | 6 execution paradigms in production; paradigm 4 has 3 sub-flavors (4a GH Actions, 4b Vercel Cron, 4c platform-hosted Slack apps) | Audit | Q1 |
+| 2 | ✓ | WDAI Newswire and AdminBot live as code inside `wdai-foundation-platform/web/lib/slack*.ts` — not external Slack apps | Direct inspection | Q7 |
+| 3 | ✓ | AdminBot is migrating from Railway (`wdai-admin`) to Vercel (platform). Verbatim header: "This replaces the Railway internal webhook relay." | Code comment | Q1, Q5 |
+| 4 | ✓ | **12 unique Vercel cron functions** (14 schedule rules; `sync-guests` has 3 separate schedules pointing at the same path) + **4 GH Actions crons** (course-content-agent 15th, website-content-agent 1st, marketing calendar-sync PAUSED, wdai-admin weekly-stats) + 1+ Slack Workflow Builder = **total 17 scheduled automations** | vercel.json read + 2026-05-12 probe sweep | Q1 |
+| 5 | ✓ | `AuditLog` Prisma table is where every cron run, member action, and Slack click lands | Schema + `daily-digest` cron code | Q3 |
+| 6 | ✓ | `daily-digest` cron at 8am UTC self-monitors all other crons; posts health summary to `#devops-website-alerts` | Platform code | Q3 |
+| 7 | ✓ | Platform pushes events INTO Gumloop via `GUMLOOP_CRON_WEBHOOK_URL` + `GUMLOOP_WEBHOOK_URL`. Bidirectional. | `cron-notify.ts` | Q7 |
+| 8 | ✓ | Two parallel mature OpenClaw stacks (Helen Mac mini, Madina Windows) have no communication channel | Bot registry + Slack audit | Q1, Q6 |
+| 9 | ✓ | `wdai-marketing` runs a pillar-level federation pattern (vault/, skills/, MEMORY.md, GH Action posting Approve/Edit) | Deep dive | Q2 |
+| 10 | ◐ | `wdai-marketing`'s daily cron has been PAUSED since 2026-04-21 | Workflow YAML | Q2 (open) |
+| 11 | ✓ | `wdai-foundation-platform` has 2 monthly autonomous code-modifying agents (**website-content-agent 1st of month, course-update-agent 15th of month** — verified by workflow `cron` lines 2026-05-12) opening PRs for review | `.github/workflows/{course-content,website-content}-agent.yml` | Q2 |
+| 12 | ✓ | Pattern is the only OpenClaw agent that writes into shared team Slack space today (`#team-core` weekly report + GH Pages publish) | Bot registry | Q1 |
+| 13 | ✓ | Zero Cowork-scheduled-task automations in WDAI production | Cowork audit | Q1 |
+| 14 | ✓ | All Gumloop flows post under ONE Slack user_id (`U089ZGUGCUR`). Per-flow identity only exists inside Gumloop UI. | Bot registry | Q7 |
+| 15 | ✓ | `mailchimp-cc` has a tiered contributor risk model in `CONTRIBUTING.md` (runbooks → skills → source code) | Deep dive | Q4 |
+| 16 | ✓ | `wdai-lumabot` reads Airtable as silent source-of-truth for active-member approval | Sub-agent deep dive | Q5 |
+| 17 | ✓ | Four different decision-discipline conventions across the four repos that have CLAUDE.md | Deep dives | Q4 |
+| 18 | ✓ | `docs/adr/` directory exists in `wdai-foundation-platform` but is empty | Direct inspection | Q4 |
+| 19 | ◐ | Sheena (Marketing co-lead) has no agent today and is in "reading and what-can-I-do phase" | Slack audit | Q4 |
+| 20 | ✓ | `.github/CODEOWNERS` exists only in `wdai-foundation-platform` (49 lines). Other repos enforce socially. | Inspection | Q2, Q7 |
+| 21 | ✓ | `SavedPrompt` entity exists in platform — members already save AI prompts | Schema inspection | — (orphan: member-feature, no Pass-3 hook) |
+| 22 | ✓ | `ContentChangeBatch` + `ContentChangeProposal` entities back `course-update-agent`'s autonomous PR proposals | Schema inspection | Q2 |
+| 23 | ✓ | `Announcement` entity is the no-deploy banner system (built by Madina Feb 13) | Schema inspection | — (orphan: member-feature, no Pass-3 hook) |
+| 24 | ◐ | 17+ geographic chapters and 5+ affinity groups exist as member-led Slack channels. Some have named leads. | Member surface deep dive | — (orphan: member-led infra, deliberately out of team-OS scope) |
+| 25 | ✓ | Granola transcripts are per-user (Helen ≠ Madina). Helen's Business plan ended 2026-04-07. | Slack audit + wiki | Q6 |
+| 26 | ✓ | **Helen personally operates ~12 of 17 named bots** (Syl/Pattern as OpenClaw on Mac mini · Newswire/AdminBot/CourseRefl as code · Gumloop fleet config · collect-recordings + process-uploads as platform crons she authored) plus the pillar-owned Marketing Content Calendar she contributes to. Single-owner concentration is structural — federation must address bus-factor. **Count corrected 2026-05-12** — Pass 1 v5 listed "Wit" as a third OpenClaw agent but probe sweep showed the Meet→Vimeo pipeline lives in the platform, not OpenClaw. | Bot registry + ownership audit + probe sweep 2026-05-12 | Q1, Q7 |
+| 27 | ✓ | **Undocumented `#get-help` Q&A capture bot** — auto-captures member questions + community-sourced answers into a "Pending Review — New Q&A Candidates" section in Helen's `Get-Help WDAI Knowledge Base` Google Doc. 4 weekly batches visible (2026-04-22 through 2026-05-08). Not in bot-registry; paradigm unknown (Gumloop suspected). | Drive read of Get-Help KB | Q3, Q4 |
+| 28 | ✓ | **Platform is a Turborepo** with 6 packages (`course-update-agent`, `website-agent`, `database`, `lib`, `test-utils`, `ui`) + the `web/` Next.js app. `apps/web/` is a 2-file stub (abandoned migration). No root `turbo.json` — wiring incomplete. Pass 1 v5 only audited `web/`; the package layer was missed. | Probe sweep 2026-05-12 (`ls packages/`) | Q1, Q5 |
+| 29 | ✓ | **Wit Meet→Vimeo pipeline runs in the platform**, not on Helen's Mac mini. Implemented as Vercel cron `/api/cron/collect-recordings` (daily midnight UTC) + companion `/api/cron/process-uploads` (every 2hr). Uses Google Meet API + Drive Service Account + `RecordingUpload` Prisma table + `postRecordingApprovalRequest` to admin Slack. Pass 1 v5's L3b listing "Wit" as a Helen-OpenClaw agent is contradicted by `web/app/api/cron/collect-recordings/route.ts`. | Probe sweep 2026-05-12 (route source read) | Q1 |
+| 30 | ✓ | **New `intro-matcher` API** (Madina, May 10 commits) — `/api/intro/suggest-matches` replaces stale Gumloop+Airtable matcher with live DB-backed logic. Env: `INTRO_MATCHER_ENABLED`, `MATCHER_API_SECRET`. Pass 1 v5 missed this entirely. | git log + `.env.example` 2026-05-12 | Q5 |
+| 31 | ✓ | **`MAILCHIMP_ENABLED` feature flag** in platform env — Mailchimp integration can be toggled off (graceful-degradation pattern). Implies Mailchimp is not assumed-always-available; Pass 3 should treat the toggle as the existing primitive for marketing-system outages. | `wdai-foundation-platform/web/.env.example` | Q3 |
+| 32 | ✓ | **Wix is fully retired (2026-05).** Zero Wix env keys in any active `.env.example`. Wix code lives only in dormant `wdai-admin` (`src/services/wixsync.ts` + 5 related files). `wdai-admin` has zero commits in 30 days. WixSync code path is dead. | Probe sweep + user confirmation 2026-05-12 | Q5 (resolved) |
+
+**Tier summary:** 28 of 32 ✓ probe-verified · 4 of 32 ◐ sourced-but-not-deep-verified · 0 ? inferred.
 
 Three orphans (#21, #23, #24) are kept for completeness — they belong to the member-facing layer that Pass 3 deliberately does **not** try to federate.
 

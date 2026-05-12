@@ -1,5 +1,7 @@
 # Pass 1 · Probe sweep (2026-05-12) — live-system verification
 
+> **Status:** Sweep 2026-05-12 · Confidence: **highest in Pass 1** — every claim has a primary source (file path, URL response, or workflow line). Caught 6 errors Pass 1 v5 had asserted with confidence. Treat as the ground-truth tier for tech-stack claims.
+
 **What this file is:** results of probing the actual running WDAI tech stack against Pass 1's documentary claims. Probes were: DNS · HTTP HEAD on URLs · grep across repos · `vercel.json` reads · `.env.example` reads · GH Actions workflow inspection · git log recency.
 
 **Discipline:** every claim below has a primary source. Where probes contradicted Pass 1's documentary claims, Pass 1 is wrong unless it can show fresher evidence.
