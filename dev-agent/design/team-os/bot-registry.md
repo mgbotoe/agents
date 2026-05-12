@@ -250,3 +250,25 @@ Single-person test channels: weather, recipes, leads, content-tracker, new-membe
 
 
 Verdict: deferring these is safe for Pass 1; they're low-signal for federation architecture.
+
+
+## Addendum 2026-05-12 — `#get-help` Q&A capture bot (newly discovered via Drive)
+
+Surfaced by reading `Get-Help WDAI Knowledge Base` (Helen-owned Google Doc, modified 2026-05-08). The doc contains a section "Pending Review — New Q&A Candidates" with the verbatim source line:
+
+> "These Q&A pairs were auto-captured from #get-help by the support bot. They are NOT part of the official KB yet. Review, edit, and promote the keepers into the relevant section above, then delete from this section. The bot ignores everything in this section when answering questions."
+
+**What's known:**
+- Bot auto-captures Q&A pairs from `#get-help` into the KB doc under "Pending Review"
+- 4 weekly batches visible in the doc: 2026-04-22, 2026-04-24, 2026-05-01, 2026-05-08
+- Each entry includes: original question, drafted answer, asker name, answerer name, Slack permalink, asked-date
+- The bot also answers questions in-channel (per "The bot ignores everything in this section when answering questions" implying it has a separate answering function)
+- Pass 3 architectural relevance: this IS the "agents propose, humans approve" pattern at the knowledge-layer level (auto-capture → tiered review → promote into canonical KB)
+
+**What's unknown:**
+- Slack bot_id / app_id (not yet mapped against Slack workspace audit)
+- Paradigm (Gumloop suspected given Helen's single-identity-many-flows pattern, not confirmed)
+- Whether the in-channel answering uses Anthropic API or a different model
+- Permissions surface (does it have Doc-write access? Slack-read access scope?)
+
+**Action:** Pass 2 (coordination surface) should map this bot's Slack identity, paradigm, and credential footprint when next auditing the SaaS layer.

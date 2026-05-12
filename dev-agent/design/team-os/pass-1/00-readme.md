@@ -16,6 +16,8 @@
 | 3 | `03-operational-architecture.md` | When you need deployment topology, SLA tiers, on-call routing, or external integration risk. |
 | 4 | `04-data-architecture.md` | When you need data flow / residency or the Prisma ER model. |
 | 5 | `05-people-and-process.md` | When you need per-person current tool stack or stakeholder expectations. |
+| 6 | `06-system-summary.md` | One-page high-level capture + single system flow diagram. Skim before deep-dive. |
+| 7 | `07-drive-context.md` | Deltas surfaced by reading WDAI's Google Drive (2026-05-12). 3Y vision, Helen's stated-vs-actual transition, cohort-registration migration, AI Intermediate launch, support bot. |
 
 If you only have time for one file, read `01-system-context.md`.
 

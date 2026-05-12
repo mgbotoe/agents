@@ -899,6 +899,7 @@ Four different decision-discipline conventions. No shared standard.
 | 24 | 17+ geographic chapters and 5+ affinity groups exist as member-led Slack channels. Some have named leads. | Member surface deep dive | — (orphan: member-led infra, deliberately out of team-OS scope) |
 | 25 | Granola transcripts are per-user (Helen ≠ Madina). Helen's Business plan ended 2026-04-07. | Slack audit + wiki | Q6 |
 | 26 | **Helen personally operates ~13 of 18 named bots** (Syl/Pattern/Wit · Newswire/AdminBot/CourseRefl as code · Gumloop fleet config) plus the pillar-owned Marketing Content Calendar she contributes to. Single-owner concentration is structural — federation must address bus-factor. | Bot registry + ownership audit | Q1, Q7 |
+| 27 | **Undocumented `#get-help` Q&A capture bot** — auto-captures member questions + community-sourced answers into a "Pending Review — New Q&A Candidates" section in Helen's `Get-Help WDAI Knowledge Base` Google Doc. 4 weekly batches visible (2026-04-22 through 2026-05-08). Not in bot-registry; paradigm unknown (Gumloop suspected). | Drive read of Get-Help KB | Q3, Q4 |
 
 Three orphans (#21, #23, #24) are kept for completeness — they belong to the member-facing layer that Pass 3 deliberately does **not** try to federate.
 
