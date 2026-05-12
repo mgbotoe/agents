@@ -6,6 +6,7 @@ The LLM writes and maintains everything. Dina reads, directs, and asks questions
 ## Infrastructure
 - [[infrastructure|Agent Infrastructure]] — shared services, onboarding checklist, new agent setup
 - [[infrastructure/mailchimp-api|Mailchimp API v3]] — Free plan limits, template push workflow, mc:edit rules, SAME SF template IDs
+- [[infrastructure/granola|Granola]] — Meeting transcription. MCP via claude.ai. Atlas→Polaris pipeline. Helen's billing cutover Apr 7.
 
 ## People
 - [[people/dina-gbotoe|Dina Gbotoe]] — The boss (self)
