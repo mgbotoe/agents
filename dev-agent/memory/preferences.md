@@ -9,6 +9,7 @@ Dina uses short, single-word/phrase tokens that are full authorizations, not che
 - `you` (in "you do X" / "you run X") → run the system-level command without re-asking, even if it touches Task Scheduler / git / files
 - `go ahead`, `ok` → full commit on the proposal under discussion, NOT "ask one more clarifying question"
 - `do it` → stop explaining and execute (already in CLAUDE.md communication.md, reinforced 04-27)
+- `Naw let just ship as is` / `ok let see the new content` → terminate iteration cleanly; want an explicit checkpoint before pushing substantive PR edits
 
 Hard rules from `.claude/rules/personal.md` still apply (main pushes, PR create/merge, force-push, releases, Slack sends need explicit phrasing) — these compact tokens authorize within the auto-mode envelope, they do not unlock the never-without-explicit-instruction list.
 
@@ -30,3 +31,17 @@ When Dina shares real childhood material / personal grief content for a creative
 - Don't instrumentalize — no "let's make this more universal" pivots, no marketing-style reframes.
 - If she says delete, **honor the wipe completely**. Don't preserve content elsewhere "just in case." Don't archive screenshots, don't save the prompt, don't quote it back later.
 - "Too emotionally invested to continue" is a hard stop. No follow-up offers, no "want to revisit later?" — let it close.
+
+<!-- promoted 2026-05-09 -->
+## Code review discipline (external repos)
+- **Don't speculate on what reviewers mean** — if a comment is ambiguous (e.g. "a detail about how we show the event"), tag the reviewer to ask rather than projecting intent.
+- **Vercel preview blockers from contributor commit-email mismatches** aren't reviewer-actionable — that's an access-grant problem (Helen's domain), not the PR author's commit to fix. Don't lead with procedural blockers contributors can't resolve.
+- **Pressure-test recommendations before posting.** Steelman alternative architectures and offer options (B vs C) rather than dictating one. Especially important in collaborative repos with non-developer contributors.
+- **Run advisor pass on every external-repo review** — catches wrong flags before they go public (retracted M1 hydration, downgraded H3 on PR #598).
+
+<!-- promoted 2026-05-11 -->
+## PR scope + docs discipline (Dina's lean-PR culture)
+- WDAI PRs should be lean: typical 1–5 files. Real test isn't lines but **"how many separable concerns surface"** — bundled architectural artifacts inflate cognitive load even when net code is small.
+- When a plan/doc is superseded by working code, **delete it in the same commit** — don't leave 968-line artifacts that survived 4 pivots.
+- Prefer **in-PR setup detail over linked docs** when the linked doc is mostly standard ops repetition. Keep PRs self-contained for things specifically introduced by that PR.
+- Wants an **explicit checkpoint before pushing substantive PR edits** — confirm new content before rewrite.
