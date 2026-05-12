@@ -6,6 +6,104 @@ This is a SUMMARY — every claim below is sourced in one of the Pass 1 siblings
 
 ---
 
+## The system in one diagram
+
+```mermaid
+flowchart LR
+    Members([~1180 Members])
+    CoreTeam([Core Team · 7 named])
+
+    Helen[Helen · operates ~13 of 18 bots]
+    Madina[Madina · tech lead]
+
+    subgraph Platform["wdai-foundation-platform · Vercel · T1"]
+        PortalAPI[Portal API]
+        VercelCrons[12 Vercel crons]
+        PlatformBots[3 Slack apps as code]
+        AuditLog[(AuditLog + daily-digest)]
+        CODEOWNERS[CODEOWNERS + PR gate]
+    end
+
+    subgraph Pillars["Other production repos"]
+        Marketing[wdai-marketing · cron PAUSED]
+        MailchimpCC[mailchimp-cc CLI]
+        Admin[wdai-admin · draining]
+        Lumabot[wdai-lumabot]
+    end
+
+    subgraph OpenClaw["Two OpenClaw stacks · no bridge"]
+        HelenStack[Helen Mac mini · Syl Pattern Wit]
+        MadinaStack[Madina Windows · Atlas Polaris]
+    end
+
+    subgraph Externals["External SaaS"]
+        Slack[Slack]
+        Stripe[Stripe]
+        Clerk[Clerk]
+        Anthropic[Anthropic]
+        Granola[Granola · per-user]
+        Linear[Linear · Helen MCP]
+        Airtable[(Airtable · legacy)]
+    end
+
+    Members --> Slack
+    Members --> PortalAPI
+    Members --> Stripe
+    CoreTeam --> Pillars
+    CoreTeam --> Slack
+
+    Helen ==> HelenStack
+    Helen ==> Platform
+    Helen ==> Pillars
+    Madina --> MadinaStack
+    Madina --> Platform
+
+    Stripe --> Platform
+    Clerk --> Platform
+    PortalAPI --> AuditLog
+    VercelCrons --> AuditLog
+    PlatformBots --> Slack
+    Pillars --> Platform
+    Pillars --> Anthropic
+    Platform --> Anthropic
+
+    Lumabot ==>|WILL BREAK on Airtable cutover| Airtable
+    Admin -.draining.-> Platform
+
+    HelenStack --> Anthropic
+    HelenStack --> Granola
+    HelenStack --> Linear
+    MadinaStack --> Anthropic
+    MadinaStack --> Granola
+
+    HelenStack -. no bridge .- MadinaStack
+    Granola -. duplicate transcripts .- Granola
+
+    classDef person fill:#fef3c7,stroke:#a16207
+    classDef bottleneck fill:#fee2e2,stroke:#b91c1c,font-weight:bold
+    classDef live fill:#dcfce7,stroke:#166534
+    classDef warning fill:#fde68a,stroke:#92400e
+    classDef openclaw fill:#dbeafe,stroke:#1e40af
+    classDef ext fill:#e0e7ff,stroke:#4338ca
+    classDef legacy fill:#f3f4f6,stroke:#9ca3af
+    classDef primitive fill:#bbf7d0,stroke:#15803d,font-weight:bold
+
+    class Members,CoreTeam person
+    class Helen bottleneck
+    class Madina person
+    class PortalAPI,VercelCrons,PlatformBots,MailchimpCC,Lumabot live
+    class Marketing warning
+    class Admin legacy
+    class HelenStack,MadinaStack openclaw
+    class Slack,Stripe,Clerk,Anthropic,Granola,Linear ext
+    class Airtable legacy
+    class AuditLog,CODEOWNERS primitive
+```
+
+**Read it like this:** Green-bold = federation primitives that already work (`AuditLog` + `CODEOWNERS`). Bold-red = the bottleneck human. Amber = production but unstable (marketing cron paused). Blue = the two OpenClaw stacks that don't talk to each other. The `WILL BREAK` edge is the most concrete cross-repo hazard. The `duplicate transcripts` loop on Granola is the per-user Q6 problem.
+
+---
+
 ## What WDAI is, operationally
 
 A 1180-member nonprofit running on **15 GitHub repos, 6 execution paradigms, 26 observable findings**, with **one bottleneck human (Helen) personally operating ~13 of 18 named bots** and **two parallel unfederated AI agent stacks** (Helen's Mac mini · Madina's Windows).
