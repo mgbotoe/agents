@@ -32,7 +32,7 @@ flowchart LR
     end
 
     subgraph OpenClaw["Two OpenClaw stacks · no bridge"]
-        HelenStack[Helen Mac mini · Syl Pattern Wit]
+        HelenStack[Helen Mac mini · Syl Pattern]
         MadinaStack[Madina Windows · Atlas Polaris]
     end
 
@@ -153,11 +153,11 @@ There is no "team-OS" today. Pass 3 is the design exercise that may create one.
 | `wdai-lumabot` | Railway | Luma guest sync, Slack Bolt | T2 |
 
 **Two OpenClaw stacks, no bridge:**
-- Helen's Mac mini: Syl + Pattern + Wit
+- Helen's Mac mini: Syl + Pattern (the previously-listed "Wit" is the platform's collect-recordings cron, not an OpenClaw agent — probe-verified 2026-05-12)
 - Madina's Windows: Atlas + Polaris (shared wiki + memory between them)
 - No peer messaging or shared state between the two machines
 
-**Two monthly autonomous code-modifying agents** inside the platform (`course-update-agent` 1st, `website-content-agent` 15th) — they open PRs gated by `CODEOWNERS`. This is the proven Q2 propose/approve pattern.
+**Two monthly autonomous code-modifying agents** inside the platform (`website-content-agent` 1st of month, `course-update-agent` 15th — probe-verified 2026-05-12) — they open PRs gated by `CODEOWNERS`. This is the proven Q2 propose/approve pattern.
 
 ---
 

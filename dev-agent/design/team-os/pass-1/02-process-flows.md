@@ -175,7 +175,8 @@ sequenceDiagram
  participant MC as Mailchimp
  participant SlackCh as #aifoundations1-basics
  participant GMeet as Google Meet
- participant Wit as Wit agent
+ participant RecCron as Platform cron · collect-recordings
+ participant UpCron as Platform cron · process-uploads
  participant Vimeo
  participant CourseRefl as Course Reflections bot
  participant DB as LessonProgress
@@ -193,9 +194,10 @@ sequenceDiagram
  opt Live session day · Mon and Thu
  Luma->>M: reminder
  M->>GMeet: join live session
- GMeet->>Wit: end-of-day pipeline · exact time unverified
- Wit->>Vimeo: upload recording
- Wit->>MC: campaign update — add recap link
+ GMeet->>RecCron: daily midnight UTC drain + sweep
+ RecCron->>UpCron: RecordingUpload row queued
+ UpCron->>Vimeo: upload recording (every 2hr)
+ UpCron->>MC: campaign update — add recap link
  end
  opt Member shares reflection
  M->>Portal: share lesson reflection
@@ -207,17 +209,17 @@ sequenceDiagram
  MC->>M: post-cohort survey
 ```
 
-**What this reveals:** a single cohort touches **Portal + Luma + Mailchimp + Slack + Google Meet + Wit (OpenClaw agent on Helen's Mac mini) + Vimeo + Course Reflections (platform Slack app) + LessonProgress DB**. Nine containers per member per cohort. **Constraint surfaced for Pass 3:** any federation design must not insert into these — they're all member-facing and working today.
+**What this reveals:** a single cohort touches **Portal + Luma + Mailchimp + Slack + Google Meet + platform's collect-recordings cron + process-uploads cron + Vimeo + Course Reflections (platform Slack app) + LessonProgress DB**. Nine containers per member per cohort, all platform-hosted on Vercel paradigm 4b. **Constraint surfaced for Pass 3:** any federation design must not insert into these — they're all member-facing and working today.
 
-**Hidden dependency (inferred):** Wit's Meet→Vimeo pipeline is sourced in `deep-dive-member-surface.md` and `bot-registry.md` (Wit agent collects recordings via `collect-recordings` cron). Wit's host (Mac mini vs elsewhere) and schedule (end-of-day, exact time) are **not directly verified** — the "5:30pm PT" timing previously asserted here came without a source. **If** Wit runs on Helen's machine and **if** that machine is offline at run time, recap emails the next day would go out without the recording link. **Verify Wit's host before treating as SPOF.**
+**Probe-verified 2026-05-12:** the Meet→Vimeo pipeline is **NOT** on Helen's Mac mini. It is `web/app/api/cron/collect-recordings/route.ts` (daily midnight UTC, three phases: Drain · Tracked · Sweep) + `web/app/api/cron/process-uploads/route.ts` (every 2hr odd hours). The "Wit" label that earlier Pass 1 drafts used for this pipeline was misattributed to an OpenClaw agent; the actual implementation is platform paradigm 4b. **No SPOF on Helen's hardware here** — the pipeline runs in Vercel even if Helen's Mac mini is off.
 
 ### course-update-agent monthly autonomous PR flow (Q2 reference)
 
-Every 1st of the month. The canonical "agent proposes, human approves" loop running in production today.
+**15th of the month** at 9am UTC (verified `cron: '0 9 15 * *'` in `course-content-agent.yml`). Companion `website-content-agent` runs on the **1st** at 9am UTC (`0 9 1 * *`). The canonical "agent proposes, human approves" loop running in production today.
 
 ```mermaid
 sequenceDiagram
- participant Cron as GH Actions cron · 1st 9am UTC
+ participant Cron as GH Actions cron · 15th 9am UTC
  participant Agent as course-update-agent
  participant DB as Supabase · AGENT_DATABASE_URL limited role
  participant Anth as Anthropic API
@@ -244,7 +246,7 @@ sequenceDiagram
  end
 ```
 
-**What this reveals:** the autonomous agent has its OWN database connection (`AGENT_DATABASE_URL` — verified as a separate GH Actions secret in the workflow files). The name implies a scoped role; **actual DB privileges (read-only vs read-write, table-level grants) are not directly verified** — flagged in audit gaps. **The CODEOWNERS gate is the approval primitive.** PR review is non-optional. Two of these run monthly (course-update-agent 1st, website-content-agent 15th). Same shape, different content domain.
+**What this reveals:** the autonomous agent has its OWN database connection (`AGENT_DATABASE_URL` — verified as a separate GH Actions secret in the workflow files). The name implies a scoped role; **actual DB privileges (read-only vs read-write, table-level grants) are not directly verified** — flagged in audit gaps. **The CODEOWNERS gate is the approval primitive.** PR review is non-optional. Two of these run monthly: **website-content-agent on the 1st, course-update-agent on the 15th** (probe-verified 2026-05-12 — earlier Pass 1 drafts had these reversed). Same shape, different content domain.
 
 ### Atlas → Polaris transcript pipeline (Q6 reference — working in Madina's stack)
 
@@ -327,11 +329,10 @@ sequenceDiagram
  WebhookHandler->>AdminBot: postChurnAlert · slack-admin.ts
  AdminBot->>AdminCh: post churn alert
  Helen->>AdminCh: triage / outreach
- Note over M: Some legacy members still flow through Wix-era path
- Note over M: WixSync parallel-run until cutover · paused til Aug
+ Note over M: Wix retired 2026-05 · WixSync code may remain as dead code
 ```
 
-**What this reveals:** the new Stripe-webhook → AdminBot flow is **paradigm 4c** (platform-hosted Slack app). The OLD path still routes ~700 unmigrated members through Wix → WixSync (paradigm 2, Railway). Both flows currently coexist. **The August Wix cutover will retire WixSync — but the Airtable → Supabase migration must complete first or the Lumabot guest-approval hazard fires.**
+**What this reveals:** the Stripe-webhook → AdminBot flow is **paradigm 4c** (platform-hosted Slack app). Wix is retired as of 2026-05 (user-confirmed) — earlier "WixSync parallel-run until cutover" claim is stale. WixSync code in `wdai-admin` is now dead path until cleanup. **The Airtable → Supabase migration still pending and remains the Lumabot guest-approval hazard.**
 
 ### Schema migration via Expand-Contract (Q5 reference pattern)
 

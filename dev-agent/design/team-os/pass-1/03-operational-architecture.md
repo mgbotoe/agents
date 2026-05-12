@@ -165,6 +165,6 @@ flowchart TB
 | **Anthropic API** | Cost concentration across 5+ services + rate limits + OpenClaw token drain (Madina's earlier Windows-CMD issue) | Cost + occasional throttle | T2 — copy gen + agents | No unified rotation, no shared rate limit plan |
 | **LinkedIn** | UGC API integration in wdai-marketing pipeline | Unknown | T3 — marketing channel | Auto-publish via marketing repo Phase 6 |
 | **Google Workspace** | Nonprofit plan; .org accounts can't record Google Meet (PR #502 workaround) | Plan limitation | T2 — recording capture | Workaround in place |
-| **Wix** | Deprecating; 700 members still flow through Wix-era path until August | Ongoing migration | T2 — onboarding path | WixSync running parallel-cutover with Stripe webhook |
+| **Wix** | **RETIRED 2026-05** per user confirmation. Earlier docs claimed parallel-running until August; that's stale. WixSync code may remain in `wdai-admin` until cleanup. | One-time migration (completed) | T3 — historical | Audit `wdai-admin` for residual WixSync code paths |
 
 ---

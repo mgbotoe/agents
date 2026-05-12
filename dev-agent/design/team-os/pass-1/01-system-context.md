@@ -143,7 +143,7 @@ graph LR
     subgraph Legacy["Legacy · draining"]
         direction TB
         Airtable[(Airtable)]
-        Wix[Wix · parallel]
+        Wix[Wix · retired 2026-05]
     end
 
     Helen --> WDAI
@@ -390,7 +390,6 @@ graph TB
     subgraph Helen_Stack[Helen · Mac mini]
         Syl
         Pattern
-        Wit
     end
 
     subgraph Madina_Stack[Madina · Windows]
@@ -434,10 +433,6 @@ graph TB
     Syl --> HelenSecrets
     Pattern --> HelenStripe
     Pattern --> HelenGH
-    Wit --> HelenCal
-    Wit --> WitGMeet[Google Meet]
-    WitGMeet --> WitVimeo[Vimeo recordings]
-
     Atlas --> MadinaGmail
     Atlas --> MadinaCal
     Atlas --> MadinaDrive
@@ -448,7 +443,7 @@ graph TB
     Polaris --> MadinaGranola
     Polaris --> MadinaCtx
 
-    Pattern --> Report[(weekly-wdai-report GH Pages)]
+    Pattern --> Report[(weekly-wdai-report.vercel.app · live cached 1d as of 2026-05-12)]
 
     Helen_Stack -. no bridge .- Madina_Stack
     HelenGranola -. duplicate transcripts on shared meetings .- MadinaGranola
@@ -459,12 +454,12 @@ graph TB
     classDef out fill:#fce7f3,stroke:#be185d
     classDef store fill:#f3f4f6,stroke:#6b7280
 
-    class Syl,Pattern,Wit helen
+    class Syl,Pattern helen
     class Atlas,Polaris madina
     class HelenGmail,HelenCal,HelenGranola,HelenMailchimp,HelenStripe,HelenLinear,HelenGH,HelenSecrets integ
     class MadinaGmail,MadinaCal,MadinaDrive,MadinaGranola,MadinaSlack,MadinaGH,MadinaCtx integ
     class MadinaWiki,MadinaMemory store
-    class Report,WitGMeet,WitVimeo out
+    class Report out
 ```
 
 **What this reveals:**
@@ -473,7 +468,9 @@ graph TB
 
 **Q6 — Granola is per-user by design.** Each Granola account captures only that user's audio. Meetings with both Helen and Madina present produce two transcripts that need dedup before either becomes canonical. Helen's Business plan ended 2026-04-07 (finding #25, exact post-Apr-7 status open — see Open Questions). The dedup problem is asserted from the per-user account model; it is **not yet observed in code** because no pipeline ingests both accounts today.
 
-**Output writes that DO escape each stack.** Pattern publishes a weekly report to GitHub Pages (`weekly-wdai-report`). Wit pulls Google Meet recordings into Vimeo. These are one-way emissions, not federation — Helen's stack writes out, no one writes back in. Madina's stack has no equivalent outward write into a WDAI-shared space today.
+**Output writes that DO escape each stack.** Pattern publishes a weekly report (live at `weekly-wdai-report.vercel.app`). The Meet→Vimeo pipeline is **NOT** in Helen's OpenClaw stack — verified by probe sweep 2026-05-12, it runs as the platform Vercel cron `/api/cron/collect-recordings` (daily midnight UTC) + companion `/api/cron/process-uploads` (every 2hr). Earlier Pass 1 drafts attributed the pipeline to a "Wit" Helen-OpenClaw agent; the code lives in `web/app/api/cron/collect-recordings/route.ts`. The "Wit" name may persist as Helen's nickname for the cron pipeline, but it's not an OpenClaw agent.
+
+So Helen's OpenClaw stack today is **Syl + Pattern** (verified). Pattern is the only one with a verified outward emission (the public report URL). Madina's stack has no equivalent outward write into a WDAI-shared space today.
 
 **Integration surface (the new richer view above):** each agent isn't isolated to its wiki — it reaches across Gmail, Calendar, Drive, Granola, Slack, GitHub, plus a credential vault (password manager — exact tool unverified) and observability tools (context-mode for Polaris). The "no bridge" finding stands, but the bridge surface is broader than just wiki ↔ wiki: Pass 3 could conceivably federate at the Gmail layer (cross-account read), the Calendar layer (shared deduped agenda), or the Granola layer (cross-attendee dedup), not only at the wiki layer.
 
@@ -869,21 +866,21 @@ Four different decision-discipline conventions. No shared standard.
 
 ---
 
-## Findings table (26 observations, each tagged with the Pass-3 question it serves)
+## Findings table (32 observations, each tagged with the Pass-3 question it serves)
 
 | # | Observation | Source | Q# |
 |---|-------------|--------|----|
 | 1 | 6 execution paradigms in production; paradigm 4 has 3 sub-flavors (4a GH Actions, 4b Vercel Cron, 4c platform-hosted Slack apps) | Audit | Q1 |
 | 2 | WDAI Newswire and AdminBot live as code inside `wdai-foundation-platform/web/lib/slack*.ts` — not external Slack apps | Direct inspection | Q7 |
 | 3 | AdminBot is migrating from Railway (`wdai-admin`) to Vercel (platform). Verbatim header: "This replaces the Railway internal webhook relay." | Code comment | Q1, Q5 |
-| 4 | **12 unique Vercel cron functions** (14 schedule rules; `sync-guests` has 3 separate schedules pointing at the same path) + 5 GH Actions crons + 1+ Slack Workflow Builder = total 18+ scheduled automations | vercel.json read | Q1 |
+| 4 | **12 unique Vercel cron functions** (14 schedule rules; `sync-guests` has 3 separate schedules pointing at the same path) + **4 GH Actions crons** (course-content-agent 15th, website-content-agent 1st, marketing calendar-sync PAUSED, wdai-admin weekly-stats) + 1+ Slack Workflow Builder = **total 17 scheduled automations** | vercel.json read + 2026-05-12 probe sweep | Q1 |
 | 5 | `AuditLog` Prisma table is where every cron run, member action, and Slack click lands | Schema + `daily-digest` cron code | Q3 |
 | 6 | `daily-digest` cron at 8am UTC self-monitors all other crons; posts health summary to `#devops-website-alerts` | Platform code | Q3 |
 | 7 | Platform pushes events INTO Gumloop via `GUMLOOP_CRON_WEBHOOK_URL` + `GUMLOOP_WEBHOOK_URL`. Bidirectional. | `cron-notify.ts` | Q7 |
 | 8 | Two parallel mature OpenClaw stacks (Helen Mac mini, Madina Windows) have no communication channel | Bot registry + Slack audit | Q1, Q6 |
 | 9 | `wdai-marketing` runs a pillar-level federation pattern (vault/, skills/, MEMORY.md, GH Action posting Approve/Edit) | Deep dive | Q2 |
 | 10 | `wdai-marketing`'s daily cron has been PAUSED since 2026-04-21 | Workflow YAML | Q2 (open) |
-| 11 | `wdai-foundation-platform` has 2 monthly autonomous code-modifying agents (course-update-agent 1st, website-content-agent 15th) opening PRs for review | Workflow inspection | Q2 |
+| 11 | `wdai-foundation-platform` has 2 monthly autonomous code-modifying agents (**website-content-agent 1st of month, course-update-agent 15th of month** — verified by workflow `cron` lines 2026-05-12) opening PRs for review | `.github/workflows/{course-content,website-content}-agent.yml` | Q2 |
 | 12 | Pattern is the only OpenClaw agent that writes into shared team Slack space today (`#team-core` weekly report + GH Pages publish) | Bot registry | Q1 |
 | 13 | Zero Cowork-scheduled-task automations in WDAI production | Cowork audit | Q1 |
 | 14 | All Gumloop flows post under ONE Slack user_id (`U089ZGUGCUR`). Per-flow identity only exists inside Gumloop UI. | Bot registry | Q7 |
@@ -898,8 +895,13 @@ Four different decision-discipline conventions. No shared standard.
 | 23 | `Announcement` entity is the no-deploy banner system (built by Madina Feb 13) | Schema inspection | — (orphan: member-feature, no Pass-3 hook) |
 | 24 | 17+ geographic chapters and 5+ affinity groups exist as member-led Slack channels. Some have named leads. | Member surface deep dive | — (orphan: member-led infra, deliberately out of team-OS scope) |
 | 25 | Granola transcripts are per-user (Helen ≠ Madina). Helen's Business plan ended 2026-04-07. | Slack audit + wiki | Q6 |
-| 26 | **Helen personally operates ~13 of 18 named bots** (Syl/Pattern/Wit · Newswire/AdminBot/CourseRefl as code · Gumloop fleet config) plus the pillar-owned Marketing Content Calendar she contributes to. Single-owner concentration is structural — federation must address bus-factor. | Bot registry + ownership audit | Q1, Q7 |
+| 26 | **Helen personally operates ~12 of 17 named bots** (Syl/Pattern as OpenClaw on Mac mini · Newswire/AdminBot/CourseRefl as code · Gumloop fleet config · collect-recordings + process-uploads as platform crons she authored) plus the pillar-owned Marketing Content Calendar she contributes to. Single-owner concentration is structural — federation must address bus-factor. **Count corrected 2026-05-12** — Pass 1 v5 listed "Wit" as a third OpenClaw agent but probe sweep showed the Meet→Vimeo pipeline lives in the platform, not OpenClaw. | Bot registry + ownership audit + probe sweep 2026-05-12 | Q1, Q7 |
 | 27 | **Undocumented `#get-help` Q&A capture bot** — auto-captures member questions + community-sourced answers into a "Pending Review — New Q&A Candidates" section in Helen's `Get-Help WDAI Knowledge Base` Google Doc. 4 weekly batches visible (2026-04-22 through 2026-05-08). Not in bot-registry; paradigm unknown (Gumloop suspected). | Drive read of Get-Help KB | Q3, Q4 |
+| 28 | **Platform is a Turborepo** with 6 packages (`course-update-agent`, `website-agent`, `database`, `lib`, `test-utils`, `ui`) + the `web/` Next.js app. `apps/web/` is a 2-file stub (abandoned migration). No root `turbo.json` — wiring incomplete. Pass 1 v5 only audited `web/`; the package layer was missed. | Probe sweep 2026-05-12 (`ls packages/`) | Q1, Q5 |
+| 29 | **Wit Meet→Vimeo pipeline runs in the platform**, not on Helen's Mac mini. Implemented as Vercel cron `/api/cron/collect-recordings` (daily midnight UTC) + companion `/api/cron/process-uploads` (every 2hr). Uses Google Meet API + Drive Service Account + `RecordingUpload` Prisma table + `postRecordingApprovalRequest` to admin Slack. Pass 1 v5's L3b listing "Wit" as a Helen-OpenClaw agent is contradicted by `web/app/api/cron/collect-recordings/route.ts`. | Probe sweep 2026-05-12 (route source read) | Q1 |
+| 30 | **New `intro-matcher` API** (Madina, May 10 commits) — `/api/intro/suggest-matches` replaces stale Gumloop+Airtable matcher with live DB-backed logic. Env: `INTRO_MATCHER_ENABLED`, `MATCHER_API_SECRET`. Pass 1 v5 missed this entirely. | git log + `.env.example` 2026-05-12 | Q5 |
+| 31 | **`MAILCHIMP_ENABLED` feature flag** in platform env — Mailchimp integration can be toggled off (graceful-degradation pattern). Implies Mailchimp is not assumed-always-available; Pass 3 should treat the toggle as the existing primitive for marketing-system outages. | `wdai-foundation-platform/web/.env.example` | Q3 |
+| 32 | **Wix is fully retired (2026-05).** Zero Wix env keys in any active `.env.example`. Wix code lives only in dormant `wdai-admin` (`src/services/wixsync.ts` + 5 related files). `wdai-admin` has zero commits in 30 days. WixSync code path is dead. | Probe sweep + user confirmation 2026-05-12 | Q5 (resolved) |
 
 Three orphans (#21, #23, #24) are kept for completeness — they belong to the member-facing layer that Pass 3 deliberately does **not** try to federate.
 
@@ -914,7 +916,7 @@ Three orphans (#21, #23, #24) are kept for completeness — they belong to the m
 5. Granola post-Apr 7 — is Helen on a paying plan still, or downgraded? Affects Q6's feasibility.
 6. Why no shared decision-discipline convention across the four pillar repos that have CLAUDE.md?
 7. `wdai-admin` post-migration — what work remains on Railway once the Vercel absorption finishes?
-8. Wix migration timeline — affects WixSync, AdminBot's "no Wix purchase" warning, Mailchimp welcome series, Lumabot's Airtable lookup.
+8. **Wix retired 2026-05 (user-confirmed)** — closed. Remaining cleanup: WixSync code in `wdai-admin` (dead path), AdminBot's "no Wix purchase" warning, Mailchimp welcome series. Lumabot's Airtable lookup is independent and still hazard-active.
 9. **RESOLVED (was data conflict):** Vercel cron count = **12 unique functions / 14 schedule rules**. `sync-guests` has 3 schedules (13:00 + 19:00 + 00:00 UTC) all pointing at one route handler. Other 11 functions have one schedule each = 11 + 3 = 14 schedule rules; 12 distinct route handlers. Both numbers are correct in different contexts.
 
 ---

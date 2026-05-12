@@ -18,6 +18,7 @@
 | 5 | `05-people-and-process.md` | When you need per-person current tool stack or stakeholder expectations. |
 | 6 | `06-system-summary.md` | One-page high-level capture + single system flow diagram. Skim before deep-dive. |
 | 7 | `07-drive-context.md` | Deltas surfaced by reading WDAI's Google Drive (2026-05-12). 3Y vision, Helen's stated-vs-actual transition, cohort-registration migration, AI Intermediate launch, support bot. |
+| 8 | `08-probe-sweep.md` | Live-system probe sweep (2026-05-12). DNS + HTTP HEAD + repo activity + cron inventory + integration footprint. Caught 6 Pass-1 errors including Wix-not-retired, course/website agent dates reversed, Wit-not-on-Mac-mini. |
 
 If you only have time for one file, read `01-system-context.md`.
 
