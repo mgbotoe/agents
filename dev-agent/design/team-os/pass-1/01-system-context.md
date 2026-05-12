@@ -412,7 +412,7 @@ graph TB
         HelenStripe[Stripe]
         HelenLinear[Linear MCP]
         HelenGH[GitHub · scoped PATs]
-        HelenSecrets[credential vault · password manager]
+        HelenSecrets[1Password · manual-paste for .env.local sharing]
     end
 
     subgraph MadinaIntegrations[Madina's integration surface]
@@ -546,7 +546,7 @@ flowchart TB
 
     Agent[Agent tier · provisioned BY core members]
 
-    Vault[(Infra credential vault · password manager · Vercel env · Railway env · GH Actions secrets)]
+    Vault[(Infra credential vault · 1Password · Vercel env · Railway env · GH Actions secrets)]
 
     Public --> Tiers
     Core --> Agent
@@ -599,7 +599,7 @@ flowchart LR
     end
 
     subgraph Storage[Where secrets live]
-        OnePassword[Password manager · tool unverified]
+        OnePassword[1Password · manual-paste for .env.local]
         VercelEnv[Vercel env vars]
         RailwayEnv[Railway env vars]
         GHSecrets[GitHub Actions secrets]

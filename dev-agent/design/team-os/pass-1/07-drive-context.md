@@ -132,7 +132,73 @@ Verified via `Get-Help WDAI Knowledge Base` (Helen-owned, modified May 8):
 
 ---
 
-## 8. The Drive layer Pass 1 underweighted
+## 8. The tiered-access Drive architecture already exists (Brigitte SOP, Mar 12)
+
+This is the most material finding for Q7. Madina's verbatim "Helen space → middle ground → open access" proposal **is already implemented at the Drive layer.** From `Intro to our shared Drives` (Brigitte-authored SOP in `SOPs/` folder, dated 2026-03-12):
+
+**Existing structure:**
+
+| Tier | Drive | Who has access | What lives there |
+|------|-------|----------------|------------------|
+| **Helen / leadership** | `Women Defining AI Org` shared drive | Core team only | Board Materials · Grant Applications · Core team folder · Helen's in-flight work |
+| **Open access / volunteers** | `Volunteer Resources` shared drive | All `@womendefiningai.org` volunteers (auto-granted on email provisioning) | Guidance · resources · marketing materials · templates · per-pillar folders (Marketing, AI Foundations, etc.) |
+
+**GWorkspace user groups (Brigitte set up):**
+- `coreteam@womendefiningai.org` — email + share target for core team
+- `volunteers@womendefiningai.org` — email + share target for all volunteers
+
+**Cross-drive pattern:** shortcuts (not copies) from volunteer drive into leadership drive resources, with **explicit per-folder/document permission grants**. The Logo + Brand Assets folder is the documented example — lives in leadership drive, shortcut in volunteer drive, Viewer permission at folder level.
+
+**SOP convention:** "It's signed and dated — please do that for any SOPs you create. We don't need to be rigid, but we do need to know who to ask when we have questions." → light-weight decision-author tracking at the SOP level.
+
+**Why this matters for Pass 3:**
+- Madina's tiered-access thesis is NOT a greenfield design ask — it's an extension of an existing Drive primitive across the GitHub + Slack + agent layers
+- The "middle ground" Madina mentions corresponds to **the Core team folder inside the leadership drive** (core-team-only, but distinct from Helen-only working stuff)
+- A federated team-OS could plausibly use the **GWorkspace user-group ID** as the identity primitive — every contributor already has a `@wdai.org` email tied to a group; the same identity can scope GitHub access, Slack channel membership, and agent provisioning
+- Pass 1's prior framing ("no shared tiered access exists") was wrong at the Drive layer; correct at the GitHub layer (CODEOWNERS only in platform); correct at the Slack layer (channels are member-led, not tiered)
+
+---
+
+## 9. The `/commit` skill is the platform-side Q4 volunteer onboarding primitive
+
+From `New volunteer / Github and systems onboarding` (Apr 2026, v0.1 draft — `Volunteer Onboarding` folder):
+
+**The codified contributor flow** for `wdai-foundation-platform`:
+
+1. **One-time setup:** Node.js LTS · Git · Claude Code (terminal) · IDE choice (VSCode / Cursor / Antigravity)
+2. **Repo clone + `npm install`** in `/web/` subfolder (the doc explicitly flags the nested-folder gotcha)
+3. **`.env.local` from 1Password** — shared via 1Password by Helen or Madina, manual-paste (the doc flags a quirk: 1Password mangles section-header formatting, contributor must re-add `#` to comment lines)
+4. **Vercel team access** — "View Only" member, email must match GitHub email
+5. **Test accounts** — `member@test.com` / `leader@test.com` (passwords in-doc; test-tier creds, not prod)
+6. **Make changes** → run `/commit` slash skill
+7. **PR review** — Helen or Madina reviews, Vercel preview link auto-attached, iterate on same branch/PR
+
+**The `/commit` skill itself** lives in `.claude/skills/commit-workflow` in the repo (already audited in Pass 1). It automates:
+- Lint
+- Typecheck
+- Stage changes
+- Generate commit message
+- Push to GitHub
+- Open PR
+- Auto-loop on test failures until passing
+
+**This is the parallel Q4 primitive to `mailchimp-cc`'s tiered model:**
+
+| Repo | Q4 onboarding primitive | Risk tier |
+|------|-------------------------|-----------|
+| `mailchimp-cc` | Runbooks → `.claude/skills/` → source code (per `CONTRIBUTING.md`) | Tiered by file path |
+| `wdai-foundation-platform` | `/commit` skill abstracts ALL git operations; volunteers never run individual git commands; checkout flow is explicitly out-of-bounds | Tiered by capability (skill-level only) |
+
+**Pass 1 corrections:**
+- `01-system-context.md` Q4 framing should add platform's `/commit` skill alongside mailchimp-cc — there are TWO working references for Pass 3, not one
+- The "platform contributor doc" (v0.1, April 2026) is itself a **federation primitive being built right now** — Helen and Madina are codifying the volunteer-onboarding contract while Pass 1 is being written
+- **1Password is verified** as the password-manager-of-record (downgrade to "tool unverified" in earlier audit was over-cautious — correcting in this commit). 1Password is used manually-pasted, NOT via CLI/secret-injection integration
+
+**What this surfaces about Helen's behavior:** Helen authored `wdai-foundation-platform/CLAUDE.md` (36KB), the `/commit` skill, AND this v0.1 onboarding doc. The volunteer-Github-onboarding pipeline is HER deliberate Q4 design — Pass 3 inherits a working reference, not a greenfield ask.
+
+---
+
+## 11. The Drive layer Pass 1 underweighted
 
 Pass 1 was built from Slack + repos. Drive carries a parallel knowledge layer that should be treated as a first-class container in Pass 3's federation design:
 
