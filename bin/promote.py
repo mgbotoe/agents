@@ -18,7 +18,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import sys
 import time
@@ -28,8 +27,38 @@ from pathlib import Path
 from anthropic import Anthropic
 
 MODEL = "claude-sonnet-4-6"
-MAX_TOKENS = 4096
+MAX_TOKENS = 8192  # bumped from 4096 — prior runs truncated mid-string on big backlogs
 DEFAULT_DAYS = 3
+
+# Tool definition forces Claude to call this function with structured input —
+# eliminates the JSON-parse failure mode that killed promote runs May 8-10.
+PROMOTE_TOOL = {
+    "name": "submit_promote",
+    "description": "Submit memory promotion updates after analyzing recent daily logs.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "session_log_entry": {
+                "type": ["string", "null"],
+                "description": "One-liner to append to ## Session Log in identity/memory.md, format '- [YYYY-MM-DD] <what>'. Null if no signal.",
+            },
+            "hot_memory_replacement": {
+                "type": ["string", "null"],
+                "description": "Full replacement text for identity/memory.md if curation requires it. Null = no change.",
+            },
+            "cold_updates": {
+                "type": "object",
+                "description": "Map of memory/filename.md → full replacement content (or null to skip).",
+                "additionalProperties": {"type": ["string", "null"]},
+            },
+            "summary": {
+                "type": "string",
+                "description": "Human-readable 2-4 line report of what was promoted/collapsed/skipped.",
+            },
+        },
+        "required": ["session_log_entry", "hot_memory_replacement", "cold_updates", "summary"],
+    },
+}
 
 AGENT_DIRS = {
     "atlas": "chief-of-staff",
@@ -87,22 +116,13 @@ Your job: read recent daily logs and current memory, produce structured updates.
 4. Hot memory must stay under 2500 tokens. If over, suggest archive moves.
 5. Don't duplicate cold-memory entries — consolidate with existing.
 
-# Output format
-Respond with ONLY valid JSON, no prose. Schema:
-{{
-  "session_log_entry": "string or null — one-liner to append to ## Session Log in identity/memory.md, format '- [YYYY-MM-DD] <what>'. Null if no signal.",
-  "hot_memory_replacement": "string or null — full replacement text for identity/memory.md if curation requires it (collapsing duplicates, archiving). Null = no change.",
-  "cold_updates": {{"memory/filename.md": "full replacement content or null"}},
-  "summary": "string — human-readable 2-4 line report of what was promoted/collapsed/skipped"
-}}
-
 # Current memory
 {memory_dump}
 
 # Recent daily logs ({days} days)
 {logs}
 
-Return JSON only.
+Submit your updates by calling the submit_promote tool.
 """
 
 
@@ -122,13 +142,20 @@ def call_claude(prompt: str) -> dict:
         model=MODEL,
         max_tokens=MAX_TOKENS,
         messages=[{"role": "user", "content": prompt}],
+        tools=[PROMOTE_TOOL],
+        tool_choice={"type": "tool", "name": "submit_promote"},
     )
-    text = "".join(block.text for block in resp.content if block.type == "text").strip()
-    if text.startswith("```"):
-        text = text.split("\n", 1)[1].rsplit("```", 1)[0].strip()
-        if text.startswith("json\n"):
-            text = text[5:]
-    return json.loads(text)
+    # Tool-use response: SDK builds structured input incrementally and validates schema.
+    # If max_tokens hit during tool_use, stop_reason='max_tokens' and input may be partial.
+    if resp.stop_reason == "max_tokens":
+        raise RuntimeError(
+            f"max_tokens ({MAX_TOKENS}) hit during tool_use — output truncated. "
+            "Bump MAX_TOKENS or reduce input size."
+        )
+    for block in resp.content:
+        if block.type == "tool_use" and block.name == "submit_promote":
+            return block.input
+    raise RuntimeError(f"no submit_promote tool_use in response (stop_reason={resp.stop_reason})")
 
 
 def apply_updates(agent_root: Path, result: dict, dry_run: bool) -> list[str]:
@@ -196,8 +223,8 @@ def main() -> int:
     print(f"[{args.agent}] calling Claude (model={MODEL}, prompt={len(prompt)} chars)")
     try:
         result = call_claude(prompt)
-    except json.JSONDecodeError as e:
-        print(f"ERROR: model returned non-JSON: {e}", file=sys.stderr)
+    except RuntimeError as e:
+        print(f"ERROR: tool-use call failed: {e}", file=sys.stderr)
         return 3
 
     actions = apply_updates(agent_root, result, args.dry_run)
