@@ -28,6 +28,17 @@
           }
         ]
       }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Context is about to compact. Run /distill-session now to save session state to daily-logs/YYYY-MM-DD.md before compaction clears in-flight work. Skip if already distilled this session.'"
+          }
+        ]
+      }
     ]
   }
 }
