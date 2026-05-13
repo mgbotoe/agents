@@ -86,3 +86,12 @@ Key technical decisions with reasoning. Includes ADRs and architecture choices.
 - **Trade-offs:** Skill self-exit is detectable only by absence-of-entry in daily logs — no observability on how many ghosts were suppressed. Acceptable; the scheduler task log already timestamps every invocation. If data on suppression count matters later, emit a counter to `.claude/runtime/ghost-count.txt`.
 - **Blocked on:** Edit to `.claude/skills/distill-session/SKILL.md` requires Dina's explicit approval (write denied twice on 2026-04-20). Next real session, ask before re-proposing.
 - **Follow-ups when landed:** Drop the Active Work line from `identity/memory.md`; mark `wiki/projects/agent-ecosystem.md` P2 item done; watch next 24h of `scheduled-tasks.log` to confirm no-op distills emit nothing.
+
+<!-- added 2026-05-11 -->
+## ADR-007: intro-matcher — Gumloop owns LLM, WDAI is data-only (PR #603)
+- **Date:** 2026-05-11
+- **Decision:** `/api/intro/suggest-matches` endpoint returns raw DB candidates; Gumloop retains the trigger, LLM matching brain, Anthropic billing, and Slack posting. WDAI's role is "smarter Airtable view."
+- **Context:** Iterated through 4 architectures: v1 inline portal hook (coverage regression) → v2 in-house cron (Vercel cron preview-only blocker) → v3 WDAI calls Anthropic directly → Path B endpoint (Gumloop owns LLM). Each pivot surfaced a concrete blocker.
+- **Rationale:** Third-party dep retained, but matching brain + Anthropic billing stay where they already worked. Keeps WDAI API surface narrow. Dropped `@anthropic-ai/sdk`, Sentry F4 opt-out, `findMatches`/`runIntroMatcher` from WDAI entirely.
+- **CAS columns kept:** `slackMatchPostedAt` + `matchingOptOut` retained despite YAGNI pressure — follow-up PRs (opt-out UI, backfill cron) will use them.
+- **Operator tasks pending:** Vercel env vars (`MATCHER_API_SECRET`, `INTRO_MATCHER_ENABLED=true`) + Gumloop duplicate flow wiring. 3 secrets exposed in chat during testing — rotate after Gumloop cutover.
