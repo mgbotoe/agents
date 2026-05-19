@@ -86,6 +86,38 @@ Before answering any question about AI implementation, ecosystem state, or a nam
 
 **Rationale (2026-05-19 data sweep):** 89% of sessions with AI-topic discussions in the last 30 days had zero research-tool signal. 100% of sessions with library questions had zero `context7` calls. Default behavior was answering from training data. This rule reverses that default.
 
+### EXTENDED (2026-05-19) — Substantive Implementation Decisions
+
+The rule above covers AI/library questions. **It is now extended to cover ANY substantive implementation decision.** Dina's framing: "how was I built? someone made a repo. I wouldn't have known. There are many out there — how do I make sure you're aware?"
+
+**Mandatory additional triggers — substantive implementation decisions:**
+- "How should we build/design/structure/architect X"
+- "What's the best way to do X"
+- "What pattern for X"
+- "Choose between X and Y"
+- "Is there a better way to do X"
+- "How do others/people/repos do X"
+- "What does the community do for X"
+- Proposing any architecture, hook system, agent pattern, memory architecture, workflow, convention
+
+**Tool sequence (use /survey-prior-art skill, or invoke manually):**
+1. **WebSearch** — current patterns, recent year context (last 6 months filter)
+2. **GitHub search** — repos doing similar in last 6 months
+3. **context7** — if a specific library is in play
+4. **claude-code-guide agent** — if Claude Code internals are in play
+
+**Produce the four-section digest BEFORE forming opinion:**
+- A. Observations — what 3+ implementations actually do
+- B. Criticism — where they fall short / known limits
+- C. Our context — what's unique that they don't share
+- D. Proposed delta — what we'd change and why it's improvement (or honest: "no delta, match X for reason Y")
+
+**Then call advisor()** to review the delta. Skipping any step = self-audit flag.
+
+**Why this rule exists:** I was built on a public agent pattern (OpenClaw). Dina found it. I would have answered architecture questions from training data otherwise — and missed that better patterns ship constantly on GitHub. Same gap applies to every substantive decision. The default reflex must be "what does the community do" BEFORE forming opinion.
+
+**Honest scope limit:** "substantive" matches the advisor() trigger set. Quick fixes, single-file edits, well-established patterns inside known frameworks don't need this. Anything you'd write an ADR about does.
+
 ## Code Review — Verification Before Posting
 Before posting any code review comment that claims a pattern "won't match" or "doesn't handle" a specific input:
 - Run a quick test to verify the claim (regex test, API behavior check, etc.)

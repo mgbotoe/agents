@@ -126,6 +126,33 @@ def detect_patterns():
                           f"(possible muddied scope)",
             })
 
+        # Pattern 4: implementation shipped + external pattern named, no delta justification
+        # Detects: day mentions a public repo / framework / pattern AND ships implementation,
+        # but daily log doesn't contain "delta:", "improvement:", "we changed:", or
+        # "match prior art" (honest acknowledgement) markers.
+        external_pattern_mentioned = bool(re.search(
+            r"\b(openclaw|cline|cursor|aider|langchain|crewai|autogen|"
+            r"github\.com/|public\s+(repo|pattern|framework)|prior\s+art)\b",
+            log_text, re.IGNORECASE,
+        ))
+        ships_implementation = any(
+            f.endswith(".py") or f.endswith(".ts") or f.endswith(".tsx")
+            or "scripts/" in f or "skills/" in f
+            for f in all_files
+        )
+        delta_acknowledged = bool(re.search(
+            r"\b(delta:|improvement\s+over|we\s+changed|match(ing)?\s+prior\s+art|"
+            r"different\s+from|extends?\s+\w+\s+by|no\s+delta)\b",
+            log_text, re.IGNORECASE,
+        ))
+        if external_pattern_mentioned and ships_implementation and not delta_acknowledged:
+            flags.append({
+                "date": day,
+                "type": "DELTA UNNAMED",
+                "detail": "shipped implementation citing external pattern, "
+                          "but no delta/improvement justification in daily log",
+            })
+
     return flags
 
 

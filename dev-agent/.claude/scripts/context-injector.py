@@ -57,6 +57,23 @@ PROPOSAL_TRIGGERS = re.compile(
     re.IGNORECASE,
 )
 
+# Triggers for substantive implementation/pattern decisions — surface prior-art reminder.
+# Broader than PROPOSAL_TRIGGERS: any "how should we build/structure/design X" question.
+SUBSTANTIVE_DECISION_TRIGGERS = re.compile(
+    r"\b(how\s+(should|do|can)\s+(we|i|you)\s+(build|design|structure|implement|architect|approach|do|handle)|"
+    r"what'?s?\s+the\s+best\s+way\s+to|"
+    r"what\s+pattern\s+for|"
+    r"should\s+(we|i)\s+(use|build|do|adopt)|"
+    r"choose\s+between|"
+    r"thinking\s+about\s+\w+ing|"
+    r"considering\s+\w+ing|"
+    r"is\s+there\s+a\s+better\s+way|"
+    r"how\s+do\s+(others|people|repos|projects)\s+do|"
+    r"what\s+does\s+the\s+(community|industry)\s+do|"
+    r"\bprior\s+art\b)",
+    re.IGNORECASE,
+)
+
 # Feedback files most relevant to "rules vs mechanisms" debates
 RULE_EFFECTIVENESS_KEYWORDS = re.compile(
     r"\b(rule|enforce|discipline|hook|mechanism|advisor|verify|"
@@ -138,14 +155,17 @@ def truncate(text: str, max_lines: int = 60) -> str:
 
 
 def build_injection(session_id: str, prompt: str, state: dict) -> str:
-    entry = state.get(session_id) or {"injected": []}
+    entry = state.get(session_id) or {"injected": [], "prior_art_marker_shown": False}
     already = set(entry["injected"])
+    prior_art_shown = entry.get("prior_art_marker_shown", False)
 
     topics = list_wiki_topics()
     wiki_matches = [p for p in find_wiki_matches(prompt, topics) if str(p) not in already]
     feedback_matches = [p for p in find_relevant_feedback(prompt) if str(p) not in already]
+    needs_prior_art = (not prior_art_shown
+                       and SUBSTANTIVE_DECISION_TRIGGERS.search(prompt) is not None)
 
-    if not wiki_matches and not feedback_matches:
+    if not wiki_matches and not feedback_matches and not needs_prior_art:
         # Still update last_seen so prune works
         entry["last_seen"] = time.time()
         state[session_id] = entry
@@ -171,6 +191,19 @@ def build_injection(session_id: str, prompt: str, state: dict) -> str:
             except Exception:
                 continue
         parts.append("\n--- END PAST LEARNINGS ---")
+
+    if needs_prior_art:
+        parts.append(
+            "\n>>> [PRIOR ART CHECK PENDING] <<<\n"
+            "Dina asked a substantive implementation question. Before forming an opinion:\n"
+            "  1. Invoke /survey-prior-art skill OR run WebSearch + GitHub search for current patterns.\n"
+            "  2. Produce the four-section digest: observations, criticism, our context, proposed delta.\n"
+            "  3. Bring evidence and explicit delta justification BEFORE proposing.\n"
+            "  4. If no delta — say so. Matching prior art is acceptable when honest.\n"
+            "Per .claude/rules/personal.md research rule. Skipping this is a self-audit flag.\n"
+            ">>> END MARKER <<<\n"
+        )
+        entry["prior_art_marker_shown"] = True
 
     entry["injected"] = list(already)
     entry["last_seen"] = time.time()
