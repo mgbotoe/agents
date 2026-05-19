@@ -15,11 +15,15 @@ workspace root. Per-repo git command timeout: 3s. Total time budget: ~15s.
 Always exits 0. Hook failure must never block session.
 """
 
+import json
 import os
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
+
+LAST_SCAN_FILE = Path(__file__).resolve().parent.parent / "state" / "last-workspace-scan.json"
 
 WORKSPACES = [
     (r"C:\Workspace\Personal Projects", "Personal Projects"),
@@ -107,8 +111,47 @@ def get_state(repo: Path) -> dict:
             "dirty": dirty + ahead_behind}
 
 
+def load_last_scan() -> set:
+    if not LAST_SCAN_FILE.exists():
+        return set()
+    try:
+        d = json.loads(LAST_SCAN_FILE.read_text(encoding="utf-8"))
+        return set(d.get("repos", []))
+    except Exception:
+        return set()
+
+
+def save_scan(repos: set) -> None:
+    LAST_SCAN_FILE.parent.mkdir(parents=True, exist_ok=True)
+    LAST_SCAN_FILE.write_text(
+        json.dumps({"repos": sorted(repos), "scanned_at": time.time()}, indent=2),
+        encoding="utf-8",
+    )
+
+
 def main() -> int:
+    all_repos_this_run = set()
     any_output = False
+
+    # Pre-pass: collect ALL repos across workspaces for new-repo detection
+    for root_str, _ in WORKSPACES:
+        root = Path(root_str)
+        if not root.exists():
+            continue
+        for r in find_repos(root):
+            if r.is_relative_to(root):
+                all_repos_this_run.add(str(r.resolve()))
+
+    last_repos = load_last_scan()
+    new_repos = all_repos_this_run - last_repos
+    if new_repos and last_repos:  # don't flag on first run (would dump everything)
+        print("[workspace-scan] NEW REPOS DETECTED since last session:")
+        for r in sorted(new_repos):
+            print(f"  + {r}")
+        print("  Action: read each repo's CLAUDE.md, add memory/projects.md entry.")
+        print("")
+    save_scan(all_repos_this_run)
+
     for root_str, label in WORKSPACES:
         root = Path(root_str)
         if not root.exists():

@@ -23,6 +23,21 @@
           {
             "type": "command",
             "command": "python .claude/scripts/workspace-scan.py 2>&1 || true"
+          },
+          {
+            "type": "command",
+            "command": "python .claude/scripts/scan-self-audit.py 2>&1 || true"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/scripts/context-injector.py"
           }
         ]
       }

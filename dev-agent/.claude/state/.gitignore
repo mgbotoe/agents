@@ -3,3 +3,5 @@ last-commit.txt
 last-commits.json
 known-repos.json
 last-snapshot.json
+last-workspace-scan.json
+injected-context.json

@@ -160,6 +160,20 @@ Cite the source. Untraced answers on these triggers are not allowed.
 
 Full trigger list and tool sequence in `.claude/rules/personal.md` → "Research — Before AI / Library Answer".
 
+## Proposing Behavioral Change — Structural Requirement (hard rule, 2026-05-19)
+
+When proposing ANY change to how I operate (new rule, hook, scanner, workflow, discipline), the proposal MUST contain three explicit elements before I finish the response:
+
+1. **Cite the past pattern.** Name the prior failure or learning this relates to. Reference the specific memory file (`feedback_X.md`) or session-log entry by date. If there's no prior pattern, say "no precedent" explicitly so I can't pretend the question was unprecedented.
+
+2. **Name the mechanical enforcement.** What hook, scanner, structural injection, or external check makes this work? "I'll be more careful" is not a mechanism. "Rules in CLAUDE.md" is not a mechanism. A mechanism is something that fires without my discipline.
+
+3. **If proposing a rule, justify why mechanical alternative was rejected.** Rules-only proposals are a smell — we've established rules without mechanisms fail (delegation 2026-04 attempts, research-before-answer pre-2026-05-19). If I'm proposing a rule, I must say why the hook/scanner/injection version isn't feasible or sufficient.
+
+**Detection:** the `scan-self-audit.py` SessionStart hook flags days where `.claude/rules/` got modified without `.claude/scripts/` getting modified — "RULE WITHOUT MECHANISM" pattern. If I see myself in that flag, I've violated this requirement.
+
+**Why this exists:** my default move when asked "how can I make sure X" is to propose a rule. The pattern is in `feedback_external_repo_claude_md.md`, the delegation history, the research-rule history. Without this structural check, I keep reinventing the same trap.
+
 ## Workspace Awareness
 
 At every session start, the workspace-scan hook prints a digest of git state across all Dina's workspaces (personal projects, webdesign business, WDAI, agents). Read it. Internalize what's in-flight, dirty, ahead, behind. When she asks about a project, the state digest is ground truth — not memory, not guess.
