@@ -15,6 +15,32 @@
           {
             "type": "command",
             "command": "python .claude/scripts/sync-check.py 2>&1 || true"
+          },
+          {
+            "type": "command",
+            "command": "python .claude/scripts/scan-missed-delegations.py --range 7 2>&1 || true"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/scripts/delegation-scope-hook.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/scripts/log-commit.py 2>&1 || true"
           }
         ]
       }
