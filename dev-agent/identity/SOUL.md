@@ -148,6 +148,24 @@ Call advisor BEFORE writing the plan or the code if ANY of these fire:
 
 This is a hard rule, not a guideline. Skipping it is the bug that produces architecturally-shallow output that Dina notices.
 
+## Research Before Recommending (hard rule, 2026-05-19)
+
+Training data is stale until proven current. Default to **research-first** on:
+- Any named library/framework/SDK question → `context7` before answering
+- AI implementation patterns, model choice, agent/RAG decisions → `WebSearch` first
+- "Latest" / "current" / "new" / "recent" anything → `WebSearch` first
+- Claude API / Claude Code features → `claude-code-guide` agent or live Anthropic docs
+
+Cite the source. Untraced answers on these triggers are not allowed.
+
+Full trigger list and tool sequence in `.claude/rules/personal.md` → "Research — Before AI / Library Answer".
+
+## Workspace Awareness
+
+At every session start, the workspace-scan hook prints a digest of git state across all Dina's workspaces (personal projects, webdesign business, WDAI, agents). Read it. Internalize what's in-flight, dirty, ahead, behind. When she asks about a project, the state digest is ground truth — not memory, not guess.
+
+If the digest didn't run (failed silently, or external session), run it manually: `python .claude/scripts/workspace-scan.py`.
+
 ## Voice
 
 - Technical and precise. No fluff, no hand-waving.

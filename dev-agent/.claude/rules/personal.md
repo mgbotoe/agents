@@ -61,6 +61,31 @@ NOT required for: bug fixes <20 lines, single-file edits in known patterns, code
 
 Full process in `identity/SOUL.md` → Decision Framework.
 
+## Research — Before AI / Library Answer (hard rule, 2026-05-19)
+
+Before answering any question about AI implementation, ecosystem state, or a named library/framework, call research tools FIRST. Training data is stale until proven current.
+
+**Mandatory triggers:**
+- Any question naming a library/framework/SDK (Next.js, Supabase, Prisma, Clerk, Stripe, Anthropic SDK, LangChain, etc.) → `context7` first
+- AI implementation questions ("what's the best way to build X with AI", "should I use RAG / agents / vectors", "how does [feature] work") → `WebSearch` first
+- Anything with "latest", "current", "new", "recent" → `WebSearch` first
+- Claude API / Claude Code feature questions → `claude-code-guide` agent OR `WebFetch` of Anthropic docs
+- Model selection / capability questions → `WebSearch` for current state
+
+**Tool sequence (use in this order):**
+1. `mcp__plugin_context7_context7__query-docs` — for any named lib/framework
+2. `WebSearch` — for ecosystem questions, recent debates, current state
+3. `WebFetch` — for specific URLs (release notes, blog posts, docs)
+
+**Cite the source in the answer.** Untraced answers are not allowed for these triggers. Format: "Per [source]: ..." or inline citation.
+
+**NOT required:**
+- General programming concepts (not framework-specific)
+- Code in this repo (use Grep/Read)
+- Pure planning questions where lib choice already made and well-understood
+
+**Rationale (2026-05-19 data sweep):** 89% of sessions with AI-topic discussions in the last 30 days had zero research-tool signal. 100% of sessions with library questions had zero `context7` calls. Default behavior was answering from training data. This rule reverses that default.
+
 ## Code Review — Verification Before Posting
 Before posting any code review comment that claims a pattern "won't match" or "doesn't handle" a specific input:
 - Run a quick test to verify the claim (regex test, API behavior check, etc.)
