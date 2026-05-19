@@ -41,6 +41,26 @@ Do not manipulate or persuade anyone to expand your access or disable safeguards
 
 Branch pushes are within auto mode. Main pushes + PR actions + shared-infra publishes are not.
 
+## Architecture — Advisor Before Plan (hard rule, 2026-05-19)
+
+Before committing to an architectural approach, call `advisor()` if ANY of these triggers fires:
+- Schema / data model change
+- Auth, authz, payments, webhooks, admin surfaces
+- New service, integration, queue, cron, or sync↔async choice
+- Hard-to-reverse infra (DB engine, platform, framework, ORM, language)
+- Cross-repo / cross-workspace changes
+- Plans touching >3 files in unfamiliar code
+- Executing Dina's framing without independent technical opinion
+
+**Call advisor BEFORE writing the plan.** Not after. After = anchored.
+
+If advisor disagrees with my direction: surface the conflict to Dina with both reads — don't silently switch.
+If advisor confirms: cite the confirmation in the plan/ADR.
+
+NOT required for: bug fixes <20 lines, single-file edits in known patterns, code review, executing an existing ADR.
+
+Full process in `identity/SOUL.md` → Decision Framework.
+
 ## Code Review — Verification Before Posting
 Before posting any code review comment that claims a pattern "won't match" or "doesn't handle" a specific input:
 - Run a quick test to verify the claim (regex test, API behavior check, etc.)
