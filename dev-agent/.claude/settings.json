@@ -55,6 +55,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "python .claude/scripts/session-snapshot.py SessionEnd 2>&1 || true"
+          },
+          {
+            "type": "command",
             "command": "python .claude/scripts/session-end-sync.py 2>&1 || true"
           }
         ]
@@ -66,7 +70,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'Context is about to compact. Run /distill-session now to save session state to daily-logs/YYYY-MM-DD.md before compaction clears in-flight work. Skip if already distilled this session.'"
+            "command": "python .claude/scripts/session-snapshot.py PreCompact 2>&1 || true"
+          },
+          {
+            "type": "command",
+            "command": "echo 'Context is about to compact. Run /distill-session now if this session had substantive learnings worth capturing (commit metadata + activity snapshot already auto-captured).'"
           }
         ]
       }
