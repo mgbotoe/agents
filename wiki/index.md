@@ -38,6 +38,7 @@ The LLM writes and maintains everything. Dina reads, directs, and asks questions
 ### WDAI
 - [[projects/wdai-platform|WDAI Platform]] — internal tooling & automation
 - [[projects/wdai-tech-debt|WDAI Tech Debt Audit]] — living doc, Phase 1 complete 2026-04-19
+- [[projects/wdai-team-os|WDAI Team OS]] — shared knowledge base + turnover-resilience layer, Phase 0-1 active 2026-05-20
 
 ### Agent Ecosystem
 - [[projects/agent-ecosystem|Agent Ecosystem Roadmap]] — living doc, improvements to Atlas + Polaris + future agents
