@@ -47,6 +47,29 @@ MAX_TOKENS = 1500
 
 MODEL = "claude-sonnet-4-6"
 
+# Keyring credential identifiers — store via:
+#   python -c "import keyring; keyring.set_password('anthropic', 'api_key', 'sk-ant-...')"
+KEYRING_SERVICE = "anthropic"
+KEYRING_USERNAME = "api_key"
+
+
+def get_api_key() -> str | None:
+    """Resolve API key. Priority: Windows Credential Manager > env var.
+
+    Keyring uses WinVaultKeyring on Windows = DPAPI-encrypted, per-user scoped.
+    Env var fallback covers CI / non-Windows / explicit override.
+    """
+    try:
+        import keyring
+        key = keyring.get_password(KEYRING_SERVICE, KEYRING_USERNAME)
+        if key:
+            return key
+    except ImportError:
+        pass
+    except Exception as e:
+        sys.stderr.write(f"[auto-distill] keyring read failed: {e}\n")
+    return os.environ.get("ANTHROPIC_API_KEY")
+
 
 def load_json(path: Path) -> dict:
     if not path.exists():
@@ -197,8 +220,8 @@ def main() -> int:
     if not session_id:
         return 0
 
-    # Gate 1: API key
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    # Gate 1: API key (keyring preferred, env var fallback)
+    api_key = get_api_key()
     if not api_key:
         # Silent — graceful degrade to lite-only
         return 0
