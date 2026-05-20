@@ -68,6 +68,17 @@
         ]
       }
     ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .claude/scripts/post-response-audit.py 2>&1 || true"
+          }
+        ]
+      }
+    ],
     "SessionEnd": [
       {
         "matcher": "",
@@ -75,6 +86,10 @@
           {
             "type": "command",
             "command": "python .claude/scripts/session-snapshot.py SessionEnd 2>&1 || true"
+          },
+          {
+            "type": "command",
+            "command": "python .claude/scripts/auto-distill.py 2>&1 || true"
           },
           {
             "type": "command",
@@ -93,7 +108,11 @@
           },
           {
             "type": "command",
-            "command": "echo 'Context is about to compact. Run /distill-session now if this session had substantive learnings worth capturing (commit metadata + activity snapshot already auto-captured).'"
+            "command": "python .claude/scripts/auto-distill.py 2>&1 || true"
+          },
+          {
+            "type": "command",
+            "command": "echo 'Context about to compact. Auto-distill ran if ANTHROPIC_API_KEY is set; manual /distill-session available if you want full narrative on top.'"
           }
         ]
       }
