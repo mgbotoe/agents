@@ -127,9 +127,11 @@ def detect_patterns():
             })
 
         # Pattern 4: implementation shipped + external pattern named, no delta justification
-        # Detects: day mentions a public repo / framework / pattern AND ships implementation,
-        # but daily log doesn't contain "delta:", "improvement:", "we changed:", or
-        # "match prior art" (honest acknowledgement) markers.
+        # KNOWN STRUCTURAL LIMIT: this regex scans daily-log PROSE. Daily logs are sparse
+        # (often 4-9 lines, mostly commit metadata). Will false-negative until session-snapshot
+        # or /distill-session writes substantive prose into the daily log. Effectively only
+        # fires on days with rich distill content — until that upstream signal is denser,
+        # treat zero flags as "no signal" not "no slips."
         external_pattern_mentioned = bool(re.search(
             r"\b(openclaw|cline|cursor|aider|langchain|crewai|autogen|"
             r"github\.com/|public\s+(repo|pattern|framework)|prior\s+art)\b",
