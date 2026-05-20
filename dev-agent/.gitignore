@@ -7,6 +7,9 @@ config/secrets/
 .claude/memory.db
 .claude/runtime/
 .claude/edit-log.txt
+.claude/scripts/__pycache__/
+__pycache__/
+*.pyc
 
 # OS
 .DS_Store
