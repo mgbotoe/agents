@@ -24,8 +24,8 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - Slack: DaFudge workspace, channel C0ASYTE8PB4 (polaris-slack MCP, `slack_dm_owner` shortcut) — full read/write working
 - Discord: #polaris (1493421025881493636) — shared bot with Atlas, can't run simultaneously
 - Sub-agents: Builder (sonnet), Designer (sonnet), QA (sonnet)
-- No GDrive/Gmail/GCal access — that's Atlas's domain
-- Code tools only: context-mode, Playwright, gh CLI
+- GDrive/Gmail/GCal MCPs ARE available to Polaris for technical work (design docs, configs, admin notes, technical specs). Atlas handles calendar/email scheduling + routing — not a gatekeeper on shared resources.
+- Code tools: context-mode, Playwright, gh CLI, GDrive/Gmail/GCal MCPs (technical-use)
 - Granola MCP: available via claude.ai account — can pull meeting transcripts directly
 - WDAI team is all non-developers/vibecoders — CI gates + smoke testing + defrag are the safety net
 - Helen's GitHub username: helenlkupp (not helenkupp)
@@ -33,6 +33,7 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - WDAI local dev DB: Docker Postgres on `localhost:5433`, seed via `bash ./scripts/db-local.sh reset` (from `web/`). `.env.local` should point at `postgresql://postgres:postgres@localhost:5433/wdai_local`.
 - WDAI staging DB: Supabase project ref `qfcjtidvmzvppxbkxupk` (us-east-2 pooler). Per their CLAUDE.md, staging migrations normally go through Vercel preview. Staging creds kept at `web/.env.local.staging` (gitignored) for deliberate swap-in.
 - WDAI Prisma client + Windows: `pnpm db:generate` fails with EPERM DLL lock if dev server is running. Stop server first. `npm run db:local:reset` uses a bash script that PowerShell can't invoke directly — run `bash ./scripts/db-local.sh reset` instead.
+- **WDAI team-OS is a federated KB, NOT a doc.** Two layers: individual weekly synthesis (per core team member) → team-OS dedup → wdai-team-os repo. Sources: marketing + foundation repos, Mailchimp, GDrive, Slack, Granola, recordings, decision-log GDoc. READ `memory/project_team_os_one_brain.md` before any team-OS architecture decision. Wrong-altitude trap: source-pull cron/webhook into current-state.md → see `memory/feedback_team_os_wrong_altitude.md`. Authority: Madina↔Helen 1:1 2026-05-11.
 
 ## Atlas → Polaris Pipeline
 - Atlas monitors WDAI meetings hourly via MeetingPrep (7 AM–3 PM)
@@ -67,3 +68,5 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - [2026-05-11] WDAI PR #603 ready for review: `/api/intro/suggest-matches` endpoint replaces stale Gumloop+Airtable matcher with live DB; iterated v1→v2→v3→Path B over the session, final state 8 files / 789 lines / 270 tests passing. Vercel env vars + Gumloop wiring pending (operator task).
 - [2026-05-19→20] Self-awareness instrumentation layer shipped: delegation-scope warning hook, daily-log commit logger (multi-repo), lite session-snapshot on SessionEnd+PreCompact, prior-art surveying for substantive decisions (with honest-framing fix per advisor critique). 6 commits to agents repo.
 - [2026-05-20] WDAI team-OS build session: PRs #5-8 opened (22 C-series rows filled), VALUE_FIRST hook shipped, turnover-resilience test passed.
+- [2026-05-20] Built + installed Team OS Beacon Slack app in WDAI workspace, round-trip DM tested, PR #9 opened, wdai-slack MCP wired (restart-pending); Polaris-as-driver explicitly POC.
+- [2026-05-20 PM] PRs #7+#9+#10 merged; ADR-0008 content synthesis (4-stage triggers, 2026 research) shipped; wiki decision tabled.

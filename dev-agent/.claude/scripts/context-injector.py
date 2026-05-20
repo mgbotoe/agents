@@ -115,6 +115,27 @@ RULE_EFFECTIVENESS_KEYWORDS = re.compile(
     re.IGNORECASE,
 )
 
+# Team-OS architecture triggers — fire BEFORE proposing any sync architecture
+# for WDAI knowledge / team-OS / current-state. The federated-KB two-layer
+# sync framing (per Madina↔Helen 1:1 2026-05-11) is the authoritative shape;
+# source-pull cron / webhook → current-state is wrong altitude.
+# See feedback_team_os_wrong_altitude.md and project_team_os_one_brain.md.
+TEAM_OS_ARCH_TRIGGERS = re.compile(
+    r"\b(team[\s\-]?os|"
+    r"current[\s\-]?state\.md|"
+    r"update[\s\-]?current[\s\-]?state|"
+    r"one[\s\-]?brain|"
+    r"federated[\s\-]?(knowledge|kb)|"
+    r"single[\s\-]?source[\s\-]?of[\s\-]?truth|"
+    r"sync[\s\-]?(from|into)[\s\-]?(team|wdai|knowledge)|"
+    r"wdai[\s\-]?(knowledge|brain|kb|architecture|sync)|"
+    r"decision[\s\-]?log|"
+    r"helen[\s\-]?1[:\s\-]?1|"
+    r"wdai[\s\-]?team[\s\-]?os|"
+    r"trigger[s]?[\s]?(an?[\s])?update[\s]?to[\s]?current[\s\-]?state)\b",
+    re.IGNORECASE,
+)
+
 STALE_SECONDS = 24 * 3600  # session state stale after 24h
 
 
@@ -194,11 +215,13 @@ def build_injection(session_id: str, prompt: str, state: dict) -> str:
         "prior_art_marker_shown": False,
         "inventory_marker_shown": False,
         "value_first_marker_shown": False,
+        "team_os_marker_shown": False,
     }
     already = set(entry["injected"])
     prior_art_shown = entry.get("prior_art_marker_shown", False)
     inventory_shown = entry.get("inventory_marker_shown", False)
     value_first_shown = entry.get("value_first_marker_shown", False)
+    team_os_shown = entry.get("team_os_marker_shown", False)
 
     topics = list_wiki_topics()
     wiki_matches = [p for p in find_wiki_matches(prompt, topics) if str(p) not in already]
@@ -209,8 +232,10 @@ def build_injection(session_id: str, prompt: str, state: dict) -> str:
                        and SURVEY_INVENTORY_TRIGGERS.search(prompt) is not None)
     needs_value_first = (not value_first_shown
                          and VALUE_FIRST_TRIGGERS.search(prompt) is not None)
+    needs_team_os = (not team_os_shown
+                     and TEAM_OS_ARCH_TRIGGERS.search(prompt) is not None)
 
-    if not wiki_matches and not feedback_matches and not needs_prior_art and not needs_inventory and not needs_value_first:
+    if not wiki_matches and not feedback_matches and not needs_prior_art and not needs_inventory and not needs_value_first and not needs_team_os:
         # Still update last_seen so prune works
         entry["last_seen"] = time.time()
         state[session_id] = entry
@@ -285,6 +310,24 @@ def build_injection(session_id: str, prompt: str, state: dict) -> str:
             ">>> END MARKER <<<\n"
         )
         entry["value_first_marker_shown"] = True
+
+    if needs_team_os:
+        parts.append(
+            "\n>>> [TEAM-OS ARCH CHECK PENDING] <<<\n"
+            "Team-OS / current-state / WDAI knowledge sync prompt detected. BEFORE proposing\n"
+            "any architecture, sync trigger, or runtime:\n"
+            "  1. READ memory/project_team_os_one_brain.md (full architectural framing per\n"
+            "     Madina↔Helen 1:1 2026-05-11)\n"
+            "  2. CONFIRM your proposal respects the federated-KB two-layer sync:\n"
+            "     Layer 1 individual weekly synthesis -> Layer 2 team-OS dedup -> wdai-team-os repo\n"
+            "  3. ANTI-PATTERN to reject explicitly: source-pull cron / webhook -> current-state.md\n"
+            "     (treats current-state as destination instead of one fragment of team-OS-as-brain).\n"
+            "     This is the wrong-altitude trap in feedback_team_os_wrong_altitude.md.\n"
+            "  4. CITE project_team_os_one_brain when you propose. Skipping the read is a self-audit flag.\n"
+            "Authority: Madina↔Helen 1:1, 2026-05-11. Granola-queryable if framing seems stale.\n"
+            ">>> END MARKER <<<\n"
+        )
+        entry["team_os_marker_shown"] = True
 
     entry["injected"] = list(already)
     entry["last_seen"] = time.time()
