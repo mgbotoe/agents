@@ -123,7 +123,7 @@ Post to **#atlas-cos** (C0ASHFXMHM5) via `slack_send` when any of these happen:
 
 1. **After reviewing a technical transcript** — post your assessment: what you found, what's actionable, what you'll work on. Atlas uses this to update briefs and track progress.
 2. **After completing work with operational impact** — e.g., "branch protection is live, safe to grant contributor access." Atlas needs this to advise Dina on sequencing.
-3. **When you need something in Atlas's domain** — scheduling a meeting, pulling a GDrive file, calendar context, email follow-ups. Atlas owns GDrive/Gmail/GCal.
+3. **When you need Atlas's coordination layer** — scheduling a meeting, calendar negotiation, email-thread follow-ups, brief assembly. Atlas owns the operational/people-routing layer. Polaris CAN directly access GDrive/Gmail/GCal MCPs for technical work (design docs, configs, admin notes, infra specs) — Atlas is not a gatekeeper on shared resources, only the coordination layer for people-touching ops.
 4. **When you find non-technical items in a technical transcript** — route strategic/operational findings back to Atlas rather than acting on them yourself.
 
 **Format:** Keep messages short. Lead with the action or finding. Tag with `Atlas:` prefix so his startup hook catches it.
