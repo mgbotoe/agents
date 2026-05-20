@@ -92,6 +92,22 @@ SURVEY_INVENTORY_TRIGGERS = re.compile(
     re.IGNORECASE,
 )
 
+# Triggers for implementation-shaped prompts — fire BEFORE proposing
+# mechanism (files, skills, architecture). The pattern this guards against:
+# Polaris jumps to artifacts because they're easier to produce than value
+# propositions. See feedback_value_first_before_mechanism.md.
+VALUE_FIRST_TRIGGERS = re.compile(
+    r"\b(let'?s\s+(build|implement|design|create|set\s+up|wire|automate|scale|add|ship)|"
+    r"how\s+(do|should|can)\s+(we|i|you)\s+(build|implement|design|create|capture|wire|set\s+up|scale|automate|handle|do)|"
+    r"what'?s?\s+the\s+best\s+way\s+to\s+(build|implement|design|create|capture|wire|set\s+up|scale|automate|handle|do)|"
+    r"^\s*(build|implement|design|create|set\s+up|wire|automate)\s+(a|the|an|some|me|us)?\s*\w+|"
+    r"how\s+(do|should|can)\s+(we|i|you)\s+capture|"
+    r"how\s+(do|should|can)\s+(we|i|you)\s+automate|"
+    r"start\s+(building|implementing|designing|creating)|"
+    r"can\s+(we|you)\s+(build|implement|create|set\s+up|wire|automate))",
+    re.IGNORECASE,
+)
+
 # Feedback files most relevant to "rules vs mechanisms" debates
 RULE_EFFECTIVENESS_KEYWORDS = re.compile(
     r"\b(rule|enforce|discipline|hook|mechanism|advisor|verify|"
@@ -173,10 +189,16 @@ def truncate(text: str, max_lines: int = 60) -> str:
 
 
 def build_injection(session_id: str, prompt: str, state: dict) -> str:
-    entry = state.get(session_id) or {"injected": [], "prior_art_marker_shown": False, "inventory_marker_shown": False}
+    entry = state.get(session_id) or {
+        "injected": [],
+        "prior_art_marker_shown": False,
+        "inventory_marker_shown": False,
+        "value_first_marker_shown": False,
+    }
     already = set(entry["injected"])
     prior_art_shown = entry.get("prior_art_marker_shown", False)
     inventory_shown = entry.get("inventory_marker_shown", False)
+    value_first_shown = entry.get("value_first_marker_shown", False)
 
     topics = list_wiki_topics()
     wiki_matches = [p for p in find_wiki_matches(prompt, topics) if str(p) not in already]
@@ -185,8 +207,10 @@ def build_injection(session_id: str, prompt: str, state: dict) -> str:
                        and SUBSTANTIVE_DECISION_TRIGGERS.search(prompt) is not None)
     needs_inventory = (not inventory_shown
                        and SURVEY_INVENTORY_TRIGGERS.search(prompt) is not None)
+    needs_value_first = (not value_first_shown
+                         and VALUE_FIRST_TRIGGERS.search(prompt) is not None)
 
-    if not wiki_matches and not feedback_matches and not needs_prior_art and not needs_inventory:
+    if not wiki_matches and not feedback_matches and not needs_prior_art and not needs_inventory and not needs_value_first:
         # Still update last_seen so prune works
         entry["last_seen"] = time.time()
         state[session_id] = entry
@@ -243,6 +267,24 @@ def build_injection(session_id: str, prompt: str, state: dict) -> str:
             ">>> END MARKER <<<\n"
         )
         entry["inventory_marker_shown"] = True
+
+    if needs_value_first:
+        parts.append(
+            "\n>>> [VALUE CHECK PENDING] <<<\n"
+            "Implementation-shaped prompt detected. BEFORE proposing mechanism (files, skills,\n"
+            "architecture, hooks, runtime choices):\n"
+            "  1. State WHAT outcome — what becomes possible / better in plain language\n"
+            "  2. State FOR WHOM — named stakeholders (Dina, specific team members, future contributors)\n"
+            "  3. State HOW we'll know — concrete validation (a query someone runs, a gap filled,\n"
+            "     a behavior change, an incident avoided)\n"
+            "If your response leads with files/skills/diagrams/code before these three are explicit,\n"
+            "you're generating scaffolding without anchoring purpose. That's the recurring failure\n"
+            "pattern in feedback_value_first_before_mechanism.md — concrete artifacts are easier\n"
+            "to produce than value props, which is exactly why I default to them.\n"
+            "Mechanism follows value. Not the reverse.\n"
+            ">>> END MARKER <<<\n"
+        )
+        entry["value_first_marker_shown"] = True
 
     entry["injected"] = list(already)
     entry["last_seen"] = time.time()
