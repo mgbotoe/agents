@@ -74,6 +74,24 @@ SUBSTANTIVE_DECISION_TRIGGERS = re.compile(
     re.IGNORECASE,
 )
 
+# Triggers for survey/inventory/landscape/diagram requests — fire BEFORE
+# producing diagrams or tables claiming what's in a repo. Per inventory-repo skill.
+SURVEY_INVENTORY_TRIGGERS = re.compile(
+    r"\b(current\s+state|inventory|landscape|"
+    r"map\s+(of|the|all)|"
+    r"diagram\s+(of|for|the)|"
+    r"\bmermaid\b|"
+    r"what'?s?\s+(in|inside)\s+(the|our|all)\s+(repo|repos|codebase)|"
+    r"what\s+does\s+\w+\s+(have|contain|use)|"
+    r"survey\s+(of|the|across|our)|"
+    r"audit\s+(the|of|all|our)|"
+    r"scan\s+(across|all|each|every|our)|"
+    r"identify\s+current|"
+    r"workflows?\s+(across|in\s+all|in\s+each)|"
+    r"compare\s+(the|all|across)\s+(repos|repositories))",
+    re.IGNORECASE,
+)
+
 # Feedback files most relevant to "rules vs mechanisms" debates
 RULE_EFFECTIVENESS_KEYWORDS = re.compile(
     r"\b(rule|enforce|discipline|hook|mechanism|advisor|verify|"
@@ -155,17 +173,20 @@ def truncate(text: str, max_lines: int = 60) -> str:
 
 
 def build_injection(session_id: str, prompt: str, state: dict) -> str:
-    entry = state.get(session_id) or {"injected": [], "prior_art_marker_shown": False}
+    entry = state.get(session_id) or {"injected": [], "prior_art_marker_shown": False, "inventory_marker_shown": False}
     already = set(entry["injected"])
     prior_art_shown = entry.get("prior_art_marker_shown", False)
+    inventory_shown = entry.get("inventory_marker_shown", False)
 
     topics = list_wiki_topics()
     wiki_matches = [p for p in find_wiki_matches(prompt, topics) if str(p) not in already]
     feedback_matches = [p for p in find_relevant_feedback(prompt) if str(p) not in already]
     needs_prior_art = (not prior_art_shown
                        and SUBSTANTIVE_DECISION_TRIGGERS.search(prompt) is not None)
+    needs_inventory = (not inventory_shown
+                       and SURVEY_INVENTORY_TRIGGERS.search(prompt) is not None)
 
-    if not wiki_matches and not feedback_matches and not needs_prior_art:
+    if not wiki_matches and not feedback_matches and not needs_prior_art and not needs_inventory:
         # Still update last_seen so prune works
         entry["last_seen"] = time.time()
         state[session_id] = entry
@@ -204,6 +225,24 @@ def build_injection(session_id: str, prompt: str, state: dict) -> str:
             ">>> END MARKER <<<\n"
         )
         entry["prior_art_marker_shown"] = True
+
+    if needs_inventory:
+        parts.append(
+            "\n>>> [INVENTORY CHECK PENDING] <<<\n"
+            "Dina asked for a survey / inventory / landscape / diagram / 'current state' of one or more repos.\n"
+            "BEFORE producing the answer (diagram, table, summary):\n"
+            "  1. Invoke the inventory-repo skill against EACH target repo:\n"
+            "     python .claude/scripts/inventory-repo.py \"<absolute-repo-path>\"\n"
+            "  2. Read the structured output. It includes workflow TRIGGERS (not just names), full deps\n"
+            "     categorized, monorepo packages, deploy + DB markers, CLAUDE.md presence.\n"
+            "  3. Draw the diagram / table / summary from THAT output, not from shallow ls + grep.\n"
+            "  4. Cite the source. If you infer a relationship the script didn't observe, flag it as inferred.\n"
+            "Producing diagrams from shallow scans is the failure mode in\n"
+            "feedback_verify_plan_against_code.md. The inventory-repo skill exists to make the\n"
+            "deep read one command instead of a temptation to skip.\n"
+            ">>> END MARKER <<<\n"
+        )
+        entry["inventory_marker_shown"] = True
 
     entry["injected"] = list(already)
     entry["last_seen"] = time.time()

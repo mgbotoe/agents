@@ -35,6 +35,8 @@ TRIGGER_PATTERNS = [
     r"docs/adr/[^/]+\.md$",
     r"docs/repos\.md$",
     r"docs/conventions/.*\.md$",
+    r"current-state.*\.md$",
+    r"docs/current-state.*\.md$",
 ]
 
 
