@@ -65,3 +65,48 @@ Location: `wiki/projects/agent-ecosystem.md`. Living doc parallel to `wdai-tech-
 Location: `C:\Workspace\Personal Projects\media-theater\docs\redesign\roadmap.md` — source of truth. Check there before recomputing scope from session memory or git log.
 
 **Open buckets:** spotlight B, button primitive, Trakt CTA, YIR conform, vote/convince, share review, error parity, audit infra, a11y.
+
+<!-- added 2026-05-20 -->
+## WDAI team-OS
+
+Location: `wdai-team-os` repo. Full architecture: `memory/project_team_os_one_brain.md`.
+
+**Structure:** Federated KB (NOT a doc). Two layers: individual weekly synthesis (per core team member) → team-OS dedup → wdai-team-os repo.
+
+**Current state (as of 2026-05-20):**
+- 22 of ~48 C-series turnover-resilience rows filled (strategy/, members/, programs/, curriculum/, operations/runbooks/, grants/, operations/infrastructure/)
+- ~25 C-series rows still tribal knowledge (Helen: 9, Brigitte: 4, Lauren: 3, Sandhya/Sheena: 3, Step-0 session: 3, deferred: 2)
+- C4 admin access map = HIGHEST priority SPOF dissolution (Helen+Madina)
+- C47 update-current-state skill = build to make system self-sustaining
+
+**Open PRs:**
+- PR #4 (ADR-0007 tiered autonomy) — awaiting Helen ack, has conflicts; rebase when she responds
+- PR #11 (Section 5 Linear refresh + 4 doc-gap fixes) — clean, ready for review
+
+**Merged:**
+- PR #7 (22 C-series closures + maintenance system)
+- PR #9 (Beacon Slack app install reference)
+- PR #10 (ADR-0008 content synthesis at scale)
+
+**Key architecture decisions:**
+- ADR-0007: tiered autonomy supersedes HITL-everywhere (pending Helen ack)
+- ADR-0008 (merged): 4-stage synthesis-at-scale escalation. Stage 1 = long-context (Anthropic 2026). Stage 3 candidate: OpenAI text-embedding-3-small OR Voyage voyage-3-large. Stage 4 candidate: graphrag-hybrid (Neo4j+Qdrant).
+- Contract-first / runtime-agnostic principle for distributed systems
+- ADR scope = HUMAN cross-cutting decisions; per-incident agent work stays in Linear
+- Dual canonical sources: platform `content/*.ts` for org content; marketing vault for outbound voice
+- Wiki-vs-extend-folders TABLED (until orphaned content categories actually need to land)
+
+**Team OS Beacon:**
+- WDAI Slack app for contributor interface (verification pings, ADR acks, runbook check-ins, decision capture)
+- Installed in WDAI workspace. Round-trip DM tested. `wdai-slack` MCP wired (needs session restart).
+- Tokens in Windows Credential Manager (`wdai-slack` service: `bot_token`, `app_token`, `dina_user_id`)
+- Polaris-as-driver = POC only — production needs always-on WDAI-tier runtime (ADR pending)
+- Tier B scopes deferred (channels:manage, groups:write, channels:join) — need separate Helen consent
+
+**Dina's key patterns (team-OS sessions):**
+- Value-first anchoring before mechanism — caught Polaris ~5 times defaulting to artifacts over outcomes
+- Helen design doc = INPUT, never source of truth
+- "Drop dead tomorrow" turnover-resilience IS the strategic value prop
+- Build for ANY runtime; defer runtime choice to its own future decision
+- One source of truth per concept — don't proliferate multiple roadmaps
+- "What are you grounding your decision on?" — real evidence required, not vibe-matching
