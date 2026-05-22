@@ -56,7 +56,7 @@ Location: `wiki/projects/agent-ecosystem.md`. Living doc parallel to `wdai-tech-
 **Tier seed:**
 - **P0** — symmetric inbox polling (shipped 2026-04-19, commit `9cc35fc`).
 - **P1** — cross-post migration at N=3 channels; Atlas's 5 UX items.
-- **P2** — watcher hardening, distill short-circuit guard (fix drafted 2026-04-20, blocked on Dina's approval — see `memory/decisions.md` ADR-006; 18 ghost sessions since 04-18 argue for P1 bump), log rotation, runtime state centralization.
+- **P2** — watcher hardening, distill short-circuit guard (shipped 2026-04-25), log rotation, runtime state centralization.
 - **P3** — shared agent-core extraction, sub-agent SDK.
 
 <!-- added 2026-04-19 -->
@@ -65,6 +65,17 @@ Location: `wiki/projects/agent-ecosystem.md`. Living doc parallel to `wdai-tech-
 Location: `C:\Workspace\Personal Projects\media-theater\docs\redesign\roadmap.md` — source of truth. Check there before recomputing scope from session memory or git log.
 
 **Open buckets:** spotlight B, button primitive, Trakt CTA, YIR conform, vote/convince, share review, error parity, audit infra, a11y.
+
+<!-- added 2026-05-19 -->
+## Self-awareness instrumentation layer
+
+Shipped 2026-05-19 to agents repo (6 commits: `7eff38b`, `bc67b57`, `05e8452`, `e9c767a`, `0d982b3`, `3e3b4d6` + fix `cdef880`).
+
+**Components:**
+- **Delegation-scope warning hook** — fires when ≥4 external files touched in a session; soft-warns to assess scope creep.
+- **Multi-repo daily-log commit logger** — tracks commits across repos in the daily log entry, not just agents repo.
+- **Lite session-snapshot on SessionEnd + PreCompact** — writes external files touched + delegation soft-warn signals to snapshot.
+- **Prior-art surveying** — prepend survey step for all substantive decisions; honest-framing fix applied per advisor critique (commit `cdef880`).
 
 <!-- added 2026-05-20 -->
 ## WDAI team-OS
@@ -100,7 +111,7 @@ Location: `wdai-team-os` repo. Full architecture: `memory/project_team_os_one_br
 - WDAI Slack app for contributor interface (verification pings, ADR acks, runbook check-ins, decision capture)
 - Installed in WDAI workspace. Round-trip DM tested. `wdai-slack` MCP wired (needs session restart).
 - Tokens in Windows Credential Manager (`wdai-slack` service: `bot_token`, `app_token`, `dina_user_id`)
-- Polaris-as-driver = POC only — production needs always-on WDAI-tier runtime (ADR pending)
+- Polaris-as-driver = POC only — production needs WDAI-tier always-on runtime (ADR pending)
 - Tier B scopes deferred (channels:manage, groups:write, channels:join) — need separate Helen consent
 
 **Dina's key patterns (team-OS sessions):**
