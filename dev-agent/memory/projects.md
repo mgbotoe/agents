@@ -121,3 +121,28 @@ Location: `wdai-team-os` repo. Full architecture: `memory/project_team_os_one_br
 - Build for ANY runtime; defer runtime choice to its own future decision
 - One source of truth per concept — don't proliferate multiple roadmaps
 - "What are you grounding your decision on?" — real evidence required, not vibe-matching
+
+<!-- added 2026-06-13 -->
+## WDAI Compound Engineering (Every plugin)
+
+**Status:** PR #689 open (docs-only, 4 commits as of 2026-06-14).
+
+**What shipped:**
+- CE plugin installed at WDAI foundation-platform project scope (team-wide, `ce-setup` ran)
+- `wdai-foundation-platform/.claude/compound-engineering.yml` — project config scaffold with `extraKnownMarketplaces`
+- `docs/decisions/adr-003-compound-engineering.md` — adoption ADR
+- CLAUDE.md coexistence routing table: CE skills vs WDAI native skills vs overlap paths
+
+**Key finding:** CE's destructive-migration guard is **already covered** by existing `ci.yml` `Check for destructive migrations` step (skill-agnostic). Stopped Builder mid-flight to avoid duplication.
+
+**Open items:**
+1. Admin must mark `Check for destructive migrations` as a **required** CI check in branch protection settings — neither Dina nor mgbotoe has admin access currently.
+2. Fast-follow: AGENTS.md `docs/solutions/` pointer once `ce-compound` runs produce first solution.
+3. Cross-tool CE (Codex/Gemini) optional per-machine — not blocking.
+
+**Coexistence routing (summary):**
+- CE `pr-merge-workflow` = kept path (replaces ad-hoc merge flows)
+- WDAI `defrag` skill = kept (CE has no equivalent)
+- WDAI `accessibility-audit` skill = kept (CE has no equivalent)
+- WDAI `distill-session` skill = kept (CE has no equivalent)
+- Overlap areas (code review, ADR drafting) → CE skill as default, WDAI-specific context injected via AGENTS.md
