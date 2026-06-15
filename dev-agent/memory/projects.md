@@ -35,6 +35,9 @@ Stack: Next.js 16 + Clerk + Stripe + Prisma + Supabase Postgres. Node 20, Biome,
 - `web/prisma/schema.prisma` `StagingMeta` model (single-row, CHECK id=1)
 - V1 ships without PII anonymization. V2 triggers documented in `docs/plans/staging-refresh-pipeline.md`.
 
+**Notable merged PRs:**
+- PR #686 (merged 2026-06-13): Luma co-hosts → Google Meet + Calendar sync (creation + hourly cron). +1186/-66, 10 files.
+
 <!-- added 2026-04-19 -->
 ## WDAI tech debt audit — Phase 1
 
@@ -122,16 +125,17 @@ Location: `wdai-team-os` repo. Full architecture: `memory/project_team_os_one_br
 - One source of truth per concept — don't proliferate multiple roadmaps
 - "What are you grounding your decision on?" — real evidence required, not vibe-matching
 
-<!-- added 2026-06-13 -->
+<!-- added 2026-06-13; updated 2026-06-14 -->
 ## WDAI Compound Engineering (Every plugin)
 
-**Status:** PR #689 open (docs-only, 4 commits as of 2026-06-14).
+**Status:** PR #689 open (docs-only, 6 commits as of 2026-06-14). Pending merge.
 
 **What shipped:**
 - CE plugin installed at WDAI foundation-platform project scope (team-wide, `ce-setup` ran)
 - `wdai-foundation-platform/.claude/compound-engineering.yml` — project config scaffold with `extraKnownMarketplaces`
 - `docs/decisions/adr-003-compound-engineering.md` — adoption ADR
 - CLAUDE.md coexistence routing table: CE skills vs WDAI native skills vs overlap paths
+- `pr-merge-workflow` clarified as the kept PR-merge path (commit `58f589ab`)
 
 **Key finding:** CE's destructive-migration guard is **already covered** by existing `ci.yml` `Check for destructive migrations` step (skill-agnostic). Stopped Builder mid-flight to avoid duplication.
 
