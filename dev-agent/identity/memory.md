@@ -83,3 +83,4 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - [2026-06-11] WDAI PR #603 driven to merge-ready w/ Dina pairing on Gumloop side. Rebased onto main (CI green). Secret ROTATED. PR body updated, Helen tagged for merge.
 - [2026-06-13] Drove Compound Engineering adoption on WDAI → PR #689. ADR-003 + CLAUDE.md coexistence routing. CE destructive-migration guard already in ci.yml (avoided dup). Standing Rule solidified: Dina is CAIO+decision-owner.
 - [2026-06-14] PR #689 finalized: ADR-003 + CLAUDE.md coexistence routing table + pr-merge-workflow clarification (commits `86d08596`, `58f589ab`). Luma→GCal sync PR #686 merged.
+- [2026-06-14] PR #689 finalized: ADR-003 + CLAUDE.md coexistence routing table + pr-merge-workflow clarification (commits `86d08596`, `58f589ab`).
