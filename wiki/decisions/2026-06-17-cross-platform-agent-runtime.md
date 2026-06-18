@@ -1,7 +1,7 @@
 ---
 name: Cross-Platform Agent Runtime (Windows + macOS)
 date: 2026-06-17
-status: proposed
+status: accepted (Dina, 2026-06-18 — direction approved, port started)
 context: Polaris cloned to a Mac (`/Users/zhalianna/Documents/AI World/agents`) alongside the existing Windows home base. Dina wants Polaris to run on BOTH machines off one shared repo, not pick one.
 decision: One shared repo is the brain; each machine gets a thin platform-specific execution layer. Paths become repo-relative + config-driven (never absolute OS paths). Scheduling stays cloud-first (GitHub Actions) so neither OS owns the cadence.
 tags: [agents, infra, cross-platform, polaris, runtime, migration]
@@ -54,7 +54,13 @@ Polaris runs on **both** Windows and macOS from a single shared repo. Architectu
 5. **OS-specific shell layer.** Keep `.cmd` for Windows; add bash siblings only for tasks that genuinely must run locally (TBD after cloud-vs-local reconciliation).
 6. **Decide advisor() story.** Either wire it on Mac too, or formally scope it as Windows-only and weaken the hard rule — but don't leave a mandatory rule silently unenforceable.
 
-## Open questions for Dina
-- Is the Windows machine still primary, or is the Mac becoming primary? (Changes which gets the richer local layer.)
-- Are Personal Projects / Webdesign Business workspaces coming to the Mac, or is the Mac WDAI+agents only? (Defines the workspace map.)
-- OK to make `.claude/settings.json` hook commands use `python3` directly, or do you want a shim so the committed file stays OS-neutral?
+## Open questions for Dina — RESOLVED (2026-06-18)
+- **Primary machine?** → **Mac primary, Windows secondary.** Cloud (GitHub Actions) owns scheduling cadence so neither laptop must be awake.
+- **Workspace scope on Mac?** → **Everything** — Personal Projects + Webdesign Business come to the Mac too (Bucket 4).
+- **python invocation?** → **OS-neutral, not a per-OS swap.** Committed hooks use `python3 … || python … || true`. Atlas's hooks done (commit `49fa6e0`); dev-agent's 15 hooks (incl. blocking PreToolUse gates) remain Polaris's.
+- **advisor() gate** → waived by Dina for this internal port (no advisor wired on Mac); flag if it should be enforced before further code lands.
+
+## Addendum — Bucket 5: inter-agent Slack → WDAI (decided 2026-06-18)
+Discovered during the port: Atlas↔Polaris channels (`#atlas-cos` C0ASHFXMHM5, `#polaris-tl` C0ASYTE8PB4) live in the **DaFudge** workspace served by the local `slack-watcher` (Windows-only). The Mac has only the **WDAI** Slack connector wired, so Mac-side pings to `#polaris-tl` fail (`channel_not_found`). **Decision (Dina):** don't port DaFudge — **move inter-agent comms to WDAI.** Recreate the channels in WDAI, swap channel IDs in CLAUDE.md/memory/dev-agent, repoint `slack-watcher`, confirm bot install. Wiki log stays the handoff of record until it lands (Slack is only the doorbell). Full punch list lives in `chief-of-staff/docs/cross-platform-port-plan.md` (Bucket 5).
+
+**Live implementation status** tracked in the plan doc + `identity/memory.md` Active Work; this decision doc records the *what/why*, the plan doc the *how/where*.

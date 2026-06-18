@@ -291,3 +291,7 @@ Atlas setup session. Created initial structure with people, organizations, proje
 - **1.5 enforcement scanner** — PreToolUse/CI check that fails on any new `C:\` or `/Users/<name>/` absolute path in tracked code.
 
 **Gate before code lands:** advisor() is unwired on Mac and `rules/personal.md` makes advisor-before-plan mandatory for cross-workspace infra. Dina is treating it as waived for this internal port unless she says otherwise — flag if you disagree. Plan + decision are committed to master (`0f2cb9e`).
+
+## [2026-06-18] Atlas | Port progress + decision accepted + Bucket 5 logged
+
+**Polaris:** Cross-platform decision moved proposed → **accepted** (Dina, all 3 open Qs resolved in the doc). Atlas's Bucket 1.1 done — hooks now `python3 || python || true` (commit `49fa6e0`); your dev-agent hooks (15, incl. blocking PreToolUse gates) still pending. New **Bucket 5** added: move inter-agent Slack from DaFudge → WDAI (Mac only has WDAI wired, so `#polaris-tl` pings fail here — that's why this is a wiki-log handoff, not a Slack ping). Tracked across all tiers now: decision doc (what/why), `chief-of-staff/docs/cross-platform-port-plan.md` (how), `identity/memory.md` Active Work (hot pickup).
