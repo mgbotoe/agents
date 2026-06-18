@@ -9,8 +9,12 @@ import re
 from datetime import datetime, timedelta
 from pathlib import Path
 
-WIKI_SOURCES = Path("C:/Workspace/agents/wiki/sources")
-REVIEWED_FILE = Path("C:/Workspace/agents/dev-agent/.claude/reviewed-sources.txt")
+# Derive paths from this script's location instead of hardcoding the drive.
+# __file__ = <root>/agents/dev-agent/.claude/scripts/check-wiki-inbox.py
+REPO_ROOT = Path(__file__).resolve().parents[2]   # dev-agent
+AGENTS_ROOT = REPO_ROOT.parent                    # agents
+WIKI_SOURCES = AGENTS_ROOT / "wiki" / "sources"
+REVIEWED_FILE = REPO_ROOT / ".claude" / "reviewed-sources.txt"
 
 def load_reviewed():
     if not REVIEWED_FILE.exists():

@@ -25,14 +25,13 @@ from pathlib import Path
 
 LAST_SCAN_FILE = Path(__file__).resolve().parent.parent / "state" / "last-workspace-scan.json"
 
-WORKSPACES = [
-    (r"C:\Workspace\Personal Projects", "Personal Projects"),
-    (r"C:\Workspace\Webdesign Business", "Webdesign Business"),
-    (r"C:\Workspace\Webdesign Business\projects", "Webdesign Business / projects"),
-    (r"C:\Workspace\Women Defining AI", "Women Defining AI"),
-    (r"C:\Workspace\Women Defining AI\projects", "WDAI / projects"),
-    (r"C:\Workspace\agents", "agents"),
-]
+# Workspace map comes from the shared per-machine loader (reads
+# .claude/workspace.local.json, falls back to deriving from repo location).
+# Single source of truth shared with log-commit.py — see _workspace.py.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _workspace import load_workspaces  # noqa: E402
+
+WORKSPACES = load_workspaces()
 MAX_DEPTH = 2
 GIT_TIMEOUT = 3
 NAME_WIDTH = 28

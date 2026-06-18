@@ -31,14 +31,11 @@ HEADS_FILE = STATE_DIR / "last-commits.json"
 REPOS_FILE = STATE_DIR / "known-repos.json"
 LOG_DIR = REPO_ROOT / "daily-logs"
 
-WORKSPACE_ROOTS = [
-    Path(r"C:\Workspace\Personal Projects"),
-    Path(r"C:\Workspace\Webdesign Business"),
-    Path(r"C:\Workspace\Webdesign Business\projects"),
-    Path(r"C:\Workspace\Women Defining AI"),
-    Path(r"C:\Workspace\Women Defining AI\projects"),
-    Path(r"C:\Workspace\agents"),
-]
+# Workspace roots come from the shared per-machine loader (no hardcoded drives).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _workspace import load_workspaces  # noqa: E402
+
+WORKSPACE_ROOTS = [p for p, _ in load_workspaces()]
 MAX_DEPTH = 2
 REPOS_CACHE_TTL = 7 * 86400  # weekly refresh
 

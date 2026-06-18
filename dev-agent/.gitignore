@@ -2,6 +2,10 @@
 .mcp.json
 .env
 config/secrets/
+config/secrets.env
+
+# Per-machine config (not shared across machines)
+.claude/workspace.local.json
 
 # Runtime
 .claude/memory.db

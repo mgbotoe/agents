@@ -40,6 +40,7 @@ except Exception:
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 WIKI_ROOT = REPO_ROOT.parent / "wiki"
 PROJECTS_DIR = WIKI_ROOT / "projects"
+DECISIONS_DIR = WIKI_ROOT / "decisions"
 # Two memory sources: repo cold memory + Claude Code auto-memory
 MEMORY_DIRS = [
     REPO_ROOT / "memory",
@@ -184,6 +185,32 @@ def find_wiki_matches(prompt: str, topics: dict) -> list[Path]:
     return matches
 
 
+# Generic slug tokens that shouldn't, alone, imply a topic match.
+_DECISION_STOPWORDS = {"agent", "agents", "plan", "runtime", "polaris", "atlas", "wdai"}
+
+
+def find_decision_matches(prompt: str) -> list[Path]:
+    """Return wiki/decisions/*.md (ADRs) whose topic overlaps the prompt.
+
+    Closes the gap that produced a duplicate cross-platform implementation on
+    2026-06-18: context-injector surfaced wiki/projects but never wiki/decisions,
+    so an existing ADR on the topic never appeared before building. Requires 2+
+    significant slug tokens to overlap, to avoid single-generic-word false hits.
+    """
+    if not DECISIONS_DIR.exists():
+        return []
+    p_lower = prompt.lower()
+    out = []
+    for f in sorted(DECISIONS_DIR.glob("*.md")):
+        slug = re.sub(r"^\d{4}-\d{2}-\d{2}-", "", f.stem).lower()
+        tokens = [t for t in re.split(r"[-_]", slug)
+                  if len(t) >= 4 and t not in _DECISION_STOPWORDS]
+        hits = sum(1 for t in set(tokens) if re.search(rf"\b{re.escape(t)}\b", p_lower))
+        if hits >= 2:
+            out.append(f)
+    return out
+
+
 def find_relevant_feedback(prompt: str) -> list[Path]:
     """If prompt has proposal triggers, find feedback memories about rule-effectiveness."""
     if not PROPOSAL_TRIGGERS.search(prompt):
@@ -225,6 +252,7 @@ def build_injection(session_id: str, prompt: str, state: dict) -> str:
 
     topics = list_wiki_topics()
     wiki_matches = [p for p in find_wiki_matches(prompt, topics) if str(p) not in already]
+    decision_matches = [p for p in find_decision_matches(prompt) if str(p) not in already]
     feedback_matches = [p for p in find_relevant_feedback(prompt) if str(p) not in already]
     needs_prior_art = (not prior_art_shown
                        and SUBSTANTIVE_DECISION_TRIGGERS.search(prompt) is not None)
@@ -235,7 +263,7 @@ def build_injection(session_id: str, prompt: str, state: dict) -> str:
     needs_team_os = (not team_os_shown
                      and TEAM_OS_ARCH_TRIGGERS.search(prompt) is not None)
 
-    if not wiki_matches and not feedback_matches and not needs_prior_art and not needs_inventory and not needs_value_first and not needs_team_os:
+    if not wiki_matches and not decision_matches and not feedback_matches and not needs_prior_art and not needs_inventory and not needs_value_first and not needs_team_os:
         # Still update last_seen so prune works
         entry["last_seen"] = time.time()
         state[session_id] = entry
@@ -250,6 +278,22 @@ def build_injection(session_id: str, prompt: str, state: dict) -> str:
             already.add(str(path))
         except Exception:
             continue
+
+    if decision_matches:
+        parts.append(
+            "\n>>> [EXISTING DECISION?] <<<\n"
+            "Your prompt overlaps existing wiki ADRs. READ THESE before implementing — building\n"
+            "without consulting an existing decision is the failure that produced a duplicate\n"
+            "cross-platform implementation on 2026-06-18:"
+        )
+        for path in decision_matches[:4]:
+            parts.append(f"  - wiki/decisions/{path.name}")
+        parts.append(
+            "Also: /advisor for an outside read on the approach before you commit to it.\n"
+            ">>> END MARKER <<<\n"
+        )
+        for path in decision_matches:
+            already.add(str(path))
 
     if feedback_matches:
         parts.append("--- RELEVANT PAST LEARNINGS (you've encountered this pattern before) ---")
