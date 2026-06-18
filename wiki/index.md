@@ -66,6 +66,7 @@ The LLM writes and maintains everything. Dina reads, directs, and asks questions
 ## Decisions
 - [[decisions/2026-04-13-value-scoring-ops-first|Value Scoring — Ops Impact First]] — Flip priority: ops impact > audience/member impact (Helen, Apr 13)
 - [[decisions/2026-04-13-cpo-mission-vision|CPO Mission & Vision]] — "WDAI doesn't just teach AI — we run on it."
+- [[decisions/2026-06-17-cross-platform-agent-runtime|Cross-Platform Agent Runtime]] — PROPOSED: Polaris runs on Windows + macOS off one shared repo; paths repo-relative, scheduling cloud-first (Jun 17)
 
 ## Sources
 
