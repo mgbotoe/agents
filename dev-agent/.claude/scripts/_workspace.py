@@ -1,8 +1,8 @@
 """Single source of truth for this machine's workspace map.
 
 Hooks/scripts that need to know "what repos live where" (workspace-scan,
-log-commit) import this instead of hardcoding a `C:\\Workspace\\...` topology
-that only exists on Windows.
+log-commit) import this instead of hardcoding a Windows drive-rooted topology
+that only exists on one machine.
 
 Resolution order:
   1. $POLARIS_WORKSPACE_CONFIG — explicit path to a workspace.local.json
@@ -35,7 +35,7 @@ def _config_path() -> Path | None:
 
 def _derive() -> list[tuple[Path, str]]:
     """Fallback when no config exists: assume the historical sibling layout
-    under the parent of the agents repo (Windows: C:\\Workspace)."""
+    under the parent of the agents repo (the Windows drive-rooted workspace)."""
     agents_repo = _agent_root().parent          # <root>/agents
     root = agents_repo.parent                    # <root>
     return [

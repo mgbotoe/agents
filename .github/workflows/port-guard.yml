@@ -1,0 +1,53 @@
+name: Cross-platform path guard
+
+# Fails a PR that introduces a new hardcoded absolute OS path (Windows drive or
+# macOS home) into code. Scans only the files the PR changed, so it enforces
+# "no NEW leaks" without choking on pre-existing debt still being ported
+# (Bucket 1.5 of the cross-platform port plan). Also reports per-agent
+# decision-scan hook presence (informational).
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Determine changed files
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch -q origin "${{ github.base_ref }}"
+            FILES=$(git diff --name-only --diff-filter=ACMR "origin/${{ github.base_ref }}...HEAD")
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            FILES=$(git diff --name-only --diff-filter=ACMR "${{ github.event.before }}" "${{ github.sha }}" 2>/dev/null || git ls-files)
+          else
+            FILES=$(git ls-files)
+          fi
+          {
+            echo "files<<EOF"
+            echo "$FILES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Path-leak scan
+        run: |
+          FILES="${{ steps.changed.outputs.files }}"
+          if [ -z "$FILES" ]; then echo "no changed files to scan"; exit 0; fi
+          python bin/scan-paths.py --check-hooks $FILES

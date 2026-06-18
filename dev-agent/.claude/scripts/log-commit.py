@@ -31,7 +31,7 @@ HEADS_FILE = STATE_DIR / "last-commits.json"
 REPOS_FILE = STATE_DIR / "known-repos.json"
 LOG_DIR = REPO_ROOT / "daily-logs"
 
-# Workspace roots come from the shared per-machine loader (no hardcoded C:\).
+# Workspace roots come from the shared per-machine loader (no hardcoded drives).
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _workspace import load_workspaces  # noqa: E402
 
