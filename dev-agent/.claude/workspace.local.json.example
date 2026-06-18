@@ -1,0 +1,17 @@
+{
+  "_comment": "Per-machine workspace map. Copy to .claude/workspace.local.json (gitignored) and set the paths for THIS machine. Read by _workspace.py (workspace-scan.py + log-commit.py). If this file is absent, those scripts fall back to deriving the layout from the repo location. 'label' is display-only; 'path' is the workspace root to scan for git repos (depth 2).",
+  "workspaces": [
+    { "path": "C:\\Workspace\\Personal Projects", "label": "Personal Projects" },
+    { "path": "C:\\Workspace\\Webdesign Business", "label": "Webdesign Business" },
+    { "path": "C:\\Workspace\\Webdesign Business\\projects", "label": "Webdesign Business / projects" },
+    { "path": "C:\\Workspace\\Women Defining AI", "label": "Women Defining AI" },
+    { "path": "C:\\Workspace\\Women Defining AI\\projects", "label": "WDAI / projects" },
+    { "path": "C:\\Workspace\\agents", "label": "agents" }
+  ],
+  "_mac_example": [
+    { "path": "/Users/zhalianna/Documents/AI World/Personal Projects", "label": "Personal Projects" },
+    { "path": "/Users/zhalianna/Documents/AI World/Webdesign Business", "label": "Webdesign Business" },
+    { "path": "/Users/zhalianna/Documents/AI World/Women Defining AI", "label": "Women Defining AI" },
+    { "path": "/Users/zhalianna/Documents/AI World/agents", "label": "agents" }
+  ]
+}

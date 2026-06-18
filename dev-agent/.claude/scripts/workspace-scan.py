@@ -25,21 +25,13 @@ from pathlib import Path
 
 LAST_SCAN_FILE = Path(__file__).resolve().parent.parent / "state" / "last-workspace-scan.json"
 
-# Workspace root is derived from this repo's location: the dev-agent repo always
-# lives at <WORKSPACE_ROOT>/agents/dev-agent, so parents[4] of this script is the
-# root (Windows: C:\Workspace, Mac: /Users/<you>/Workspace). Override with
-# POLARIS_WORKSPACE_ROOT if the layout differs on a given machine.
-WORKSPACE_ROOT = Path(os.environ.get(
-    "POLARIS_WORKSPACE_ROOT", Path(__file__).resolve().parents[4]))
+# Workspace map comes from the shared per-machine loader (reads
+# .claude/workspace.local.json, falls back to deriving from repo location).
+# Single source of truth shared with log-commit.py — see _workspace.py.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _workspace import load_workspaces  # noqa: E402
 
-WORKSPACES = [
-    (WORKSPACE_ROOT / "Personal Projects", "Personal Projects"),
-    (WORKSPACE_ROOT / "Webdesign Business", "Webdesign Business"),
-    (WORKSPACE_ROOT / "Webdesign Business" / "projects", "Webdesign Business / projects"),
-    (WORKSPACE_ROOT / "Women Defining AI", "Women Defining AI"),
-    (WORKSPACE_ROOT / "Women Defining AI" / "projects", "WDAI / projects"),
-    (WORKSPACE_ROOT / "agents", "agents"),
-]
+WORKSPACES = load_workspaces()
 MAX_DEPTH = 2
 GIT_TIMEOUT = 3
 NAME_WIDTH = 28
