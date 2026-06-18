@@ -7,7 +7,7 @@ Draft an email in Dina's voice as her Chief of Staff.
 
 ## Voice Reference
 
-Read `C:\Workspace\agents\wiki\sources\dina-email-voice-profile.md` before drafting. This is the source of truth for her tone, patterns, vocabulary, and structure. Key rules:
+Read `wiki/sources/dina-email-voice-profile.md` (repo root) before drafting. This is the source of truth for her tone, patterns, vocabulary, and structure. Key rules:
 
 - Match opening to relationship: Hello (formal) → Hi (warm) → Hey (casual) → none (close)
 - Get to the point in sentence 1-2. No filler openings.

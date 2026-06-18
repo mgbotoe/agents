@@ -15,8 +15,8 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - Dedup + naming rules added to skill to prevent duplicate entries across scans
 - GDrive MIME type fix deployed — pptx/xlsx uploads now open correctly in Google Slides/Sheets
 - CPO folder: https://drive.google.com/drive/folders/1d7OR7Sy0BW5Qb-Fjr8vq-jOPCiniGsAy
-- **Polaris** (dev agent) live at `C:\Workspace\agents\dev-agent\` — tech lead role, Opus, delegates to Builder/Designer/QA (Sonnet). Posts to #polaris-tl (C0ASYTE8PB4). General purpose across all repos.
-- **Slack Socket Mode Watcher** live at `C:\Workspace\agents\slack-watcher\` — persistent listener, routes messages to correct agent, config-driven (add agents via config.json). Replaces Discord watcher. Singleton guard fixed commit `0b81411` (May 5): uses `tasklist` to verify PID on Windows EPERM — signal-0 alone was unreliable. Clean shutdown hooks added.
+- **Polaris** (dev agent) live at repo-root `dev-agent/` — tech lead role, Opus, delegates to Builder/Designer/QA (Sonnet). Posts to #polaris-tl (C0ASYTE8PB4). General purpose across all repos.
+- **Slack Socket Mode Watcher** live at repo-root `slack-watcher/` — persistent listener, routes messages to correct agent, config-driven (add agents via config.json). Replaces Discord watcher. Singleton guard fixed commit `0b81411` (May 5): uses `tasklist` to verify PID on Windows EPERM — signal-0 alone was unreliable. Clean shutdown hooks added.
 - **Inter-agent pipeline:** Atlas → wiki/sources/ (with routing tag) → Slack notification → Polaris pulls Granola transcript. Wiki log for async messages. Slack for notifications.
 - **Post-meeting transcript pipeline** (WDAI only): MeetingPrep hourly task checks Granola after meetings end, writes to wiki, routes technical items to Polaris via #polaris-tl.
 - `/draft-email` skill created — drafts in Dina's voice using wiki voice profile. Never sends without approval.
@@ -24,7 +24,7 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - Synced with UnClaw upstream: added `.claude/agents/` (researcher, reviewer) and 9 playwright reference docs.
 - **Heartbeat auto-starts** on session start (no manual `/loop 60m /heartbeat` needed) — commit 530c3ad, Apr 17.
 - Wiki reorganized + 45 Granola transcripts (Mar 1–Apr 15) ingested — commit 7279d6c, Apr 17.
-- **Sage** (content ops agent for SAME SF Post) live at `C:\Workspace\SAMESF\` — bootstrapped May 3. Identity, rules, core skills, heartbeat, memory arch all in place.
+- **Sage** (content ops agent for SAME SF Post) lives in the separate SAMESF repo (not in this monorepo; Windows) — bootstrapped May 3. Identity, rules, core skills, heartbeat, memory arch all in place.
 - **Agent roster** at `memory/reference_agents_roster.md` — consistency checklist for all 3 agents (Atlas, Polaris, Sage). Standing rule: apply infra changes to all 3 unless explicit reason not to.
 - **Promote/Distill cron jobs removed** (`\Atlas\Promote`, `\Atlas\Distill`, `\Polaris\Promote`, `\Polaris\Distill`) — by design. Heartbeat distills every 30m; session-start hook auto-runs promote if >24h since last run. Sage had this right from day 1; Atlas+Polaris hooks fixed May 5.
 

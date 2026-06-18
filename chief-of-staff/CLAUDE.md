@@ -88,7 +88,7 @@ If Dina asks for something outside this scope, do it if it's quick and obvious �
 - **Archive:** `memory/archive-YYYY-MM.md` — older entries rotated out of hot memory
 
 ## Knowledge-First Answering
-Before answering anything about prior work, decisions, dates, people, projects, organizations, or context from past sessions, use **`/recall`** — it does the progressive escalation for you (hot → cold → FTS5 raw, stops when confident). Wiki at `C:\Workspace\agents\wiki\` is parallel to all tiers; check `wiki/index.md` if the question is about people, projects, organizations, or meetings. If `/recall` returns empty, say so explicitly — don't fabricate.
+Before answering anything about prior work, decisions, dates, people, projects, organizations, or context from past sessions, use **`/recall`** — it does the progressive escalation for you (hot → cold → FTS5 raw, stops when confident). Wiki at the repo-root `wiki/` (sibling to the agent dirs) is parallel to all tiers; check `wiki/index.md` if the question is about people, projects, organizations, or meetings. If `/recall` returns empty, say so explicitly — don't fabricate.
 
 The wiki is the primary knowledge base for people, projects, organizations, decisions, and meeting history. Memory is for preferences, patterns, and session context. Use both.
 
@@ -180,15 +180,16 @@ If context is filling up mid-session, write a session summary to `daily-logs/YYY
 A persistent, compounding knowledge base maintained by Atlas. Inspired by Karpathy's LLM Wiki pattern.
 
 ## Structure
-- `C:\Workspace\agents\wiki\index.md` — catalog of all pages
-- `C:\Workspace\agents\wiki\log.md` — chronological activity log
-- `C:\Workspace\agents\wiki\SCHEMA.md` — conventions and workflows
-- `C:\Workspace\agents\wiki\people/` — entity pages for individuals
-- `C:\Workspace\agents\wiki\organizations/` — companies, nonprofits, schools
-- `C:\Workspace\agents\wiki\projects/` — active work streams
-- `C:\Workspace\agents\wiki\decisions/` — key decisions with context
-- `C:\Workspace\agents\wiki\sources/` — ingested documents, transcripts, articles
-- `C:\Workspace\agents\wiki\raw/` — immutable source documents
+The wiki lives at the **repo root** (`wiki/`), a sibling to the agent dirs (`chief-of-staff/`, `dev-agent/`, …) — repo-relative, not an absolute OS path, so it resolves on any machine.
+- `wiki/index.md` — catalog of all pages
+- `wiki/log.md` — chronological activity log
+- `wiki/SCHEMA.md` — conventions and workflows
+- `wiki/people/` — entity pages for individuals
+- `wiki/organizations/` — companies, nonprofits, schools
+- `wiki/projects/` — active work streams
+- `wiki/decisions/` — key decisions with context
+- `wiki/sources/` — ingested documents, transcripts, articles
+- `wiki/raw/` — immutable source documents
 
 ## Rules
 - The wiki is shared. Any agent (Atlas, Polaris) can read and write.

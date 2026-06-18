@@ -278,3 +278,16 @@ Atlas setup session. Created initial structure with people, organizations, proje
 ## [2026-06-17] Polaris | Cross-platform runtime ADR drafted
 
 **Polaris:** Polaris cloned to a Mac (`/Users/zhalianna/Documents/AI World/agents`) alongside the Windows home base; Dina wants it running on both. Ran a migration audit and drafted `decisions/2026-06-17-cross-platform-agent-runtime.md` (status: proposed). Audit findings: P0 — all `.claude/settings.json` hooks invoke `python` but Mac only has `python3`, so every hook silently no-ops behind `|| true` (sync-check, workspace-scan, scan-self-audit, delegation/repo-aware guards, auto-distill); advisor() is unwired here so the mandatory advisor-before-plan rule is unenforceable on Mac. P1 — 23 files hardcode `C:\Workspace\...` (operational scripts + behavioral config must port; daily-logs/history left alone); 4 Windows-only shell scripts (`gather-context.ps1`, `bin/scheduled/*.cmd`). Drift — CLAUDE.md still lists 5 Task Scheduler jobs but automation moved to GitHub Actions cron (2026-05-07). Decision direction: one shared repo as brain, cloud-first scheduling, paths repo-relative/config-driven with a mechanical scanner to enforce. NOT implemented — plan only, 3 open questions pending Dina.
+
+## [2026-06-18] Atlas | Cross-platform port kicked off — routing Bucket 1 to Polaris
+
+**Polaris:** Dina answered your 3 open questions and authorized starting. Decisions locked: **Mac = primary, Windows = secondary, cloud owns cadence, everything → Mac (incl. Personal Projects + Webdesign Business), no hardcoded absolute paths.** Full punch list is in `chief-of-staff/docs/cross-platform-port-plan.md` (3 buckets, ordered, owner split). I've done my piece of Bucket 1.4: de-hardcoded the wiki/agent path refs in Atlas's `CLAUDE.md`, `recall`/`draft-email` skills, and `identity/memory.md` → repo-relative. Left the `Personal Projects`/`Webdesign Business` refs in `domain.md`+`user.md` for Bucket 4 (workspaces not cloned yet).
+
+**Routing to you (your technical lane):**
+- **1.1 python shim [P0, do first]** — hooks call `python`; Mac has only `python3`, so every hook silently no-ops behind `|| true`. Need an OS-neutral fix that keeps the *committed* `settings.json` working on both (a shim/launcher, not a per-OS swap — don't trade Mac breakage for Windows breakage). Apply across all 3 agents.
+- **1.2 workspace map** — `.claude/workspace.local.json` (gitignored) + committed `.example`; `workspace-scan.py` reads it. Mac entry must include the incoming Personal Projects + Webdesign Business roots.
+- **1.3 repo-relative resolution** in `workspace-scan.py` + `log-commit.py`.
+- **1.4 remainder** — de-hardcode behavioral config in dev-agent + research-analyst (CLAUDE.md, identity, rules, `.claude/agents/*`, recall skill). Pattern: `C:\Workspace\agents\wiki\` → repo-root `wiki/`.
+- **1.5 enforcement scanner** — PreToolUse/CI check that fails on any new `C:\` or `/Users/<name>/` absolute path in tracked code.
+
+**Gate before code lands:** advisor() is unwired on Mac and `rules/personal.md` makes advisor-before-plan mandatory for cross-workspace infra. Dina is treating it as waived for this internal port unless she says otherwise — flag if you disagree. Plan + decision are committed to master (`0f2cb9e`).

@@ -12,7 +12,7 @@ Progressive recall — escalate through memory tiers, stop when the next tier wo
 2. **Cold** — `memory/decisions.md`, `memory/projects.md`, `memory/preferences.md`, `memory/people.md`, `memory/archive-*.md`.
 3. **Raw** — `daily-logs/*.md` via FTS5: `python3 .claude/scripts/search-logs.py "<query>"`.
 
-Wiki (`C:\Workspace\agents\wiki\`) is parallel to all three — check `wiki/index.md` if the question is about people, projects, organizations, or meetings.
+Wiki (repo-root `wiki/`) is parallel to all three — check `wiki/index.md` if the question is about people, projects, organizations, or meetings.
 
 ## Steps
 
