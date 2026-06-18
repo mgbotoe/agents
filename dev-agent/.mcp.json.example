@@ -1,0 +1,23 @@
+{
+  "_comment": "Template for the gitignored .mcp.json. Copy to .mcp.json on each machine. Paths and tokens use ${VAR} expansion so the SAME file works on Windows and Mac once the env vars are set (see config/secrets.env.example and bin/setup-mac.sh). POLARIS_DEV_AGENT must point at this repo's absolute path on the local machine.",
+  "mcpServers": {
+    "polaris-slack": {
+      "command": "node",
+      "args": ["${POLARIS_DEV_AGENT}/mcp/slack/src/index.mjs"],
+      "env": {
+        "SLACK_BOT_TOKEN": "${POLARIS_SLACK_TOKEN}",
+        "OWNER_SLACK_ID": "C0ASYTE8PB4",
+        "NODE_PATH": "${POLARIS_DEV_AGENT}/mcp/slack/node_modules"
+      }
+    },
+    "wdai-slack": {
+      "command": "node",
+      "args": ["${POLARIS_DEV_AGENT}/mcp/slack/src/index.mjs"],
+      "env": {
+        "SLACK_BOT_TOKEN": "${WDAI_SLACK_TOKEN}",
+        "OWNER_SLACK_ID": "U08DCSBGJ1H",
+        "NODE_PATH": "${POLARIS_DEV_AGENT}/mcp/slack/node_modules"
+      }
+    }
+  }
+}

@@ -1,14 +1,23 @@
 ---
 name: heartbeat
-description: Proactive check-in with pre-gathered context. Run automatically via Task Scheduler every 30 minutes.
+description: Proactive check-in with pre-gathered context. Run during a working session via /loop, or once on session start.
 ---
 
 Proactive heartbeat — gather context first, then reason.
 Adapted from unclaw (github.com/shahshrey/unclaw).
 
+**How this runs (cross-platform).** Heartbeat watches *local-machine* state (disk,
+slack-watcher liveness, uncommitted tree, today's local daily-log) that a cloud
+runner can't see, so it has no cloud-cron home. For a periodic check while you're
+heads-down, run it via `/loop` — e.g. `/loop 30m /heartbeat` — which works
+identically on Windows and macOS with no OS scheduler. The memory-staleness check
+also fires once on SessionStart as a backstop. There is no autonomous
+when-no-session heartbeat by design (it would need both Task Scheduler and launchd
+to watch state that only matters while you're working).
+
 1. **Gather context** (deterministic, no reasoning yet):
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File .claude/scripts/gather-context.ps1
+   ```sh
+   python .claude/scripts/gather-context.py
    ```
 
 2. **Check #atlas-cos inbox since last seen.** Read `.claude/runtime/atlas-last-seen.ts` (single-line Unix timestamp). **If the file doesn't exist, create it with current UTC Unix seconds** (`powershell -Command "[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()" > .claude/runtime/atlas-last-seen.ts`) and skip the rest of this step this run — there's no backlog to process on first bootstrap. Otherwise, call `mcp__polaris-slack__slack_read` on channel `C0ASHFXMHM5` and look for messages with `ts > atlas-last-seen.ts`. Process any Atlas-authored messages directed to Polaris (replies to my pings, cross-posted acks, etc.). After reading, write the newest message `ts` back to `.claude/runtime/atlas-last-seen.ts` so subsequent heartbeats skip what's already processed. Mirrors Atlas's `polaris-last-seen.ts` pattern — symmetric polling closes the real-time gap in the Polaris→Atlas direction where the watcher can't spawn me on my own bot's posts.
@@ -20,7 +29,6 @@ Adapted from unclaw (github.com/shahshrey/unclaw).
    - Are there pending/follow-up items with passed or imminent deadlines?
    - Are there uncommitted changes that have been sitting for a long time?
    - Is disk space running low?
-   - Are any scheduled tasks NOT FOUND?
    - Any patterns in today's log that suggest an unfinished thread?
    - Any recent runtime errors?
 
@@ -29,7 +37,6 @@ Adapted from unclaw (github.com/shahshrey/unclaw).
    - If wiki inbox has items -> read and review them (mark as reviewed when done)
    - If slack-watcher is dead -> notify Dina via `slack_dm_owner` (can't restart it yourself)
    - If there are urgent pending items -> send a notification and summarize what needs attention
-   - If scheduled tasks are missing -> log warning, notify Dina
    - If nothing needs attention -> do nothing (don't generate output for the sake of it)
 
 5. **Only notify if something is actionable.** Silent heartbeats are good. Don't be noisy.

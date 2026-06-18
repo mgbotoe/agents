@@ -2,6 +2,7 @@
 .mcp.json
 .env
 config/secrets/
+config/secrets.env
 
 # Runtime
 .claude/memory.db

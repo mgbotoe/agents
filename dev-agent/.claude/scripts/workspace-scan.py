@@ -25,13 +25,20 @@ from pathlib import Path
 
 LAST_SCAN_FILE = Path(__file__).resolve().parent.parent / "state" / "last-workspace-scan.json"
 
+# Workspace root is derived from this repo's location: the dev-agent repo always
+# lives at <WORKSPACE_ROOT>/agents/dev-agent, so parents[4] of this script is the
+# root (Windows: C:\Workspace, Mac: /Users/<you>/Workspace). Override with
+# POLARIS_WORKSPACE_ROOT if the layout differs on a given machine.
+WORKSPACE_ROOT = Path(os.environ.get(
+    "POLARIS_WORKSPACE_ROOT", Path(__file__).resolve().parents[4]))
+
 WORKSPACES = [
-    (r"C:\Workspace\Personal Projects", "Personal Projects"),
-    (r"C:\Workspace\Webdesign Business", "Webdesign Business"),
-    (r"C:\Workspace\Webdesign Business\projects", "Webdesign Business / projects"),
-    (r"C:\Workspace\Women Defining AI", "Women Defining AI"),
-    (r"C:\Workspace\Women Defining AI\projects", "WDAI / projects"),
-    (r"C:\Workspace\agents", "agents"),
+    (WORKSPACE_ROOT / "Personal Projects", "Personal Projects"),
+    (WORKSPACE_ROOT / "Webdesign Business", "Webdesign Business"),
+    (WORKSPACE_ROOT / "Webdesign Business" / "projects", "Webdesign Business / projects"),
+    (WORKSPACE_ROOT / "Women Defining AI", "Women Defining AI"),
+    (WORKSPACE_ROOT / "Women Defining AI" / "projects", "WDAI / projects"),
+    (WORKSPACE_ROOT / "agents", "agents"),
 ]
 MAX_DEPTH = 2
 GIT_TIMEOUT = 3
