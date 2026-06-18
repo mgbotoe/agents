@@ -17,7 +17,7 @@ to watch state that only matters while you're working).
 
 1. **Gather context** (deterministic, no reasoning yet):
    ```sh
-   python .claude/scripts/gather-context.py
+   python3 .claude/scripts/gather-context.py || python .claude/scripts/gather-context.py
    ```
 
 2. **Check #atlas-cos inbox since last seen.** Read `.claude/runtime/atlas-last-seen.ts` (single-line Unix timestamp). **If the file doesn't exist, create it with current UTC Unix seconds** (`powershell -Command "[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()" > .claude/runtime/atlas-last-seen.ts`) and skip the rest of this step this run — there's no backlog to process on first bootstrap. Otherwise, call `mcp__polaris-slack__slack_read` on channel `C0ASHFXMHM5` and look for messages with `ts > atlas-last-seen.ts`. Process any Atlas-authored messages directed to Polaris (replies to my pings, cross-posted acks, etc.). After reading, write the newest message `ts` back to `.claude/runtime/atlas-last-seen.ts` so subsequent heartbeats skip what's already processed. Mirrors Atlas's `polaris-last-seen.ts` pattern — symmetric polling closes the real-time gap in the Polaris→Atlas direction where the watcher can't spawn me on my own bot's posts.
