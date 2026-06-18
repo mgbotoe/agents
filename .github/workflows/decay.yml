@@ -1,0 +1,68 @@
+name: Weekly memory decay
+
+on:
+  schedule:
+    # Weekly Sunday 09:00 UTC. Staggered off promote (daily 07:00) and
+    # discuss (daily 10:00) to avoid push races on the shared repo.
+    - cron: "0 9 * * 0"
+  workflow_dispatch:
+    inputs:
+      agent:
+        description: "Agent to decay (atlas, polaris, or both)"
+        required: false
+        default: "both"
+
+permissions:
+  contents: write
+
+jobs:
+  decay:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - agent: atlas
+            dir: chief-of-staff
+          - agent: polaris
+            dir: dev-agent
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Filter agent (manual runs)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.agent != 'both' && github.event.inputs.agent != matrix.agent
+        run: echo "SKIP=true" >> $GITHUB_ENV
+
+      - name: Setup Python
+        if: env.SKIP != 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run decay
+        if: env.SKIP != 'true'
+        # decay-memory.py is pure stdlib (no deps, no API key). It derives its
+        # repo root from parents[2], so it only touches its own agent dir.
+        run: python ${{ matrix.dir }}/.claude/scripts/decay-memory.py
+
+      - name: Commit and push archive moves
+        if: env.SKIP != 'true'
+        run: |
+          git config user.name "agent-cron[bot]"
+          git config user.email "agent-cron@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "no logs aged out this week — nothing to commit"
+          else
+            git commit -m "chore(${{ matrix.agent }}): weekly memory decay $(date -u +%Y-%m-%d)"
+            # Pull-rebase before push to handle concurrent matrix jobs.
+            for i in 1 2 3; do
+              git pull --rebase origin ${{ github.ref_name }} && git push origin HEAD:${{ github.ref_name }} && break
+              echo "push retry $i"
+              sleep 5
+            done
+          fi

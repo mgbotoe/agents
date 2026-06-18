@@ -49,4 +49,4 @@ Daily log promotion — extract signal from raw conversation logs into long-term
 
 ## Decay (separate concern)
 
-Raw `daily-logs/*.md` decay is handled by the weekly `Polaris\Decay` task (`bin/scheduled/decay.cmd` → `.claude/scripts/decay-memory.py`). Don't manually move daily logs from this skill.
+Raw `daily-logs/*.md` decay is handled by the weekly `decay.yml` GitHub Actions cron (`.github/workflows/decay.yml` → `.claude/scripts/decay-memory.py`, matrix over both agents). Don't manually move daily logs from this skill.

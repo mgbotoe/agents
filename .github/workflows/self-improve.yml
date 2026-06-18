@@ -1,0 +1,86 @@
+name: Weekly self-improvement (PR-gated)
+
+on:
+  schedule:
+    # Weekly Sunday 11:00 UTC. Staggered off promote (07:00), decay (Sun 09:00),
+    # discuss (10:00).
+    - cron: "0 11 * * 0"
+  workflow_dispatch:
+    inputs:
+      agent:
+        description: "Agent (atlas, polaris, or both)"
+        required: false
+        default: "both"
+      dry_run:
+        description: "Dry run (propose to logs only, no PR)"
+        type: boolean
+        required: false
+        default: false
+
+# Behavioral self-modification is PR-gated: the job opens a PR, never writes
+# master. pull-requests:write is required for create-pull-request.
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  self-improve:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - agent: atlas
+            dir: chief-of-staff
+          - agent: polaris
+            dir: dev-agent
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Filter agent (manual runs)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.agent != 'both' && github.event.inputs.agent != matrix.agent
+        run: echo "SKIP=true" >> $GITHUB_ENV
+
+      - name: Setup Python
+        if: env.SKIP != 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: bin/requirements.txt
+
+      - name: Install dependencies
+        if: env.SKIP != 'true'
+        run: pip install -r bin/requirements.txt
+
+      - name: Run self-improve
+        if: env.SKIP != 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        # Report (summary + human-observations) is written OUTSIDE the repo so it
+        # doesn't become part of the PR diff; it feeds the PR body via body-path.
+        run: |
+          python bin/self-improve.py --agent ${{ matrix.agent }} \
+            ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }} \
+            | tee "$RUNNER_TEMP/self-improve-${{ matrix.agent }}.txt"
+
+      - name: Open / update pull request
+        if: env.SKIP != 'true' && github.event.inputs.dry_run != 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: bot/self-improve-${{ matrix.agent }}
+          base: ${{ github.ref_name }}
+          commit-message: "chore(${{ matrix.agent }}): weekly self-improvement proposals"
+          title: "chore(${{ matrix.agent }}): weekly self-improvement proposals"
+          body-path: ${{ runner.temp }}/self-improve-${{ matrix.agent }}.txt
+          labels: self-improve
+          delete-branch: true
+          add-paths: |
+            ${{ matrix.dir }}/.claude/rules/*.md
+            ${{ matrix.dir }}/.claude/agents/*.md
+            ${{ matrix.dir }}/.claude/runtime/self-improve-last-run.ts
