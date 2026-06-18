@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Team OS Beacon">
+  <!-- Background: WDAI primary-900 deep purple with rounded corners (Slack avatar shape) -->
+  <rect width="512" height="512" rx="96" fill="#1a0f2e"/>
+
+  <!-- Subtle radial backdrop using primary-800 -->
+  <defs>
+    <radialGradient id="bg-glow" cx="256" cy="360" r="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2d1b4e" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#1a0f2e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="256" cy="360" r="280" fill="url(#bg-glow)"/>
+
+  <!-- Three concentric signal arcs, opening upward (Wi-Fi / radio-pulse motif) -->
+  <g fill="none" stroke="#9672cd" stroke-width="28" stroke-linecap="round">
+    <!-- Outer arc, faint -->
+    <path d="M 100 360 A 156 156 0 0 1 412 360" opacity="0.35"/>
+    <!-- Middle arc -->
+    <path d="M 148 360 A 108 108 0 0 1 364 360" opacity="0.65"/>
+    <!-- Inner arc -->
+    <path d="M 196 360 A 60 60 0 0 1 316 360" opacity="1"/>
+  </g>
+
+  <!-- Source dot in WDAI accent-pink (the signal origin) -->
+  <circle cx="256" cy="360" r="22" fill="#d6006e"/>
+</svg>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 240" width="1200" height="240" role="img" aria-label="WDAI Team OS">
+  <!-- Background: WDAI primary-900 with subtle radial highlight (matches platform globals.css) -->
+  <defs>
+    <radialGradient id="bg-radial" cx="200" cy="100" r="600" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3f2968" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#1a0f2e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ai-gradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d6006e"/>
+      <stop offset="0.6" stop-color="#b8005e"/>
+      <stop offset="1" stop-color="#9672cd"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="240" fill="#1a0f2e"/>
+  <rect width="1200" height="240" fill="url(#bg-radial)"/>
+
+  <!-- WDAI "AI" mark — stylized letterforms in pink-to-lavender gradient -->
+  <g transform="translate(80, 60)" font-family="'Inter', 'Helvetica Neue', sans-serif" font-weight="900" font-size="120" font-style="italic" fill="url(#ai-gradient)">
+    <text x="0" y="100" letter-spacing="-4">AI</text>
+  </g>
+
+  <!-- Vertical divider -->
+  <line x1="260" y1="60" x2="260" y2="180" stroke="#9672cd" stroke-width="2" opacity="0.5"/>
+
+  <!-- "TEAM OS" wordmark in light neutral, slightly smaller -->
+  <g transform="translate(300, 60)" font-family="'Inter', 'Helvetica Neue', sans-serif" fill="#ffffff">
+    <text x="0" y="60" font-size="42" font-weight="700" letter-spacing="2">WDAI</text>
+    <text x="0" y="125" font-size="68" font-weight="800" letter-spacing="3">TEAM OS</text>
+    <text x="0" y="170" font-size="22" font-weight="400" fill="#a8a4ba" letter-spacing="1">one brain · federated knowledge base · turnover-resilient</text>
+  </g>
+
+  <!-- Signal-burst glyph (echoes Beacon icon) on the right -->
+  <g transform="translate(1040, 100)" fill="none" stroke="#9672cd" stroke-width="6" stroke-linecap="round">
+    <path d="M -40 60 A 56 56 0 0 1 40 60" opacity="0.35"/>
+    <path d="M -28 60 A 40 40 0 0 1 28 60" opacity="0.65"/>
+    <path d="M -16 60 A 24 24 0 0 1 16 60" opacity="1"/>
+  </g>
+  <circle cx="1040" cy="160" r="8" fill="#d6006e"/>
+</svg>

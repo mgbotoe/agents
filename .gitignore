@@ -49,6 +49,27 @@ chief-of-staff/*.png
 # Slack watcher runtime
 slack-watcher/watcher.log
 slack-watcher/sessions/
+slack-watcher/watcher-*.log
+slack-watcher/watcher-*.txt
+slack-watcher/startup-*.txt
+slack-watcher/*.pid
+slack-watcher/*.vbs
+chief-of-staff/watcher-*.log
 
 # Raw wiki sources (tracked separately if needed)
 wiki/raw/
+
+# Nested external repos cloned for reference (not part of this monorepo)
+open-design/
+
+# Python cache
+**/__pycache__/
+*.pyc
+
+# Agent scratch + scan cache
+**/.claude/drafts/
+**/.claude/state/website-scan/
+
+# Throwaway HTML at agent root (commit to docs/ instead — mirrors the *.png rule)
+dev-agent/*.html
+chief-of-staff/*.html
