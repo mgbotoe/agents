@@ -85,6 +85,23 @@ Each Slack-posting task is a clean candidate to move to GitHub Actions like `pro
 
 ---
 
+## Bucket 5 — Move inter-agent notifications onto WDAI Slack (decided 2026-06-18)
+
+Today's discovery: Atlas↔Polaris pinging only works from Windows. The inter-agent channels (`#atlas-cos` C0ASHFXMHM5, `#polaris-tl` C0ASYTE8PB4) live in the **DaFudge** workspace, served by the local Slack bot / `slack-watcher` — which isn't running on the Mac. The only Slack connector wired here is **WDAI**, so a Mac-side `slack_send_message` to `#polaris-tl` returns `channel_not_found`.
+
+**Decision (Dina, 2026-06-18):** don't port DaFudge — **move inter-agent comms to the WDAI Slack workspace.** WDAI is already wired on the Mac, so this also fixes the notification gap.
+
+Work:
+- Create the inter-agent channels in WDAI (e.g. `#atlas-cos`, `#polaris-tl`) and capture their new channel IDs.
+- Update `CLAUDE.md` "Inter-Agent Communication" + "Key Facts" (channel IDs), `identity/memory.md`, and the same in dev-agent — replace DaFudge IDs with WDAI IDs.
+- Update `slack-watcher` config (`config.json`) to listen on the WDAI workspace/channels; retire the DaFudge wiring.
+- Confirm the bot token / app is installed in WDAI with the needed scopes (per-machine secret, not committed).
+- Until this lands, the **wiki log is the handoff** (Slack is only the doorbell) — already how routing survived today.
+
+Note: keeps the audit trail unchanged (wiki log is workspace-agnostic); only the notification layer moves.
+
+---
+
 ## Suggested order
 1. **1.1 python shim** — unblocks all hooks; everything else is observable once safety scaffolding actually runs.
 2. **1.2 + 1.3 + 1.5** — path config + enforcement, so no new absolute paths leak while we work.
@@ -92,6 +109,7 @@ Each Slack-posting task is a clean candidate to move to GitHub Actions like `pro
 4. **Bucket 2** — cloud-ify, one task at a time, retire the Windows twin as each lands.
 5. **Bucket 3** — docs reconcile (do alongside 2 so they never drift again).
 6. **Bucket 4** — workspace clones, whenever convenient.
+7. **Bucket 5** — WDAI Slack inter-agent move; can run anytime (independent of 1–4). Atlas owns the CLAUDE.md/memory channel-ID swap; `slack-watcher` config + WDAI app install is ops/Polaris.
 
 ## Owner split
 - **Polaris** owns the technical execution (scripts, hooks, Actions workflows, enforcement scanner) — his lane.
