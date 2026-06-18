@@ -156,24 +156,25 @@ If context is filling up mid-session, write a session summary to `daily-logs/YYY
 # Scheduling
 
 ## Rules
-- Recurring automation runs on **GitHub Actions cloud cron** and **Claude Code hooks** — both OS-agnostic, so they fire regardless of which machine (Windows/Mac) is in use. Windows Task Scheduler was retired in the 2026-05-07 migration.
-- `/loop` is the cross-platform way to run a periodic task *during a working session* (e.g. `/loop 30m /heartbeat`).
+- Persistent recurring tasks are managed by **Windows Task Scheduler** (folder: `\Polaris\`).
+- Each task runs a short-lived Claude Code session via `bin/scheduled/run-task.cmd`.
+- `/loop` is for **temporary, session-scoped** reminders only.
 
-## What runs where
-| Task | Mechanism | When | What it does |
-|------|-----------|------|-------------|
-| Promote | Cloud cron (`.github/workflows/promote.yml` → `bin/promote.py`) | Daily 07:00 UTC | Extract learnings from daily logs → memory; curate Session Log |
-| Discuss | Cloud cron (`.github/workflows/discuss.yml` → `bin/discuss.py`) | Daily 10:00 UTC | Overnight Atlas↔Polaris discussion → `wiki/discussions/` |
-| Decay | Cloud cron (`.github/workflows/decay.yml` → `decay-memory.py`, matrix both agents) | Weekly Sun 09:00 UTC | Move daily logs >180d into `memory/archive-YYYY-MM.md` |
-| Index logs | Hook (SessionStart → `index-daily-logs.py`) | Every session start | Rebuild daily-log FTS5 search index |
-| Distill | Hook (SessionEnd/PreCompact → `auto-distill.py`) | Session end / pre-compact | Save session context to daily logs |
-| Heartbeat | `/loop` (local, watches local-machine state) | While working | Proactive check-in; see `skills/heartbeat` |
-| Self-improve | Cloud cron (`.github/workflows/self-improve.yml` → `bin/self-improve.py`, **PR-gated** — opens a PR, never writes master) | Weekly Sun 11:00 UTC | Propose refinements to own rules + agent defs from daily-log signal |
+## Active Tasks
+| Task | Schedule | What it does |
+|------|----------|-------------|
+| `Polaris\Promote` | Daily 11:15 PM | Extract learnings from daily logs → memory (curates Session Log: collapses runs of near-identical entries) |
+| `Polaris\Distill` | Every 2 hours (:12) | Save session context to daily logs |
+| `Polaris\SelfImprove` | Daily 3:30 AM | Review and improve agent skills/rules |
+| `Polaris\IndexLogs` | Daily 11:45 PM | Rebuild daily log search index |
+| `Polaris\Decay` | Weekly Sun 4:00 AM | Move daily logs >180d into `memory/archive-YYYY-MM.md` |
+
+All tasks have `WakeToRun` + `StartWhenAvailable` enabled. Times are staggered 15-30 min after Atlas to avoid conflicts.
 
 ## Management
-- List workflows: `gh workflow list` (from the agents repo root)
-- Run now: `gh workflow run promote.yml` (or `decay.yml`, `discuss.yml`)
-- Manual local run of a cloud job: `python bin/promote.py --agent polaris --dry-run`
+- List tasks: `schtasks /query /tn "\Polaris\Promote" /fo LIST`
+- Run now: `schtasks /run /tn "\Polaris\Promote"`
+- All scripts: `bin/scheduled/run-task.cmd <task-name>`
 
 # Skills
 
