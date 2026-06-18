@@ -9,11 +9,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/scripts/index-daily-logs.py 2>/dev/null || true"
+            "command": "python3 .claude/scripts/index-daily-logs.py 2>/dev/null || python .claude/scripts/index-daily-logs.py 2>/dev/null || true"
           },
           {
             "type": "command",
-            "command": "python .claude/scripts/sync-check.py 2>&1 || true"
+            "command": "python3 .claude/scripts/sync-check.py 2>&1 || python .claude/scripts/sync-check.py 2>&1 || true"
           }
         ]
       }
@@ -24,7 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/scripts/session-end-sync.py 2>&1 || true"
+            "command": "python3 .claude/scripts/session-end-sync.py 2>&1 || python .claude/scripts/session-end-sync.py 2>&1 || true"
           }
         ]
       }
