@@ -66,6 +66,14 @@ Each Slack-posting task is a clean candidate to move to GitHub Actions like `pro
 - For anything that genuinely can't run in cloud (auth-bound), build a **Mac launchd** job from the existing `templates/launchd/*.plist` — primary machine only.
 - **Retire the Windows Task Scheduler `\Atlas\` jobs** as each is cloud-ified, so nothing double-fires.
 
+### 2.1 Tier-2 runner definitions + injection hardening  [net-new 2026-06-18]
+The 4 Slack-posting daily-drivers were ported `.ps1`→`.sh` (`bin/scheduled/{morning-brief,midday-check,evening-wrapup,meeting-prep}.sh`) — portable runners holding the prompt bodies with repo-relative (`$AGENTS_ROOT`) paths. **Reuse these prompts when cloud-ifying — don't rewrite them.** Per the table above these target **cloud**, not launchd.
+
+**[CRITICAL — clear before ANY Tier-2 runner goes live, cloud or local]** these flows ingest external email/Granola/web content and currently invoke `claude -p --dangerously-skip-permissions` → prompt-injection → RCE + file-write fanout. Required hardening:
+- Replace `--dangerously-skip-permissions` with a scoped `--allowedTools` allowlist — real server prefixes are `mcp__atlas-gcal__*` / `mcp__atlas-gmail__*` / `mcp__atlas-slack__*` (NOT generic `mcp__gcal__*`), plus `WebSearch`/`WebFetch` (AI-radar + Open-Meteo) and `Read`/`Write`; add `--disallowedTools Bash` where the job needs no shell (verify evening-wrapup/meeting-prep — they write wiki sources).
+- Compute wiki write paths + a sanitised slug `[a-z0-9-]+` in the caller, not the LLM (pin base to `wiki/sources/`); data-fence external text.
+- **Interim:** the `.sh` are **fail-closed** — `exit 2` unless `ATLAS_TIER2_HARDENED=1` — so they can't run unhardened.
+
 ---
 
 ## Bucket 3 — Reconcile the docs with reality
