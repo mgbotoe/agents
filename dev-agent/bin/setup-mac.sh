@@ -53,7 +53,57 @@ if [ -d mcp/slack ]; then
   echo "  mcp/slack deps installed."
 fi
 
-# 5. Shell profile reminder -------------------------------------------------
+# 5. Python shim ------------------------------------------------------------
+# Hooks invoke bare `python`; macOS ships only `python3`. A user-local shim lets
+# the committed hook commands resolve without editing them per-machine.
+if ! command -v python >/dev/null 2>&1; then
+  mkdir -p "$HOME/.local/bin"
+  ln -sf "$(command -v python3)" "$HOME/.local/bin/python"
+  echo "  created ~/.local/bin/python -> python3 (ensure ~/.local/bin is on PATH)"
+else
+  echo "  python already on PATH."
+fi
+
+# 6. GitHub auth (private claude-skills marketplace) ------------------------
+# custom-skills is a PRIVATE repo; cloning/pulling it needs git credentials.
+if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+  echo "  gh auth: ok (private claude-skills clone will work)."
+else
+  echo "  WARNING: GitHub auth not detected — run 'gh auth login' (or set up an" >&2
+  echo "           SSH key / GITHUB_TOKEN), else the claude-skills marketplace won't sync." >&2
+fi
+
+# 7. Wire the cross-machine skill-sync hook ---------------------------------
+# Claude Code does not auto-pull github marketplaces (issue #44276). Register the
+# sync-skills SessionStart hook in the user-level settings.local.json (gitignored,
+# per-machine). Idempotent — only adds it if absent. Needs ~/.claude cloned first.
+SYNC_HOOK="python3 $HOME/.claude/hooks/sync-skills.py"
+set +e
+python3 - "$HOME/.claude/settings.local.json" "$SYNC_HOOK" <<'PY'
+import json, os, sys
+path, cmd = sys.argv[1], sys.argv[2]
+data = {}
+if os.path.exists(path):
+    try:
+        with open(path) as f:
+            data = json.load(f)
+    except Exception:
+        data = {}
+hooks = data.setdefault("hooks", {})
+ss = hooks.setdefault("SessionStart", [])
+present = any(h.get("command") == cmd for entry in ss for h in entry.get("hooks", []))
+if not present:
+    ss.append({"hooks": [{"type": "command", "command": cmd}]})
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2)
+    print("  added sync-skills SessionStart hook to settings.local.json")
+else:
+    print("  sync-skills hook already present.")
+PY
+set -e
+
+# 8. Shell profile reminder -------------------------------------------------
 cat <<EOF
 
 Next steps:
