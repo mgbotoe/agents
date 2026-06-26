@@ -64,6 +64,10 @@
           {
             "type": "command",
             "command": "python .claude/scripts/log-commit.py 2>&1 || true"
+          },
+          {
+            "type": "command",
+            "command": "python .claude/scripts/ce-compound-nudge.py"
           }
         ]
       }
