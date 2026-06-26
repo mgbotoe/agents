@@ -102,10 +102,10 @@ Location: `wdai-team-os` repo. Full architecture: `memory/project_team_os_one_br
 - Tokens in Windows Credential Manager (`wdai-slack` service: `bot_token`, `app_token`, `dina_user_id`)
 - Polaris-as-driver = POC only — production needs WDAI-tier always-on runtime (ADR pending)
 
-<!-- added 2026-06-13; updated 2026-06-14 -->
+<!-- added 2026-06-13; updated 2026-06-23 -->
 ## WDAI Compound Engineering (Every plugin)
 
-**Status:** PR #689 open (docs-only, 6 commits as of 2026-06-14). Pending merge.
+**Status:** PR #689 MERGED (2026-06-23, commits `e4e6491a` + `0fefbf6b`).
 
 **What shipped:**
 - CE plugin installed at WDAI foundation-platform project scope
@@ -113,13 +113,21 @@ Location: `wdai-team-os` repo. Full architecture: `memory/project_team_os_one_br
 - `docs/decisions/adr-003-compound-engineering.md` — adoption ADR
 - CLAUDE.md coexistence routing table: CE skills vs WDAI native skills vs overlap paths
 - `pr-merge-workflow` clarified as the kept PR-merge path
+- CE setup guide linked from README Essential Reading
 
 **Key finding:** CE's destructive-migration guard already covered by existing `ci.yml` step.
 
+**CE plugin scope rule (learned 2026-06-23):**
+- Plugin installed at project scope only — doesn't load in Polaris-rooted sessions (Claude Code reads project settings from session root only)
+- Committed config is for teammates who open WDAI repo directly
+- Fix for Dina's through-Polaris sessions: user-scope install via `/plugin install compound-engineering@compound-engineering-plugin` (awaiting Dina's choice)
+- `enabledPlugins` enables but does NOT install (claude-code#32606) — hand-editing `installed_plugins.json` is racy with live instance
+
 **Open items:**
-1. Admin must mark `Check for destructive migrations` as a required CI check — neither Dina nor mgbotoe has admin.
+1. Admin must mark `Check for destructive migrations` as a required CI check — mgbotoe HAS admin (verified 2026-06-24), can do this directly.
 2. Fast-follow: AGENTS.md `docs/solutions/` pointer once `ce-compound` runs produce first solution.
 3. Cross-tool CE (Codex/Gemini) optional per-machine — not blocking.
+4. Dina: run `/plugin install compound-engineering@compound-engineering-plugin` for user-scope coverage in Polaris sessions.
 
 <!-- added 2026-06-18 -->
 ## Cross-platform (Mac + Windows) port
