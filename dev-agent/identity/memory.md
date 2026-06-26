@@ -89,3 +89,5 @@ Detailed context lives in `memory/*.md` — search on-demand, don't duplicate he
 - [2026-06-14] PR #689 finalized: ADR-003 + coexistence routing table + pr-merge-workflow clarification. Luma→GCal sync PR #686 merged.
 - [2026-06-18] Cross-platform overhaul: OS-agnostic path derivation, gather-context.py (fixed 0GB bug), cloud cron for decay/self-improve (PR-gated), heartbeat→/loop, per-machine workspace map, mgbotoe/claude-skills + my.claude repos, sync-skills.py SessionStart hook, /advisor skill (fork), path-leak CI guard. Atlas meeting-prep pipeline found DEAD since 2026-05-12 — posted #atlas-cos.
 - [2026-06-23] PR #689 merged (CE + CLAUDE.md coexistence). CE scope issue found: plugin installed at project scope, not user — doesn't load in Polaris-rooted sessions. Fix pending (user-scope install via `/plugin install`).
+- [2026-06-23] Disabled leftover Beacon POC poller (`beacon-poll.yml`) in wdai-team-os — was cron-spamming PR #12 comment + failure emails to Dina.
+- [2026-06-26] Mapped WDAI Newswire recording-approval flow; root-caused core-team recordings appearing = PR #550 DRAIN (indiscriminate My Drive sweep, no fix wanted).
